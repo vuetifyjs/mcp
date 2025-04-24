@@ -3,7 +3,6 @@
  *
  * Adds API key validation to the transport layer for secure communication.
  */
-
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
@@ -29,15 +28,15 @@ export class AuthTransportWrapper implements Transport {
     }
   }
 
-  async start (): Promise<void> {
+  async start () {
     return this.baseTransport.start()
   }
 
-  async send (message: JSONRPCMessage): Promise<void> {
+  async send (message: JSONRPCMessage) {
     return this.baseTransport.send(message)
   }
 
-  async close (): Promise<void> {
+  async close () {
     return this.baseTransport.close()
   }
 
@@ -45,7 +44,7 @@ export class AuthTransportWrapper implements Transport {
   onerror?: (error: Error) => void
   onclose?: () => void
 
-  private async handleMessage (message: JSONRPCMessage): Promise<void> {
+  private async handleMessage (message: JSONRPCMessage) {
     const isValid = await this.authService.validateApiKey(this.apiKey)
 
     if (!isValid) {
