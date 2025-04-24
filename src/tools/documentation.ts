@@ -1,8 +1,13 @@
+/**
+ * Registers tools for documentation-related features.
+ *
+ * Includes functionality to fetch installation guides and other documentation.
+ */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
-import { useDocumentationService } from '../services/documentation.js'
+import { createDocumentationService } from '../services/documentation.js'
 
-const documentation = useDocumentationService()
+const documentation = createDocumentationService()
 
 export function registerDocumentationTools (server: McpServer) {
   server.tool(

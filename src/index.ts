@@ -1,3 +1,9 @@
+/**
+ * Vuetify MCP - Main Entry Point
+ *
+ * This file initializes the MCP server and registers all the available tools.
+ */
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
@@ -21,7 +27,7 @@ const server = new McpServer({
 registerTools(server)
 registerResources(server)
 
-async function main() {
+async function main () {
   const transport = new StdioServerTransport()
   const auth = new AuthTransportWrapper(transport)
   await server.connect(auth)

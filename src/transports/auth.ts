@@ -1,21 +1,22 @@
 /**
- * Authentication Transport Wrapper for Vuetify MCP
- * Wraps a base transport with API key validation
+ * Implements an authentication transport wrapper for the MCP server.
+ *
+ * Adds API key validation to the transport layer for secure communication.
  */
 
-import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
-import { AuthService } from './auth-service.js'
+
+import { createAuthService } from '../services/auth.js'
 
 export class AuthTransportWrapper implements Transport {
   private baseTransport: StdioServerTransport
-  private authService: AuthService
-  private apiKey: string | null = null
+  private authService = createAuthService('http://localhost:8096', 300000)
+  private apiKey = process.env.VUETIFY_API_KEY!
 
-  constructor(baseTransport: StdioServerTransport) {
+  constructor (baseTransport: StdioServerTransport) {
     this.baseTransport = baseTransport
-    this.authService = new AuthService('http://localhost:8096', 300000)
 
     this.baseTransport.onmessage = (message) => this.handleMessage(message)
 
@@ -28,15 +29,15 @@ export class AuthTransportWrapper implements Transport {
     }
   }
 
-  async start(): Promise<void> {
+  async start (): Promise<void> {
     return this.baseTransport.start()
   }
 
-  async send(message: JSONRPCMessage): Promise<void> {
+  async send (message: JSONRPCMessage): Promise<void> {
     return this.baseTransport.send(message)
   }
 
-  async close(): Promise<void> {
+  async close (): Promise<void> {
     return this.baseTransport.close()
   }
 
@@ -45,51 +46,39 @@ export class AuthTransportWrapper implements Transport {
   onclose?: () => void
 
   private async handleMessage (message: JSONRPCMessage): Promise<void> {
-    console.log('made it here', message)
-    console.log(process.env.VUETIFY_API_KEY)
-    // Extract API key from headers if present
-    // if (message.headers && message.headers[this.apiKeyHeaderName]) {
-    //   this.apiKey = message.headers[this.apiKeyHeaderName]
-    // }
+    const isValid = await this.authService.validateApiKey(this.apiKey)
 
-    // Validate API key before processing message
-    // if (this.apiKey) {
-    //   const isValid = await this.authService.validateApiKey(this.apiKey)
-    //   if (!isValid) {
-    //     this.sendErrorResponse(message, 403, 'Invalid API key')
-    //     return
-    //   }
-    // } else {
-    //   this.sendErrorResponse(message, 401, 'API key is required')
-    //   return
-    // }
+    if (!isValid) {
+      this.sendErrorResponse(message, 403, 'Invalid API key')
+      return
+    }
 
     if (this.onmessage) {
       this.onmessage(message)
     }
   }
 
-  private handleError(error: Error): void {
+  private handleError (error: Error): void {
     if (this.onerror) {
       this.onerror(error)
     }
   }
 
-  private handleClose(): void {
+  private handleClose (): void {
     if (this.onclose) {
       this.onclose()
     }
   }
 
-  private sendErrorResponse(msg: JSONRPCMessage, code: number, message: string): void {
+  private sendErrorResponse (msg: JSONRPCMessage, code: number, message: string): void {
     if ('id' in msg) {
       this.send({
         jsonrpc: '2.0',
         id: msg.id,
         error: {
           code,
-          message
-        }
+          message,
+        },
       })
     }
 
