@@ -11,13 +11,15 @@ import { createAuthService } from '../services/auth.js'
 
 export class AuthTransportWrapper implements Transport {
   private baseTransport: StdioServerTransport
-  private authService = createAuthService('http://localhost:8096', 300000)
+  private authService = createAuthService(process.env.VUETIFY_API_SERVER!, 300000)
   private apiKey = process.env.VUETIFY_API_KEY!
 
   constructor (baseTransport: StdioServerTransport) {
     this.baseTransport = baseTransport
 
-    this.baseTransport.onmessage = (message) => this.handleMessage(message)
+    this.baseTransport.onmessage = (message) => {
+      this.handleMessage(message)
+    }
 
     if (this.baseTransport.onerror) {
       this.baseTransport.onerror = (error) => this.handleError(error)
