@@ -26,7 +26,7 @@ pnpm start
 
 ## Configuration for Claude
 
-To use this MCP server with Claude, add the following to your `.vscode/mcp.json` file:
+To use this MCP server with Claude, add the following to your `.vscode/mcp.json` file (or move it to `settings.json` for global usage):
 
 ```json
 {
@@ -34,7 +34,7 @@ To use this MCP server with Claude, add the following to your `.vscode/mcp.json`
     "vuetify-mcp": {
       "command": "node",
       "args": [
-        "C:\\PATH\\TO\\PARENT\\FOLDER\\vuetify-mcp\\dist\\index.js"
+        "/absolute/path/to/vuetify-mcp/dist/index.js"
       ],
       "env": {
         "VUETIFY_API_KEY": "your_api_key_here"
@@ -44,8 +44,21 @@ To use this MCP server with Claude, add the following to your `.vscode/mcp.json`
 }
 ```
 
-Make sure to replace `C:\PATH\TO\PARENT\FOLDER` with the actual path to the parent directory containing your vuetify-mcp folder.
+Make sure to replace `/absolute/path/to` with the actual absolute path to the `vuetify-mcp` directory.
 
+Additionally, ensure that automatic discovery is enabled in your `settings.json` file:
+
+```json
+{
+  "chat.mcp.discovery.enabled": true
+}
+```
+
+You can also verify the discovery and configuration by using the command palette in VS Code:
+
+1. Press `Ctrl + Shift + P` (or `Cmd + Shift + P` on macOS).
+2. Search for `MCP`.
+3. Use the available options to check the discovery and configuration settings.
 
 ## Features
 
