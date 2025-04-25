@@ -12,7 +12,7 @@ const components = createComponentService()
 
 export function registerComponentTools (server: McpServer) {
   server.tool(
-    'get_component_props',
+    'get-component-props',
     'Get detailed information about Vuetify component properties',
     {
       componentName: z.string().describe('The name of the Vuetify component to retrieve properties for'),

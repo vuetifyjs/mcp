@@ -5,10 +5,13 @@
  */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import dotenv from 'dotenv'
 
 import { registerResources } from './resources/index.js'
 import { registerTools } from './tools/index.js'
 import { AuthTransportWrapper } from './transports/auth.js'
+
+dotenv.config()
 
 const server = new McpServer({
   name: 'vuetify',
