@@ -26,11 +26,11 @@ pnpm start
 
 ## Configuration for Claude
 
-To use this MCP server with Claude, add the following to your `.mcp.json` file:
+To use this MCP server with Claude, add the following to your `.vscode/mcp.json` file:
 
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "vuetify-mcp": {
       "command": "node",
       "args": [
