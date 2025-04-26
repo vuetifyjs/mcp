@@ -15,34 +15,50 @@ This MCP server provides Claude with access to Vuetify component information, la
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Build the project
-npm run build
+pnpm run build
 
 # Start the server
-npm start
+pnpm start
 ```
 
 ## Configuration for Claude
 
-To use this MCP server with Claude, add the following to your `.mcp.json` file:
+To use this MCP server with Claude, add the following to your `.vscode/mcp.json` file (or move it to `settings.json` for global usage):
 
 ```json
 {
-    "mcpServers": {
-        "vuetify-mcp": {
-            "command": "node",
-            "args": [
-                "C:\\PATH\\TO\\PARENT\\FOLDER\\vuetify-mcp\\dist\\index.js"
-            ]
-        }
+  "servers": {
+    "vuetify-mcp": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/vuetify-mcp/dist/index.js"
+      ],
+      "env": {
+        "VUETIFY_API_KEY": "your_api_key_here"
+      }
     }
+  }
 }
 ```
 
-Make sure to replace `C:\PATH\TO\PARENT\FOLDER` with the actual path to the parent directory containing your vuetify-mcp folder.
+Make sure to replace `/absolute/path/to` with the actual absolute path to the `vuetify-mcp` directory.
 
+Additionally, ensure that automatic discovery is enabled in your `settings.json` file:
+
+```json
+{
+  "chat.mcp.discovery.enabled": true
+}
+```
+
+You can also verify the discovery and configuration by using the command palette in VS Code:
+
+1. Press `Ctrl + Shift + P` (or `Cmd + Shift + P` on macOS).
+2. Search for `MCP`.
+3. Use the available options to check the discovery and configuration settings.
 
 ## Features
 
@@ -51,24 +67,10 @@ The Vuetify MCP provides the following capabilities:
 ### Component Tools
 
 - `get_component_props`: Get detailed information about a component's properties
-- `generate_component`: Create HTML for a Vuetify component with specified properties
-- `generate_form`: Create a Vuetify form with specified fields
-
-### Layout Tools
-
-- `create_layout_example`: Generate example code for common layouts (dashboard, login, landing)
-- `list_available_layouts`: Get a list of available layout templates
-- `create_custom_layout`: Generate a custom layout based on components specification
 
 ### Documentation Tools
 
-- `list_vuetify_components`: Get a list of commonly used Vuetify components
-- `get_color_system_info`: Information about Vuetify's color system
-- `get_grid_system_info`: Information about Vuetify's grid system
 - `get_installation_guide`: Guide for installing Vuetify
-- `get_theme_customization_guide`: Guide for customizing Vuetify themes
-- `search_docs`: Search Vuetify documentation based on a query
-- `get_version_compatibility`: Information about Vuetify version compatibility with Vue
 
 ## Project Structure
 
@@ -77,15 +79,14 @@ vuetify-mcp/
 ├── src/
 │   ├── index.ts        # Main entry point
 │   ├── services/       # Core business logic
-│   │   ├── component.ts   # Component generation service
-│   │   ├── layout.ts      # Layout creation service
-│   │   └── documentation.ts # Documentation service
-│   ├── tools/          # MCP tool definitions
-│   │   ├── component.ts   # Component-related tools
-│   │   ├── layout.ts      # Layout-related tools
-│   │   └── documentation.ts # Documentation-related tools
-│   └── types/          # TypeScript type definitions
-├── dist/               # Compiled JavaScript files
+│   │   ├── auth.ts        # Authentication service
+│   │   ├── component.ts   # Component-related service
+│   │   ├── documentation.ts # Documentation-related service
+│   └── tools/          # MCP tool definitions
+│       ├── component.ts   # Component-related tools
+│       ├── documentation.ts # Documentation-related tools
+│   └── transports/     # Transport wrappers
+│       ├── auth.ts        # Authentication transport wrapper
 ├── package.json        # Project dependencies
 ├── tsconfig.json       # TypeScript configuration
 └── README.md           # This file
@@ -95,9 +96,9 @@ vuetify-mcp/
 
 To add new features or extend existing ones:
 
-1. Add or update service methods in the appropriate service file
-2. Register the tool in the corresponding tools file
-3. Build and test your changes
+1. Add or update service methods in the appropriate service file.
+2. Register the tool in the corresponding tools file.
+3. Build and test your changes.
 
 ## MCP SDK Integration
 
