@@ -8,17 +8,19 @@ interface ValidationCacheEntry {
   timestamp: number
 }
 
-export function createAuthService (vuetifyApiUrl: string, cacheTTL = 300000) {
+export function createAuthService () {
   const validationCache = new Map<string, ValidationCacheEntry>()
+  // const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
 
   async function validateApiKey (apiKey: string): Promise<boolean> {
     const cached = validationCache.get(apiKey)
-    if (cached && (Date.now() - cached.timestamp < cacheTTL)) {
+
+    if (cached && (Date.now() - cached.timestamp < 300000)) {
       return cached.valid
     }
 
     try {
-      // const response = await fetch(`${vuetifyApiUrl}/validate-key`, {
+      // const response = await fetch(`${apiServer}/validate-key`, {
       //   method: 'POST',
       //   headers: {
       //     'Content-Type': 'application/json',
@@ -32,10 +34,7 @@ export function createAuthService (vuetifyApiUrl: string, cacheTTL = 300000) {
         statusText: 'OK',
       }
 
-      if (!response.ok) {
-        console.error('API key validation error:', response.statusText)
-        return false
-      }
+      if (!response.ok) return false
 
       const data = await response.json()
       const isValid = data.valid === true
@@ -47,7 +46,7 @@ export function createAuthService (vuetifyApiUrl: string, cacheTTL = 300000) {
 
       return isValid
     } catch (error) {
-      console.error('API key validation error:', error)
+      void error
       return false
     }
   }

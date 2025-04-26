@@ -1,6 +1,6 @@
 {
-  "name": "vuetify-mcp",
-  "version": "0.1.0",
+  "name": "@vuetify/mcp",
+  "version": "0.0.1",
   "description": "Machine Context Protocol server for Vuetify assistance",
   "main": "dist/index.js",
   "type": "module",
@@ -18,7 +18,7 @@
     "claude",
     "anthropic"
   ],
-  "author": "Your Company",
+  "author": "john@vuetifyjs.com",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.10.2",

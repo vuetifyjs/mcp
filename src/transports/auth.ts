@@ -11,7 +11,7 @@ import { createAuthService } from '../services/auth.js'
 
 export class AuthTransportWrapper implements Transport {
   private stdioTransport = new StdioServerTransport()
-  private authService = createAuthService(process.env.VUETIFY_API_SERVER!, 300000)
+  private authService = createAuthService()
   private apiKey = process.env.VUETIFY_API_KEY!
 
   onmessage?: (message: JSONRPCMessage) => void
@@ -44,15 +44,15 @@ export class AuthTransportWrapper implements Transport {
       return
     }
 
-    if (this.onmessage) this.onmessage(message)
+    this.onmessage?.(message)
   }
 
   private handleError (error: Error) {
-    if (this.onerror) this.onerror(error)
+    this.onerror?.(error)
   }
 
   private handleClose () {
-    if (this.onclose) this.onclose()
+    this.onclose?.()
   }
 
   private sendErrorResponse (msg: JSONRPCMessage, code: number, message: string) {
@@ -67,6 +67,6 @@ export class AuthTransportWrapper implements Transport {
       })
     }
 
-    if (this.onerror) this.onerror(new Error(message))
+    this.onerror?.(new Error(message))
   }
 }
