@@ -1,5 +1,5 @@
 /**
- * Registers resources with the MCP server.
+ * Registers prompts with the MCP server.
  *
  * This function is used to define and attach resource-related capabilities.
  */

@@ -3,13 +3,11 @@
  *
  * Includes functionality to fetch installation guides and other documentation.
  */
-import { Octokit } from 'octokit'
+import octokit from '../plugins/octokit.js'
 
 import { CallToolService } from './shared.js'
 
 async function getInstallationGuide () {
-  const octokit = new Octokit()
-
   const { data } = await octokit.rest.repos.getContent({
     owner: 'vuetifyjs',
     repo: 'vuetify',
