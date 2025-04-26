@@ -1,3 +1,8 @@
+/**
+ * octokit.js
+ *
+ * https://github.com/octokit/octokit.js
+ */
 import { Octokit } from 'octokit'
 
 const octokit: InstanceType<typeof Octokit> = new Octokit({
