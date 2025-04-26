@@ -7,6 +7,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import dotenv from 'dotenv'
 
+import { registerPrompts } from './prompts/index.js'
 import { registerResources } from './resources/index.js'
 import { registerTools } from './tools/index.js'
 import { AuthTransportWrapper } from './transports/auth.js'
@@ -26,8 +27,9 @@ const server = new McpServer({
   },
 })
 
-registerTools(server)
 registerResources(server)
+registerPrompts(server)
+registerTools(server)
 
 async function main () {
   const transport = new StdioServerTransport()

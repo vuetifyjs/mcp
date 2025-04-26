@@ -11,7 +11,7 @@ const documentation = createDocumentationService()
 
 export function registerDocumentationTools (server: McpServer) {
   server.tool(
-    'get-installation-guide',
+    'get_installation_guide',
     'Get detailed information about how to install Vuetify in a variety of environments.',
     {},
     async () => documentation.getInstallationGuide(),

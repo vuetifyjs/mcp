@@ -66,11 +66,11 @@ The Vuetify MCP provides the following capabilities:
 
 ### Component Tools
 
-- `get-component-props`: Get detailed information about a component's properties
+- `get_component_props`: Get detailed information about a component's properties
 
 ### Documentation Tools
 
-- `get-installation-guide`: Guide for installing Vuetify
+- `get_installation_guide`: Guide for installing Vuetify
 
 ## Project Structure
 
