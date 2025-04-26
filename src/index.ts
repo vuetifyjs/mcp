@@ -4,7 +4,6 @@
  * This file initializes the MCP server and registers all the available tools.
  */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import dotenv from 'dotenv'
 
 import { registerPrompts } from './prompts/index.js'
@@ -32,8 +31,7 @@ registerPrompts(server)
 registerTools(server)
 
 async function main () {
-  const transport = new StdioServerTransport()
-  const auth = new AuthTransportWrapper(transport)
+  const auth = new AuthTransportWrapper()
   await server.connect(auth)
   console.error('Vuetify MCP Server running on stdio')
 }

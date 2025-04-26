@@ -10,41 +10,31 @@ import { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
 import { createAuthService } from '../services/auth.js'
 
 export class AuthTransportWrapper implements Transport {
-  private baseTransport: StdioServerTransport
+  private stdioTransport = new StdioServerTransport()
   private authService = createAuthService(process.env.VUETIFY_API_SERVER!, 300000)
   private apiKey = process.env.VUETIFY_API_KEY!
-
-  constructor (baseTransport: StdioServerTransport) {
-    this.baseTransport = baseTransport
-
-    this.baseTransport.onmessage = (message) => {
-      this.handleMessage(message)
-    }
-
-    if (this.baseTransport.onerror) {
-      this.baseTransport.onerror = (error) => this.handleError(error)
-    }
-
-    if (this.baseTransport.onclose) {
-      this.baseTransport.onclose = () => this.handleClose()
-    }
-  }
-
-  async start () {
-    return this.baseTransport.start()
-  }
-
-  async send (message: JSONRPCMessage) {
-    return this.baseTransport.send(message)
-  }
-
-  async close () {
-    return this.baseTransport.close()
-  }
 
   onmessage?: (message: JSONRPCMessage) => void
   onerror?: (error: Error) => void
   onclose?: () => void
+
+  constructor () {
+    this.stdioTransport.onmessage = this.handleMessage.bind(this)
+    this.stdioTransport.onerror = this.handleError.bind(this)
+    this.stdioTransport.onclose = this.handleClose.bind(this)
+  }
+
+  async start () {
+    return this.stdioTransport.start()
+  }
+
+  async send (message: JSONRPCMessage) {
+    return this.stdioTransport.send(message)
+  }
+
+  async close () {
+    return this.stdioTransport.close()
+  }
 
   private async handleMessage (message: JSONRPCMessage) {
     const isValid = await this.authService.validateApiKey(this.apiKey)
@@ -54,24 +44,18 @@ export class AuthTransportWrapper implements Transport {
       return
     }
 
-    if (this.onmessage) {
-      this.onmessage(message)
-    }
+    if (this.onmessage) this.onmessage(message)
   }
 
-  private handleError (error: Error): void {
-    if (this.onerror) {
-      this.onerror(error)
-    }
+  private handleError (error: Error) {
+    if (this.onerror) this.onerror(error)
   }
 
-  private handleClose (): void {
-    if (this.onclose) {
-      this.onclose()
-    }
+  private handleClose () {
+    if (this.onclose) this.onclose()
   }
 
-  private sendErrorResponse (msg: JSONRPCMessage, code: number, message: string): void {
+  private sendErrorResponse (msg: JSONRPCMessage, code: number, message: string) {
     if ('id' in msg) {
       this.send({
         jsonrpc: '2.0',
@@ -83,8 +67,6 @@ export class AuthTransportWrapper implements Transport {
       })
     }
 
-    if (this.onerror) {
-      this.onerror(new Error(message))
-    }
+    if (this.onerror) this.onerror(new Error(message))
   }
 }
