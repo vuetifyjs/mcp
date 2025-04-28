@@ -42,27 +42,27 @@ export function getSettingsForIde ({ darwin, win32, linux }: IDEPathSettings) {
 }
 
 const code = {
-  darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Code', 'User', 'settings.json'),
-  win32: () => path.join(process.env.APPDATA!, 'Code', 'User', 'settings.json'),
-  linux: () => path.join(homedir(), '.config', 'Code', 'User', 'settings.json'),
+  darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Code', 'User'),
+  win32: () => path.join(process.env.APPDATA!, 'Code', 'User'),
+  linux: () => path.join(homedir(), '.config', 'Code', 'User'),
 }
 
 const trae = {
-  darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Trae', 'User', 'settings.json'),
-  win32: () => path.join(process.env.APPDATA!, 'Trae', 'User', 'settings.json'),
-  linux: () => path.join(homedir(), '.config', 'Trae', 'User', 'settings.json'),
+  darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Trae', 'User'),
+  win32: () => path.join(process.env.APPDATA!, 'Trae', 'User'),
+  linux: () => path.join(homedir(), '.config', 'Trae', 'User'),
 }
 
 const cursor = {
-  darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Cursor', 'User', 'settings.json'),
-  win32: () => path.join(process.env.APPDATA!, 'Cursor', 'User', 'settings.json'),
-  linux: () => path.join(homedir(), '.config', 'Cursor', 'User', 'settings.json'),
+  darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Cursor', 'User'),
+  win32: () => path.join(process.env.APPDATA!, 'Cursor', 'User'),
+  linux: () => path.join(homedir(), '.config', 'Cursor', 'User'),
 }
 
 const codeInsiders = {
-  darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Code - Insiders', 'User', 'settings.json'),
-  win32: () => path.join(process.env.APPDATA!, 'Code - Insiders', 'User', 'settings.json'),
-  linux: () => path.join(homedir(), '.config', 'Code - Insiders', 'User', 'settings.json'),
+  darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Code - Insiders', 'User'),
+  win32: () => path.join(process.env.APPDATA!, 'Code - Insiders', 'User'),
+  linux: () => path.join(homedir(), '.config', 'Code - Insiders', 'User'),
 }
 
 const idePathConfigs = {
