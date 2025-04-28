@@ -23,6 +23,7 @@
   "author": "john@vuetifyjs.com",
   "license": "MIT",
   "dependencies": {
+    "@clack/prompts": "^0.10.1",
     "@modelcontextprotocol/sdk": "^1.10.2",
     "dotenv": "^16.5.0",
     "kolorist": "^1.8.0",

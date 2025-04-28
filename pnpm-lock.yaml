@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@clack/prompts':
+        specifier: ^0.10.1
+        version: 0.10.1
       '@modelcontextprotocol/sdk':
         specifier: ^1.10.2
         version: 1.10.2
