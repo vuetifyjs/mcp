@@ -5,6 +5,7 @@
  */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import dotenv from 'dotenv'
+import { intro } from './cli/intro.js'
 
 dotenv.config()
 
@@ -31,9 +32,9 @@ registerPrompts(server)
 registerTools(server)
 
 async function main () {
+  intro()
   const auth = new AuthTransportWrapper()
   await server.connect(auth)
-  console.error('Vuetify MCP Server running on stdio')
 }
 
 main().catch((error) => {
