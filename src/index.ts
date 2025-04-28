@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Vuetify MCP - Main Entry Point
  *
@@ -5,14 +6,15 @@
  */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import dotenv from 'dotenv'
-import { intro } from './cli/intro.js'
 
-dotenv.config()
+import { intro } from './cli/intro.js'
 
 import { registerPrompts } from './prompts/index.js'
 import { registerResources } from './resources/index.js'
 import { registerTools } from './tools/index.js'
 import { AuthTransportWrapper } from './transports/auth.js'
+
+dotenv.config()
 
 const server = new McpServer({
   name: 'vuetify',
@@ -37,7 +39,7 @@ async function main () {
   await server.connect(auth)
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error('Fatal error in main():', error)
   process.exit(1)
 })

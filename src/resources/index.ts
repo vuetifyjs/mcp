@@ -3,7 +3,7 @@
  *
  * This function is used to define and attach resource-related capabilities.
  */
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
 export function registerResources (server: McpServer) {
   void server

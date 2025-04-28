@@ -3,7 +3,7 @@
  *
  * Includes functionality to retrieve component properties and details.
  */
-import { CallToolService } from './shared.js'
+import type { CallToolService } from './shared.js'
 
 function getComponentApi (componentName: string) {
   return `Props for ${componentName} component...`
@@ -11,7 +11,7 @@ function getComponentApi (componentName: string) {
 
 export function createComponentService (): CallToolService {
   return {
-    getComponentApi: async (componentName) => {
+    getComponentApi: async componentName => {
       return {
         content: [{
           type: 'text',

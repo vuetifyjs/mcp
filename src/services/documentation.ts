@@ -6,7 +6,7 @@
 import octokit from '../plugins/octokit.js'
 
 export const INSTALLATION_PLATFORMS = {
-  vite: {
+  'vite': {
     name: 'Vite',
     description: 'Installation guide for Vite projects.',
     markdown: `
@@ -48,7 +48,7 @@ export const INSTALLATION_PLATFORMS = {
       \`\`\`
 `,
   },
-  nuxt: {
+  'nuxt': {
     name: 'Nuxt',
     description: 'Installation guide for Nuxt projects.',
     markdown: `
@@ -137,7 +137,7 @@ export const INSTALLATION_PLATFORMS = {
       \`\`\`
 `,
   },
-  laravel: {
+  'laravel': {
     name: 'Laravel Vite',
     description: 'Installation guide for Laravel Vite projects.',
     markdown: `
@@ -184,7 +184,7 @@ export const INSTALLATION_PLATFORMS = {
       \`\`\`
 `,
   },
-  cdn: {
+  'cdn': {
     name: 'CDN',
     description: 'Installation guide for using Vuetify via CDN.',
     markdown: `
@@ -238,7 +238,7 @@ export const INSTALLATION_PLATFORMS = {
       \`\`\`
 `,
   },
-  vitepress: {
+  'vitepress': {
     name: 'VitePress',
     description: 'Installation guide for VitePress projects.',
     markdown: `
