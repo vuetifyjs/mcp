@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { intro } from '../cli/intro.js'
-import { confirm, multiselect } from '@clack/prompts'
+import { intro as clackIntro, confirm, multiselect, outro } from '@clack/prompts'
 import type { DetectedIDE } from './detect-ide.js'
 import { detectIDEs } from './detect-ide.js'
 import { installGlobally } from './install-globally.js'
@@ -12,6 +12,8 @@ intro('config')
 if (ides.length === 0) {
   process.exit(0)
 }
+
+clackIntro()
 
 const shouldAddGlobally = await confirm({
   message: 'Add to global settings?',
@@ -35,7 +37,7 @@ if (shouldAddGlobally && ides.length === 1) {
 
 if (Array.isArray(idesToInstall) && idesToInstall.length > 0) {
   await installGlobally(idesToInstall)
-  console.log('IDE settings updated successfully')
+  outro('IDE settings updated successfully')
 } else {
-  console.log('No IDEs selected')
+  outro('No IDEs selected')
 }
