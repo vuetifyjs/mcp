@@ -11,7 +11,7 @@ import type { InstallationPlatform, AvailableFeature } from '../services/documen
 
 const documentation = createDocumentationService()
 
-export function registerDocumentationTools (server: McpServer) {
+export async function registerDocumentationTools (server: McpServer) {
   const platforms = Object.keys(INSTALLATION_PLATFORMS) as InstallationPlatform[]
   const features = Object.keys(AVAILABLE_FEATURES) as AvailableFeature[]
 

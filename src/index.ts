@@ -26,9 +26,9 @@ const server = new McpServer({
   },
 })
 
-registerResources(server)
-registerPrompts(server)
-registerTools(server)
+await registerResources(server)
+await registerPrompts(server)
+await registerTools(server)
 
 async function main () {
   const auth = new AuthTransportWrapper()
