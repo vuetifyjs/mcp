@@ -18,6 +18,12 @@ export class AuthTransportWrapper implements Transport {
   private authService = createAuthService()
   private apiKey = process.env.VUETIFY_API_KEY!
 
+  constructor () {
+    this.stdioTransport.onmessage = this.handleMessage.bind(this)
+    this.stdioTransport.onerror = this.handleError.bind(this)
+    this.stdioTransport.onclose = this.handleClose.bind(this)
+  }
+
   async start () {
     return this.stdioTransport.start()
   }
