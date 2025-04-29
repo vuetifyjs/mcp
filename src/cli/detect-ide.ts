@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import { homedir } from 'node:os'
-import path from 'node:path'
+import path from 'pathe'
 
 import { platform } from 'std-env'
 import which from 'which'

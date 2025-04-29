@@ -3,6 +3,7 @@ import { intro } from '../cli/intro.js'
 import { confirm, multiselect } from '@clack/prompts'
 import type { DetectedIDE } from './detect-ide.js'
 import { detectIDEs } from './detect-ide.js'
+import { installGlobally } from './install-globally.js'
 
 const ides = detectIDEs()
 
@@ -33,7 +34,8 @@ if (shouldAddGlobally && ides.length === 1) {
 }
 
 if (Array.isArray(idesToInstall) && idesToInstall.length > 0) {
-  console.log('idesToInstall', idesToInstall)
+  await installGlobally(idesToInstall)
+  console.log('IDE settings updated successfully')
 } else {
   console.log('No IDEs selected')
 }
