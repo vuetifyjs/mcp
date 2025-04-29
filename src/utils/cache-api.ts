@@ -3,18 +3,21 @@ import { join } from 'node:path'
 
 import { getCacheDir } from './cache-dir.js'
 
-export async function cacheApi (version = 'latest') {
+export async function getApi (version = 'latest') {
   const dir = getCacheDir(version)
   const file = join(dir, 'web-types.json')
-
-  if (existsSync(file)) {
-    return JSON.parse(readFileSync(file, 'utf-8'))
+  if (existsSync(file) && version !== 'latest') {
+    return readFileSync(file, 'utf-8')
   }
 
-  // const url = `https://cdn.jsdelivr.net/npm/vuetify@${version}/dist/web-types.json`
-  // const text = await fetch(url).then(r => r.text())
+  return cacheApi(file, version)
+}
 
-  // writeFileSync(file, text, 'utf-8')
+export async function cacheApi (file: string, version = 'latest') {
+  const url = `https://cdn.jsdelivr.net/npm/vuetify@${version}/dist/json/web-types.json`
+  const text = await fetch(url).then(r => r.text())
 
-  // return JSON.parse(text)
+  writeFileSync(file, text, 'utf-8')
+
+  return text
 }

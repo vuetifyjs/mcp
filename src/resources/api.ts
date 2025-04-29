@@ -28,7 +28,6 @@ export async function registerApiResources (server: McpServer) {
     'vuetify-api',
     template,
     async (uri, { version = 'latest' }) => {
-
       const api = await cacheApi(Array.isArray(version) ? version[0] : version)
 
       return {
@@ -36,7 +35,7 @@ export async function registerApiResources (server: McpServer) {
           {
             uri: uri.href,
             mimeType: 'application/json',
-            text: 'Foobars',
+            text: api,
           },
         ],
       }
