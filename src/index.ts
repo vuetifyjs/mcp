@@ -23,6 +23,9 @@ const server = new McpServer({
     tools: {
       description: 'Tools to help with Vuetify component properties, layouts, and documentation.',
     },
+    prompts: {
+      description: 'Prompts to assist with Vuetify component usage and best practices.',
+    },
   },
 })
 
