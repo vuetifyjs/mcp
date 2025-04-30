@@ -5,10 +5,12 @@
  */
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
+import { registerApiTools } from './api.js'
 import { registerComponentTools } from './component.js'
 import { registerDocumentationTools } from './documentation.js'
 
-export function registerTools (server: McpServer) {
-  registerComponentTools(server)
-  registerDocumentationTools(server)
+export async function registerTools (server: McpServer) {
+  await registerApiTools(server)
+  await registerComponentTools(server)
+  await registerDocumentationTools(server)
 }
