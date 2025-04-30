@@ -16,7 +16,7 @@ const configMessage = blue(`Welcome to the Vuetify MCP Server!
 Open your IDE and paste this into your
 .vscode/settings.json file (for ${ide.brand}):`)
 
-export const intro = (command?: 'config' | (string & {})) => console.log(`
+export const intro = (command?: 'config' | (string & {})) => console.warn(`
 ${command === 'config' ? configMessage : startMessage}
 
 ${settingsBuilder(ide.ide)}
