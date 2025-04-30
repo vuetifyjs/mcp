@@ -5,25 +5,55 @@
  */
 import octokit from '../plugins/octokit.js'
 
+export const SSR_NOTE = `
+  > **SSR Configuration**: When using Server-Side Rendering, you must pass the \`ssr: true\` option to all \`createVuetify()\` instances in your code.
+  > For example: \`createVuetify({ ssr: true })\` or \`createVuetify({ ssr: true, components, directives })\`
+`
+
+export const FRESH_INSTALLATION_PLATFORMS = {
+  vite: `
+    \`\`\`bash
+    npm create vite@latest <project-name> -- --template vue
+    [pnpm|yarn|bun] create vite@latest <project-name> --template vue
+    \`\`\`
+  `,
+  nuxt: `
+    \`\`\`bash
+    [npm|pnpm|yarn|bun] create nuxt <project-name>
+    \`\`\`
+  `,
+  vitepress: `
+    \`\`\`bash
+    [npm|pnpm|yarn|bun] vitepress
+    # OR
+    [npx|pnpm|yarn|bun] vitepress init
+    \`\`\`
+  `,
+  vuetify: `
+    \`\`\`bash
+    [npm|pnpm|yarn|bun] create vuetify <project-name>
+    \`\`\`
+  `,
+} as const
+
 export const INSTALLATION_PLATFORMS = {
   vite: {
     name: 'Vite',
     description: 'Installation guide for Vite projects.',
     markdown: `
       # Dependencies
-      The following dependencies are required to use Vuetify with Vite:
-      - vue, vite, vuetify, vite-plugin-vuetify, @mdi/font
+      \`\`\`bash
+      [npm|pnpm|yarn|bun] install vue vite @vitejs/plugin-vue vuetify vite-plugin-vuetify @mdi/font
+      \`\`\`
       # Files
-      - src/plugins/vuetify.[js|ts]
-      \`\`\`[js|ts]
+      \`\`\`ts [plugins/vuetify.ts]
       import '@mdi/font/css/materialdesignicons.css'
       import 'vuetify/styles'
       import { createVuetify } from 'vuetify'
 
       export default createVuetify()
       \`\`\`
-      - src/main.[js|ts]
-      \`\`\`[js|ts]
+      \`\`\`ts [app|main.ts]
       import { createApp } from 'vue'
       import App from './App.vue'
       import vuetify from './plugins/vuetify'
@@ -31,8 +61,7 @@ export const INSTALLATION_PLATFORMS = {
       const app = createApp(App)
       app.use(vuetify).mount('#app')
       \`\`\`
-      - vite.config.[mjs|js|mts|ts]
-      \`\`\`[mjs|js|mts|ts]
+      \`\`\`ts [vite.config.ts]
       import { defineConfig } from 'vite'
       import vue from '@vitejs/plugin-vue'
       import vuetify from 'vite-plugin-vuetify'
@@ -46,19 +75,18 @@ export const INSTALLATION_PLATFORMS = {
         ],
       })
       \`\`\`
-`,
+    `,
   },
   nuxt: {
     name: 'Nuxt',
     description: 'Installation guide for Nuxt projects.',
     markdown: `
-      # Nuxt Installation
-      The following dependencies are required to use Vuetify with Nuxt:
-      - vue, nuxt, vuetify, vite-plugin-vuetify, @mdi/font
-
+      # Dependencies
+      \`\`\`bash
+      [npm|pnpm|yarn|bun] vuetify vite-plugin-vuetify @mdi/font
+      \`\`\`
       # Files
-      - nuxt.config.[js|ts]
-      \`\`\`[js|ts]
+      \`\`\`ts [nuxt.config.ts]
       import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 
       export default defineNuxtConfig({
@@ -82,9 +110,7 @@ export const INSTALLATION_PLATFORMS = {
         },
       })
       \`\`\`
-
-      - plugins/vuetify.[js|ts]
-      \`\`\`[js|ts]
+      \`\`\`ts [plugins/vuetify.ts]
       import '@mdi/font/css/materialdesignicons.css'
       import 'vuetify/styles'
       import { createVuetify } from 'vuetify'
@@ -94,9 +120,7 @@ export const INSTALLATION_PLATFORMS = {
         app.vueApp.use(vuetify)
       })
       \`\`\`
-
-      - app.vue
-      \`\`\`vue
+      \`\`\`vue [app.vue]
       <template>
         <NuxtLayout>
           <v-app>
@@ -105,37 +129,29 @@ export const INSTALLATION_PLATFORMS = {
         </NuxtLayout>
       </template>
       \`\`\`
-`,
+    `,
   },
   'nuxt-module': {
     name: 'Nuxt Module',
     description: 'Installation guide for Vuetify Nuxt Module.',
     markdown: `
       # Nuxt Module Installation
-      The following dependencies are required to use Vuetify with Nuxt Module:
-      - vue, nuxt, vuetify, vite-plugin-vuetify, @mdi/font, vuetify-nuxt-module
-
-      # Installation
       \`\`\`bash
-      pnpx nuxi@latest module add vuetify-nuxt-module
+      [npx|pnpm|yarn|bun] nuxi@latest module add vuetify-nuxt-module
       \`\`\`
-
       # Files
-      - nuxt.config.[js|ts]
-      \`\`\`[js|ts]
+      \`\`\`ts [nuxt.config.ts]
       import { defineNuxtConfig } from 'nuxt/config'
 
       export default defineNuxtConfig({
-        modules: [
-          'vuetify-nuxt-module'
-        ],
+        modules: ['vuetify-nuxt-module'],
         vuetify: {
           moduleOptions: {},
           vuetifyOptions: {}
         }
       })
       \`\`\`
-`,
+    `,
   },
   laravel: {
     name: 'Laravel Vite',
@@ -144,18 +160,18 @@ export const INSTALLATION_PLATFORMS = {
       # Laravel Vite Installation
       The following dependencies are required to use Vuetify with Laravel Vite:
       TODO
-`,
+    `,
   },
   'laravel-mix': {
     name: 'Laravel Mix',
     description: 'Installation guide for Laravel Mix projects.',
     markdown: `
-      # Laravel Mix Installation
-      The following dependencies are required to use Vuetify with Laravel Mix:
-      - vue, vuetify, @mdi/font
+      # Dependencies
+      \`\`\`bash
+      [npm|pnpm|yarn|bun] vuetify @mdi/font
+      \`\`\`
       # Files
-      - resources/[js|ts]/plugins/vuetify.[js|ts]
-      \`\`\`[js|ts]
+      \`\`\`ts [plugins/vuetify.ts]
       import '@mdi/font/css/materialdesignicons.css'
       import 'vuetify/styles'
       import { createVuetify } from 'vuetify'
@@ -167,8 +183,7 @@ export const INSTALLATION_PLATFORMS = {
         directives,
       })
       \`\`\`
-      - resources/[js|ts]/app.[js|ts]
-      \`\`\`[js|ts]
+      \`\`\`ts [app.ts]
       import { createApp } from 'vue'
       import App from './App.vue'
       import vuetify from './plugins/vuetify'
@@ -176,13 +191,12 @@ export const INSTALLATION_PLATFORMS = {
       const app = createApp(App)
       app.use(vuetify).mount('#app')
       \`\`\`
-      - webpack.mix.[js|ts]
-      \`\`\`[js|ts]
+      \`\`\`webpack.mix.[js|ts]
       const mix = require('laravel-mix')
 
       mix.copy('node_modules/@mdi/font/fonts/', 'dist/fonts/')
       \`\`\`
-`,
+    `,
   },
   cdn: {
     name: 'CDN',
@@ -246,8 +260,8 @@ export const INSTALLATION_PLATFORMS = {
       The following dependencies are required to use Vuetify with VitePress:
       - vue, vitepress, vuetify, @mdi/font
       # Files
-      - .vitepress/theme/index.[js|ts]
-      \`\`\`[js|ts]
+      -
+      \`\`\`ts [.vitepress/theme/index.ts]
       import DefaultTheme from 'vitepress/theme'
       import '@mdi/font/css/materialdesignicons.css'
       import 'vuetify/styles'
@@ -287,27 +301,38 @@ export const AVAILABLE_FEATURES = {
 } as const
 
 export type InstallationPlatform = keyof typeof INSTALLATION_PLATFORMS
+export type FreshInstallationPlatform = keyof typeof FRESH_INSTALLATION_PLATFORMS
 export type AvailableFeature = keyof typeof AVAILABLE_FEATURES
 
 export function createDocumentationService () {
   return {
-    getInstallationGuide: async (platform: InstallationPlatform, ssr: boolean) => {
+    getInstallationGuide: async ({ fresh, platform, ssr }: {
+      platform: InstallationPlatform
+      ssr: boolean
+      fresh: boolean
+    }) => {
       if (!INSTALLATION_PLATFORMS[platform]) {
         throw new Error(`Installation guide for platform "${platform}" not found.`)
       }
-
-      let text: string = INSTALLATION_PLATFORMS[platform].markdown
 
       if (ssr && !['vite', 'nuxt'].includes(platform)) {
         throw new Error('SSR installation guide is only available for Vite and Nuxt platforms.')
       }
 
+      if (fresh && !(platform in FRESH_INSTALLATION_PLATFORMS)) {
+        throw new Error(`Fresh installation guide for platform "${platform}" not found.`)
+      }
+
+      let text: string = INSTALLATION_PLATFORMS[platform].markdown
+
+      if (fresh) {
+        const freshText = FRESH_INSTALLATION_PLATFORMS[platform as FreshInstallationPlatform]
+
+        text = `Setup a baseline project using "${platform}": ${freshText}\n${text}`
+      }
+
       if (ssr) {
-        const ssrNote = `
-      > **SSR Configuration**: When using Server-Side Rendering, you must pass the \`ssr: true\` option to all \`createVuetify()\` instances in your code.
-      > For example: \`createVuetify({ ssr: true })\` or \`createVuetify({ ssr: true, components, directives })\`
-`
-        text = `${ssrNote}\n${text}`
+        text = `${SSR_NOTE}\n${text}`
       }
 
       return {

@@ -21,8 +21,9 @@ export async function registerDocumentationTools (server: McpServer) {
     {
       platform: z.enum(platforms as [InstallationPlatform, ...InstallationPlatform[]]).describe(`The platform for which to get the installation guide. Available platforms: ${platforms.join(', ')}`),
       ssr: z.boolean().default(false).describe('Whether to return the SSR version of the installation guide.'),
+      fresh: z.boolean().default(false).describe('Whether the user has an existing project or is starting fresh.'),
     },
-    async ({ platform, ssr }) => documentation.getInstallationGuide(platform, ssr),
+    async args => documentation.getInstallationGuide(args),
   )
 
   server.tool(
