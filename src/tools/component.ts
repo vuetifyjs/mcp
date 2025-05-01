@@ -1,9 +1,14 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+/**
+ * Registers tools for managing Vuetify component properties.
+ *
+ * Provides functionality to retrieve detailed information about components.
+ */
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 
 import { getApi } from '../utils/cache-api.js'
 
-import { VuetifyWebTypes } from './api.js'
+import type { VuetifyWebTypes } from './api.js'
 
 export async function registerComponentTools (server: McpServer) {
   server.tool(

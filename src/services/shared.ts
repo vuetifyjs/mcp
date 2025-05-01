@@ -1,4 +1,4 @@
-import { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
 
 export interface CallToolService {
   [name: string]: (name?: string) => Promise<CallToolResult>
