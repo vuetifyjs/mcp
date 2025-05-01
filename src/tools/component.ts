@@ -8,7 +8,7 @@ import { z } from 'zod'
 
 import { getApi } from '../utils/cache-api.js'
 
-import { VuetifyWebTypes } from './api.js'
+import type { VuetifyWebTypes } from './api.js'
 
 export async function registerComponentTools (server: McpServer) {
   server.tool(
