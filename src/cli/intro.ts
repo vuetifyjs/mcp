@@ -3,7 +3,7 @@ import { ansi256 } from 'kolorist'
 import { getDefaultIDE } from './detect-ide.js'
 import { settingsBuilder } from './settings-builder.js'
 
-const ide = getDefaultIDE()
+const ide = await getDefaultIDE()
 
 const blue = ansi256(33)
 

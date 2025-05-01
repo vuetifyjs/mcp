@@ -1,6 +1,5 @@
 import { resolve } from 'pathe'
-
-import type { IDEType } from './detect-ide.js'
+import type { IDEId } from './ide/types.js'
 
 const dirname = new URL('.', import.meta.url).pathname
 const mcpPath = resolve(dirname, '../index.js')
@@ -17,11 +16,14 @@ const server = {
   },
 }
 
-export const settingsBuilder = (ide: IDEType) => {
-  if (ide === 'code' || ide === 'code-insiders') {
-    return JSON.stringify({ servers: server }, null, 2)
-  }
-  if (ide === 'trae' || ide === 'cursor') {
-    return JSON.stringify({ mcpServers: server }, null, 2)
+export const settingsBuilder = (ide: IDEId): string => {
+  switch (ide) {
+    case 'code':
+    case 'code-insiders': {
+      return JSON.stringify({ servers: server }, null, 2)
+    }
+    default: {
+      return JSON.stringify({ mcpServers: server }, null, 2)
+    }
   }
 }

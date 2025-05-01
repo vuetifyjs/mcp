@@ -1,66 +1,51 @@
-import fs from 'node:fs'
-
 import { platform } from 'std-env'
-import which from 'which'
-import type { IDEPathSettings } from './ide-paths.js'
-import { idePathConfigs } from './ide-paths.js'
+import type { DetectedIDE, KnownIDE } from './ide/types.js'
+import * as SupportedIDEList from './ide/known/index.js'
 
-const supportedIDEList = ['code', 'trae', 'cursor', 'code-insiders'] as const
-export type IDEType = typeof supportedIDEList[number]
+const DEFAULT_SETTINGS_FILE = 'mcp.json'
+let cachedIDEs: DetectedIDE[] | null = null
 
-export const ideBrands: Record<IDEType, string> = {
-  'trae': 'Trae',
-  'code': 'VS Code',
-  'cursor': 'Cursor',
-  'code-insiders': 'VS Code Insiders',
+async function isProgramInstalled (ide: KnownIDE) {
+  const check = ide.detect[platform as keyof typeof ide.detect]
+  if (check) {
+    return await check()
+  }
+  return false
 }
 
-export function getSettingsForIde ({ darwin, win32, linux }: IDEPathSettings) {
-  const paths = []
-  if (platform === 'win32') {
-    paths.push(win32)
+function getSettingsFile (ide: KnownIDE): string {
+  if (ide.settingsFile && typeof ide.settingsFile === 'string') {
+    return ide.settingsFile
+  } else if (typeof ide.settingsFile === 'object') {
+    return ide.settingsFile[platform as keyof typeof ide.settingsFile] ?? DEFAULT_SETTINGS_FILE
   }
-  if (platform === 'darwin') {
-    paths.push(darwin)
-  }
-  if (platform === 'linux') {
-    paths.push(linux)
-  }
+  return DEFAULT_SETTINGS_FILE
+}
 
-  const flatPaths = paths.flat()
-  for (const filePath of flatPaths) {
-    const path = filePath()
-    if (fs.existsSync(path)) {
-      return path
-    }
+function getSettingsDir (ide: KnownIDE): string {
+  if (typeof ide.settings === 'object') {
+    return ide.settings[platform as keyof typeof ide.settings]?.() ?? ''
   }
   return ''
 }
 
-export interface DetectedIDE {
-  ide: IDEType
-  brand: string
-  config: string
-}
-
-let cachedIDEs: DetectedIDE[] | null = null
-
-export function detectIDEs () {
+export async function detectIDEs () {
   if (cachedIDEs !== null) {
     return cachedIDEs
   }
 
   const detectedIDEs: DetectedIDE[] = []
-  for (const ide of supportedIDEList) {
-    try {
-      which.sync(ide)
+  for (const ideName in SupportedIDEList) {
+    const exists = await isProgramInstalled(SupportedIDEList[ideName as keyof typeof SupportedIDEList])
+
+    if (exists) {
+      const ide = SupportedIDEList[ideName as keyof typeof SupportedIDEList]
       detectedIDEs.push({
-        ide,
-        brand: ideBrands[ide],
-        config: getSettingsForIde(idePathConfigs[ide]),
+        ide: ide.id,
+        brand: ide.brand,
+        settingsDir: getSettingsDir(ide),
+        settingsFile: getSettingsFile(ide),
       })
-    } catch {
-      continue
     }
   }
 
@@ -71,11 +56,12 @@ export function detectIDEs () {
 const fallbackData = {
   ide: 'code',
   brand: 'VS Code',
-  config: '',
+  settingsDir: '',
+  settingsFile: DEFAULT_SETTINGS_FILE,
 } satisfies DetectedIDE
 
-export function getDefaultIDE () {
-  return detectIDEs().at(0) || fallbackData
+export async function getDefaultIDE () {
+  return (await detectIDEs()).at(0) || fallbackData
 }
 
 export function clearIDECache () {

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import { intro } from '../cli/intro.js'
 import { intro as clackIntro, confirm, multiselect, outro } from '@clack/prompts'
-import type { DetectedIDE } from './detect-ide.js'
 import { detectIDEs } from './detect-ide.js'
 import { installGlobally } from './install-globally.js'
+import type { DetectedIDE } from './ide/types.js'
 
-const ides = detectIDEs()
+const ides = await detectIDEs()
 
 intro('config')
 
