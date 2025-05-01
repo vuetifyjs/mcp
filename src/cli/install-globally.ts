@@ -7,7 +7,7 @@ import deepmerge from 'deepmerge'
 import type { DetectedIDE } from './ide/types.js'
 
 async function setIdeSettings (ideInstance: DetectedIDE) {
-  if (!ideInstance.settingsDir) {
+  if (!ideInstance.settingsDir || !existsSync(ideInstance.settingsDir)) {
     return
   }
   const configFilePath = resolve(ideInstance.settingsDir, ideInstance.settingsFile)
