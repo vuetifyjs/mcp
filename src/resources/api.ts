@@ -3,13 +3,12 @@ import { dirname } from 'node:path'
 
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 
-import { cacheApi } from '../utils/cache-api.js'
-import { getCacheDir } from '../utils/cache-dir.js'
+import { cacheApi, getApiCacheDir } from '../utils/api.js'
 
 export async function registerApiResources (server: McpServer) {
   const template = new ResourceTemplate('vuetify://api@{version}.json', {
     list: async () => {
-      const cacheRoot = dirname(getCacheDir())
+      const cacheRoot = dirname(getApiCacheDir())
       const versions = readdirSync(cacheRoot, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
         .map(dirent => dirent.name)
