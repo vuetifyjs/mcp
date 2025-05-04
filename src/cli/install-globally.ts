@@ -2,24 +2,26 @@ import { parse } from 'jsonc-parser'
 import { writeFile, readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { resolve } from 'pathe'
-import { settingsBuilder } from './settings-builder.js'
-import deepmerge from 'deepmerge'
+import { serverConfig, getSettingsPath } from './settings-builder.js'
 import type { DetectedIDE } from './ide/types.js'
+import { deepset } from './utils/deepset.js'
 
 async function setIdeSettings (ideInstance: DetectedIDE) {
   if (!ideInstance.settingsDir || !existsSync(ideInstance.settingsDir)) {
     return
   }
   const configFilePath = resolve(ideInstance.settingsDir, ideInstance.settingsFile)
-  const builtConfig = JSON.parse(settingsBuilder(ideInstance.ide)!)
+  const settingsPath = getSettingsPath(ideInstance.ide)
   if (existsSync(configFilePath)) {
     const fileContent = await readFile(configFilePath, { encoding: 'utf8' })
     const existingConfig = parse(fileContent)
-    const mergedConfig = deepmerge(builtConfig, existingConfig, { arrayMerge: target => target })
-    await writeFile(configFilePath, prettyPrint(mergedConfig))
+    deepset(existingConfig, settingsPath, serverConfig)
+    await writeFile(configFilePath, prettyPrint(existingConfig))
     return
   } else {
-    await writeFile(configFilePath, prettyPrint(builtConfig))
+    const config = {}
+    deepset(config, settingsPath, serverConfig)
+    await writeFile(configFilePath, prettyPrint(config))
   }
 }
 

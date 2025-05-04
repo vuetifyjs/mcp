@@ -1,7 +1,7 @@
 import { ansi256 } from 'kolorist'
 
 import { getDefaultIDE } from './detect-ide.js'
-import { settingsBuilder } from './settings-builder.js'
+import { getSettingsBuilder } from './settings-builder.js'
 
 const ide = await getDefaultIDE()
 
@@ -19,5 +19,5 @@ Open your IDE and paste this into your
 export const intro = (command?: 'config' | (string & {})) => console.warn(`
 ${command === 'config' ? configMessage : startMessage}
 
-${settingsBuilder(ide.ide)}
+${getSettingsBuilder(ide.ide)}
 `)

@@ -4,26 +4,38 @@ import type { IDEId } from './ide/types.js'
 const dirname = new URL('.', import.meta.url).pathname
 const mcpPath = resolve(dirname, '../index.js')
 
-const server = {
-  'vuetify-mcp': {
-    command: 'node',
-    args: [
-      mcpPath,
-    ],
-    env: {
-      VUETIFY_API_KEY: 'your_api_key_here',
-    },
+export const SERVER_NAME = 'vuetify-mcp'
+
+export const serverConfig = {
+  command: 'node',
+  args: [
+    mcpPath,
+  ],
+  env: {
+    VUETIFY_API_KEY: 'your_api_key_here',
   },
 }
 
-export const settingsBuilder = (ide: IDEId): string => {
+export const getSettingsPath = (ide: IDEId): string => {
   switch (ide) {
     case 'code':
     case 'code-insiders': {
-      return JSON.stringify({ mcp: { servers: server } }, null, 2)
+      return `mcp.servers.${SERVER_NAME}`
     }
     default: {
-      return JSON.stringify({ mcpServers: server }, null, 2)
+      return `mcpServers.${SERVER_NAME}`
+    }
+  }
+}
+
+export const getSettingsBuilder = (ide: IDEId): string => {
+  switch (ide) {
+    case 'code':
+    case 'code-insiders': {
+      return JSON.stringify({ mcp: { servers: { [SERVER_NAME]: serverConfig } } }, null, 2)
+    }
+    default: {
+      return JSON.stringify({ mcpServers: { [SERVER_NAME]: serverConfig } }, null, 2)
     }
   }
 }
