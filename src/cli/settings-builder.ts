@@ -20,7 +20,7 @@ export const settingsBuilder = (ide: IDEId): string => {
   switch (ide) {
     case 'code':
     case 'code-insiders': {
-      return JSON.stringify({ servers: server }, null, 2)
+      return JSON.stringify({ mcp: { servers: server } }, null, 2)
     }
     default: {
       return JSON.stringify({ mcpServers: server }, null, 2)
