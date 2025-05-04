@@ -11,7 +11,7 @@ export const CLAUDE: KnownIDE = {
     win32: () => checkWindowsApp('claude'),
   },
   settings: {
-    darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Claude', 'User'),
+    darwin: () => path.join(homedir(), 'Library', 'Application Support', 'Claude'),
     win32: () => path.join(process.env.APPDATA!, 'Claude'),
   },
   settingsFile: 'claude_desktop_config.json',
