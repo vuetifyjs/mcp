@@ -14,7 +14,7 @@ import { registerTools } from './tools/index.js'
 import { AuthTransportWrapper } from './transports/auth.js'
 
 const server = new McpServer({
-  name: 'vuetify',
+  name: 'Vuetify',
   version: '1.0.0',
   capabilities: {
     resources: {
@@ -36,7 +36,7 @@ await registerTools(server)
 async function main () {
   const auth = new AuthTransportWrapper()
   await server.connect(auth)
-  console.error('Vuetify MCP Server running on stdio')
+  console.log('Vuetify MCP Server running on stdio')
 }
 
 main().catch((error) => {
