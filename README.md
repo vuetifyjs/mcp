@@ -24,6 +24,14 @@ pnpm run build
 pnpm start
 ```
 
+## Quick Start
+
+Run Vuetify MCP with a single command:
+
+```bash
+npx -y @vuetify/mcp --api-key=YOUR_API_KEY
+```
+
 ## Configuration for Claude
 
 To use this MCP server with Claude, add the following to your `.vscode/mcp.json` file (or move it to `settings.json` for global usage):
