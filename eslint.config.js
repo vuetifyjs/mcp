@@ -1,4 +1,5 @@
 import js from '@eslint/js'
+import { globalIgnores } from 'eslint/config'
 import importPlugin from 'eslint-plugin-import'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
@@ -31,4 +32,5 @@ export default [
       'space-before-function-paren': ['error', 'always'],
     },
   },
+  globalIgnores(['**/dist/', '**/node_modules/']),
 ]
