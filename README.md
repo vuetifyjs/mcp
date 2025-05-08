@@ -38,11 +38,12 @@ To use this MCP server with Claude, add the following to your `.vscode/mcp.json`
 
 ```json
 {
-  "servers": {
-    "vuetify-mcp": {
-      "command": "node",
+  "mcpServers": {
+    "vuetify": {
+      "command": "npx",
       "args": [
-        "/absolute/path/to/vuetify-mcp/dist/index.js"
+        "-y",
+        "@vuetify/mcp"
       ],
       "env": {
         "VUETIFY_API_KEY": "your_api_key_here"
