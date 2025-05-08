@@ -10,7 +10,7 @@
     "bin"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "start": "node dist/index.js",
     "dev": "pnpm watch && node --watch dist/index.js",
     "watch": "tsc --watch",
@@ -39,6 +39,7 @@
     "eslint": "^9.25.1",
     "eslint-plugin-import": "^2.31.0",
     "globals": "^16.0.0",
+    "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.0"
   },
