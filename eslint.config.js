@@ -7,6 +7,6 @@ export default vuetify({
 },
 {
   rules: {
-    'unicorn/prefer-add-event-listener': 'off'
-  }
+    'unicorn/prefer-add-event-listener': 'off',
+  },
 })
