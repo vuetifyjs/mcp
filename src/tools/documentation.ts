@@ -9,29 +9,29 @@ import { z } from 'zod'
 import { AVAILABLE_FEATURES, createDocumentationService, INSTALLATION_PLATFORMS } from '../services/documentation.js'
 import type { InstallationPlatform, AvailableFeature } from '../services/documentation.js'
 
-const documentation = createDocumentationService()
-
 export async function registerDocumentationTools (server: McpServer) {
-  const platforms = Object.keys(INSTALLATION_PLATFORMS) as InstallationPlatform[]
-  const features = Object.keys(AVAILABLE_FEATURES) as AvailableFeature[]
+  const platforms = Object.keys(INSTALLATION_PLATFORMS) as [InstallationPlatform, ...InstallationPlatform[]]
+  const features = Object.keys(AVAILABLE_FEATURES) as [AvailableFeature, ...AvailableFeature[]]
+
+  const documentation = createDocumentationService()
 
   server.tool(
     'get_installation_guide',
     'Get detailed information about how to install Vuetify in a variety of environments.',
     {
-      platform: z.enum(platforms as [InstallationPlatform, ...InstallationPlatform[]]).describe(`The platform for which to get the installation guide. Available platforms: ${platforms.join(', ')}`),
+      platform: z.enum(platforms).describe(`The platform for which to get the installation guide. Available platforms: ${platforms.join(', ')}`),
       ssr: z.boolean().default(false).describe('Whether to return the SSR version of the installation guide.'),
       fresh: z.boolean().default(false).describe('Whether the user has an existing project or is starting fresh.'),
     },
-    async args => documentation.getInstallationGuide(args),
+    documentation.getInstallationGuide,
   )
 
   server.tool(
     'get_available_features',
     'Get a list of available features in the documentation.',
     {
-      feature: z.enum(features as [AvailableFeature, ...AvailableFeature[]]).describe(`The feature for which to get the documentation. Available features: ${features.join(', ')}`),
+      feature: z.enum(features).describe(`The feature for which to get the documentation. Available features: ${features.join(', ')}`),
     },
-    async ({ feature }) => documentation.getFeatureGuide(feature),
+    documentation.getFeatureGuide,
   )
 }
