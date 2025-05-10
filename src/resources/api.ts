@@ -1,6 +1,7 @@
 import { readdirSync } from 'node:fs'
 
-import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 
 import { cacheApi, getApiCacheDirRoot } from '@/utils/api.js'
 
