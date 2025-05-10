@@ -3,12 +3,11 @@
  *
  * This file initializes the MCP server and registers all the available tools.
  */
+import 'dotenv/config'
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import dotenv from 'dotenv'
 
 import packageJson from '../package.json' with { type: 'json' }
-
-dotenv.config()
 
 import { registerPrompts } from './prompts/index.js'
 import { registerResources } from './resources/index.js'
