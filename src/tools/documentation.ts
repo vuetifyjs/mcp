@@ -6,8 +6,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 
-import { AVAILABLE_FEATURES, createDocumentationService, INSTALLATION_PLATFORMS } from '../services/documentation.js'
-import type { InstallationPlatform, AvailableFeature } from '../services/documentation.js'
+import { AVAILABLE_FEATURES, createDocumentationService, INSTALLATION_PLATFORMS } from '../services/documentation'
+import type { InstallationPlatform, AvailableFeature } from '../services/documentation'
 
 export async function registerDocumentationTools (server: McpServer) {
   const platforms = Object.keys(INSTALLATION_PLATFORMS) as [InstallationPlatform, ...InstallationPlatform[]]

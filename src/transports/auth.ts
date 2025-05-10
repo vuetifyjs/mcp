@@ -7,7 +7,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
 
-import { createAuthService } from '@/services/auth.js'
+import { createAuthService } from '@/services/auth'
 
 export class AuthTransportWrapper implements Transport {
   private stdioTransport = new StdioServerTransport()
