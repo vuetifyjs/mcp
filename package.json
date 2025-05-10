@@ -10,6 +10,7 @@
     "bin"
   ],
   "scripts": {
+    "prepack": "pnpm build",
     "build": "tsdown",
     "start": "node dist/index.js",
     "dev": "pnpm watch && node --watch dist/index.js",
