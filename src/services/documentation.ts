@@ -3,7 +3,7 @@
  *
  * Includes functionality to fetch installation guides and other documentation.
  */
-import octokit from '@/plugins/octokit.js'
+import octokit from '@/plugins/octokit'
 
 export const SSR_NOTE = `
   > **SSR Configuration**: When using Server-Side Rendering, you must pass the \`ssr: true\` option to all \`createVuetify()\` instances in your code.

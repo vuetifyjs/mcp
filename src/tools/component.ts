@@ -1,9 +1,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 
-import { VuetifyWebTypes } from './api.js'
+import { VuetifyWebTypes } from './api'
 
-import { getApi } from '@/utils/api.js'
+import { getApi } from '@/utils/api'
 
 
 export async function registerComponentTools (server: McpServer) {
