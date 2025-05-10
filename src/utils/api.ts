@@ -12,20 +12,20 @@ import { join } from 'node:path'
  */
 export function getApiCacheDirRoot () {
   return (
-    process.env.VUETIFY_MCP_CACHE ??
-    process.env.XDG_CACHE_HOME ??
-    (process.platform === 'win32'
+    process.env.VUETIFY_MCP_CACHE
+    ?? process.env.XDG_CACHE_HOME
+    ?? (process.platform === 'win32'
       ? process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local', 'Vuetify')
       : join(homedir(), '.cache', 'Vuetify'))
   )
 }
 
 export function getApiCacheDir (version: string) {
-	const dir = join(getApiCacheDirRoot(), version)
+  const dir = join(getApiCacheDirRoot(), version)
 
-	mkdirSync(dir, { recursive: true })
+  mkdirSync(dir, { recursive: true })
 
-	return dir
+  return dir
 }
 
 export async function getApi (version: string) {
@@ -33,7 +33,7 @@ export async function getApi (version: string) {
   const file = join(dir, 'web-types.json')
 
   if (existsSync(file) && version !== 'latest') {
-    return readFileSync(file, 'utf-8')
+    return readFileSync(file, 'utf8')
   }
 
   return cacheApi(version)
@@ -47,7 +47,7 @@ export async function cacheApi (version: string) {
     const dir = getApiCacheDir(version)
     const file = join(dir, 'web-types.json')
 
-    writeFileSync(file, text, 'utf-8')
+    writeFileSync(file, text, 'utf8')
   }
 
   return text

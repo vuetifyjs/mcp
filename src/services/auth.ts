@@ -15,7 +15,7 @@ export function createAuthService () {
   async function validateApiKey (apiKey: string): Promise<boolean> {
     const cached = validationCache.get(apiKey)
 
-    if (cached && (Date.now() - cached.timestamp < 300000)) {
+    if (cached && (Date.now() - cached.timestamp < 300_000)) {
       return cached.valid
     }
 
@@ -34,7 +34,9 @@ export function createAuthService () {
         statusText: 'OK',
       }
 
-      if (!response.ok) return false
+      if (!response.ok) {
+        return false
+      }
 
       const data = await response.json()
       const isValid = data.valid === true

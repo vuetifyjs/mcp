@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { spawn } from 'child_process'
+import { spawn } from 'node:child_process'
 import { parseArgs } from 'node:util'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const { values } = parseArgs({
   options: {
@@ -42,11 +42,11 @@ if (values['github-token']) {
 
 const server = spawn('node', [serverPath], {
   stdio: 'inherit',
-  env: env,
+  env,
   shell: process.platform === 'win32',
 })
 
-server.on('error', (err) => {
+server.on('error', err => {
   console.error('Failed to start server:', err)
   process.exit(1)
 })
