@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "prepack": "pnpm build",
-    "build": "tsdown",
+    "build": "tsc --noEmit && tsdown",
     "start": "node dist/index.js",
     "dev": "pnpm watch && node --watch dist/index.js",
     "watch": "tsdown --watch",
