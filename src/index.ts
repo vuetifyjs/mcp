@@ -6,6 +6,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import dotenv from 'dotenv'
 
+import packageJson from '../package.json' with { type: 'json' }
+
 dotenv.config()
 
 import { registerPrompts } from './prompts/index.js'
@@ -15,7 +17,7 @@ import { AuthTransportWrapper } from './transports/auth.js'
 
 const server = new McpServer({
   name: 'Vuetify',
-  version: '1.0.0',
+  version: packageJson.version,
   capabilities: {
     resources: {
       description: 'No resources required for Vuetify assistance.',
@@ -36,7 +38,6 @@ await registerTools(server)
 async function main () {
   const auth = new AuthTransportWrapper()
   await server.connect(auth)
-  console.log('Vuetify MCP Server running on stdio')
 }
 
 main().catch((error) => {
