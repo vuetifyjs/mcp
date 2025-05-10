@@ -10,10 +10,10 @@
     "bin"
   ],
   "scripts": {
-    "build": "rimraf dist && tsc",
+    "build": "tsdown",
     "start": "node dist/index.js",
     "dev": "pnpm watch && node --watch dist/index.js",
-    "watch": "tsc --watch",
+    "watch": "tsdown --watch",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
@@ -43,6 +43,7 @@
     "eslint-plugin-import": "^2.31.0",
     "globals": "^16.0.0",
     "rimraf": "^6.0.1",
+    "tsdown": "^0.11.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.31.0"
   },
