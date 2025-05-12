@@ -9,10 +9,10 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
 import packageJson from '../package.json' with { type: 'json' }
 
-import { registerPrompts } from './prompts/index.js'
-import { registerResources } from './resources/index.js'
-import { registerTools } from './tools/index.js'
-import { AuthTransportWrapper } from './transports/auth.js'
+import { registerPrompts } from '#prompts/index'
+import { registerResources } from '#resources/index'
+import { registerTools } from '#tools/index'
+import { AuthTransportWrapper } from '#transports/auth'
 
 const server = new McpServer({
   name: 'Vuetify',

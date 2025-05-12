@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 
-import { cacheApi } from '@/utils/api.js'
+import { cacheApi } from '#utils/api'
 
 export interface VuetifyWebTypes {
 	$schema: string

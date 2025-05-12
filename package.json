@@ -3,12 +3,22 @@
   "version": "0.0.6",
   "description": "Machine Context Protocol server for Vuetify assistance",
   "bin": "bin/cli.js",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
   "type": "module",
   "files": [
     "dist",
     "bin"
   ],
+  "imports": {
+    "#plugins/*": "./dist/plugins/*.js",
+    "#prompts/*": "./dist/prompts/*.js",
+    "#resources/*": "./dist/resources/*.js",
+    "#services/*": "./dist/services/*.js",
+    "#tools/*": "./dist/tools/*.js",
+    "#transports/*": "./dist/transports/*.js",
+    "#types/*": "./dist/types/*.js",
+    "#utils/*": "./dist/utils/*.js"
+  },
   "scripts": {
     "build": "rimraf dist && tsc",
     "start": "node dist/index.js",

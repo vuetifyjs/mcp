@@ -12,16 +12,7 @@
     "declaration": true,
     "sourceMap": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/plugins/*": ["src/plugins/*"],
-      "@/prompts/*": ["src/prompts/*"],
-      "@/resources/*": ["src/resources/*"],
-      "@/services/*": ["src/services/*"],
-      "@/tools/*": ["src/tools/*"],
-      "@/transports/*": ["src/transports/*"],
-      "@/utils/*": ["src/utils/*"],
-    }
+    "baseUrl": "."
   },
   "include": [
     "src/**/*"

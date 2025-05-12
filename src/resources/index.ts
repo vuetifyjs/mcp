@@ -5,7 +5,7 @@
  */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
-import { registerApiResources } from './api.js'
+import { registerApiResources } from '#resources/api'
 
 export async function registerResources (server: McpServer) {
   await registerApiResources(server)
