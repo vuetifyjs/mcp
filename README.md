@@ -21,17 +21,26 @@ pnpm install
 pnpm bootstrap
 ```
 
+## Quick Start
+
+Run Vuetify MCP with a single command:
+
+```bash
+npx -y @vuetify/mcp --api-key=YOUR_API_KEY
+```
+
 ## Configuration for Claude
 
 To use this MCP server with Claude, add the following to your `.vscode/mcp.json` file (or move it to `settings.json` for global usage):
 
 ```json
 {
-  "servers": {
-    "vuetify-mcp": {
-      "command": "node",
+  "mcpServers": {
+    "vuetify": {
+      "command": "npx",
       "args": [
-        "/absolute/path/to/vuetify-mcp/dist/index.js"
+        "-y",
+        "@vuetify/mcp"
       ],
       "env": {
         "VUETIFY_API_KEY": "your_api_key_here"

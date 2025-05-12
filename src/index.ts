@@ -4,21 +4,21 @@
  *
  * This file initializes the MCP server and registers all the available tools.
  */
+import 'dotenv/config'
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import dotenv from 'dotenv'
 
 import { intro } from './cli/intro.js'
+import packageJson from '../package.json' with { type: 'json' }
 
-import { registerPrompts } from './prompts/index.js'
-import { registerResources } from './resources/index.js'
-import { registerTools } from './tools/index.js'
-import { AuthTransportWrapper } from './transports/auth.js'
-
-dotenv.config()
+import { registerPrompts } from '#prompts/index'
+import { registerResources } from '#resources/index'
+import { registerTools } from '#tools/index'
+import { AuthTransportWrapper } from '#transports/auth'
 
 const server = new McpServer({
-  name: 'vuetify',
-  version: '1.0.0',
+  name: 'Vuetify',
+  version: packageJson.version,
   capabilities: {
     resources: {
       description: 'No resources required for Vuetify assistance.',

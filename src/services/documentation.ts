@@ -3,7 +3,7 @@
  *
  * Includes functionality to fetch installation guides and other documentation.
  */
-import octokit from '../plugins/octokit.js'
+import octokit from '#plugins/octokit'
 
 export const SSR_NOTE = `
   > **SSR Configuration**: When using Server-Side Rendering, you must pass the \`ssr: true\` option to all \`createVuetify()\` instances in your code.
@@ -285,6 +285,40 @@ export const INSTALLATION_PLATFORMS = {
   },
 } as const
 
+export const UPGRADE_FROM_VERSIONS = {
+  'v1.5': {
+    name: 'Vuetify v1.5 Upgrade',
+    description: 'Upgrade from Vuetify v1.5 to v2.0',
+    path: 'blob/v2-stable/packages/docs/src/pages/en/getting-started/upgrade-guide.md',
+    markdown: `
+      # Dependencies
+      \`\`\`bash
+      [npm|pnpm|yarn|bun] install vuetify@v2.0.0 eslint-plugin-vuetify@1.1.0
+      \`\`\`
+      # Files
+      \`\`\`js [.eslintrc.js]
+      module.exports = {
+        extends: [
+          'plugin:vue/base',
+          'plugin:vuetify/base',
+        ],
+      }
+      \`\`\`
+    `,
+  },
+  'v2.7': {
+    name: 'Vuetify v2.7 Upgrade',
+    description: 'Upgrade from Vuetify v2.7 to v3.0',
+    path: 'packages/docs/src/pages/en/getting-started/upgrade-guide.md',
+    markdown: `
+      # Dependencies
+      \`\`\`bash
+      [npm|pnpm|yarn|bun] install vuetify@v3.0.0 eslint-plugin-vuetify@2.0.0
+      \`\`\`
+    `,
+  },
+} as const
+
 export const AVAILABLE_FEATURES = {
   'accessibility': 'Web accessibility (a11y for short), is the inclusive practice of ensuring there are no barriers that prevent the interaction with, or access to, websites on the World Wide Web by people with disabilities.',
   'aliasing': 'Create virtual components that extend built-in Vuetify components using custom aliases.',
@@ -303,6 +337,7 @@ export const AVAILABLE_FEATURES = {
 export type InstallationPlatform = keyof typeof INSTALLATION_PLATFORMS
 export type FreshInstallationPlatform = keyof typeof FRESH_INSTALLATION_PLATFORMS
 export type AvailableFeature = keyof typeof AVAILABLE_FEATURES
+export type UpgradeFromVersion = keyof typeof UPGRADE_FROM_VERSIONS
 
 export function createDocumentationService () {
   return {
@@ -344,7 +379,7 @@ export function createDocumentationService () {
         ],
       }
     },
-    getFeatureGuide: async (feature: AvailableFeature) => {
+    getFeatureGuide: async ({ feature }: { feature: AvailableFeature }) => {
       const { data } = await octokit.rest.repos.getContent({
         owner: 'vuetifyjs',
         repo: 'vuetify',
@@ -359,6 +394,27 @@ export function createDocumentationService () {
           {
             type: 'text',
             text: data as unknown as string,
+          } as const,
+        ],
+      }
+    },
+    getUpgradeGuide: async ({ version }: { version: UpgradeFromVersion }) => {
+      const guide = UPGRADE_FROM_VERSIONS[version]
+
+      const { data } = await octokit.rest.repos.getContent({
+        owner: 'vuetifyjs',
+        repo: 'vuetify',
+        path: `packages/docs/src/pages/en/features/${guide.path}`,
+        mediaType: {
+          format: 'raw',
+        },
+      })
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `${guide.name}\n${guide.markdown}\n${data}`,
           } as const,
         ],
       }

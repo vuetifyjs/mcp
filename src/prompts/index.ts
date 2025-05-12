@@ -5,8 +5,8 @@
  */
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
-import { registerDocumentationPrompts } from './documentation.js'
+import { registerDocumentationPrompts } from '#prompts/documentation'
 
-export function registerPrompts (server: McpServer) {
-  registerDocumentationPrompts(server)
+export async function registerPrompts (server: McpServer) {
+  await registerDocumentationPrompts(server)
 }
