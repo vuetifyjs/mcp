@@ -4,19 +4,19 @@
  * Adds API key validation to the transport layer for secure communication.
  */
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
-import { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
+import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
 
 import { createAuthService } from '#services/auth'
 
 export class AuthTransportWrapper implements Transport {
-  private stdioTransport = new StdioServerTransport()
-  private authService = createAuthService()
-  private apiKey = process.env.VUETIFY_API_KEY!
-
   onmessage?: (message: JSONRPCMessage) => void
   onerror?: (error: Error) => void
   onclose?: () => void
+
+  private stdioTransport = new StdioServerTransport()
+  private authService = createAuthService()
+  private apiKey = process.env.VUETIFY_API_KEY!
 
   constructor () {
     this.stdioTransport.onmessage = this.handleMessage.bind(this)

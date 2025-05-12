@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Vuetify MCP - Main Entry Point
  *
@@ -39,7 +40,7 @@ async function main () {
   await server.connect(auth)
 }
 
-main().catch((error) => {
+main().catch(error => {
   console.error('Fatal error in main():', error)
   process.exit(1)
 })

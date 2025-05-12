@@ -1,70 +1,70 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 
 import { cacheApi } from '#utils/api'
 
 export interface VuetifyWebTypes {
-	$schema: string
-	framework: 'vue' | string
-	name: string
-	version: string
-	contributions: {
-		html: {
-			'types-syntax': string
-			'description-markup': string
-			tags: VuetifyHtmlTag[]
-		}
-		[key: string]: unknown
-	}
+  $schema: string
+  framework: 'vue' | string
+  name: string
+  version: string
+  contributions: {
+    [key: string]: unknown
+    html: {
+      'types-syntax': string
+      'description-markup': string
+      'tags': VuetifyHtmlTag[]
+    }
+  }
 }
 
 export interface VuetifyHtmlTag {
-	name: string
-	source?: {
-		module: string
-		symbol: string
-	}
-	description?: string
-	'doc-url'?: string
-	attributes?: VuetifyAttr[]
-	events?: VuetifyEvent[]
-	slots?: VuetifySlot[]
-	'vue-model'?: {
-		prop: string
-		event: string
-	}
-	[key: string]: unknown
+  [key: string]: unknown
+  'name': string
+  'source'?: {
+    module: string
+    symbol: string
+  }
+  'description'?: string
+  'doc-url'?: string
+  'attributes'?: VuetifyAttr[]
+  'events'?: VuetifyEvent[]
+  'slots'?: VuetifySlot[]
+  'vue-model'?: {
+    prop: string
+    event: string
+  }
 }
 
 export interface VuetifyAttr {
-	name: string
-	description?: string
-	'doc-url'?: string
-	default?: unknown
-	value?: {
-		kind: string
-		type?: string
-	}
+  'name': string
+  'description'?: string
+  'doc-url'?: string
+  'default'?: unknown
+  'value'?: {
+    kind: string
+    type?: string
+  }
 }
 
 export interface VuetifyEvent {
-	name: string
-	description?: string
-	'doc-url'?: string
-	arguments?: {
-		name?: string
-		type?: string
-	}[]
+  'name': string
+  'description'?: string
+  'doc-url'?: string
+  'arguments'?: {
+    name?: string
+    type?: string
+  }[]
 }
 
 export interface VuetifySlot {
-	name: string
-	description?: string
-	'doc-url'?: string
-	'vue-properties'?: {
-		name: string
-		type?: string
-	}[]
+  'name': string
+  'description'?: string
+  'doc-url'?: string
+  'vue-properties'?: {
+    name: string
+    type?: string
+  }[]
 }
 
 export async function registerApiTools (server: McpServer) {

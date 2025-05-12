@@ -3,7 +3,7 @@
  *
  * Combines tools for components, documentation, and other features.
  */
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
 import { registerApiTools } from '#tools/api'
 import { registerDocumentationTools } from '#tools/documentation'
