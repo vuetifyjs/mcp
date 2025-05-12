@@ -1,7 +1,7 @@
 {
   "name": "@vuetify/mcp",
   "version": "0.0.6",
-  "description": "Machine Context Protocol server for Vuetify assistance",
+  "description": "Model Context Protocol server for Vuetify assistance",
   "bin": "bin/cli.js",
   "main": "./dist/index.js",
   "type": "module",
