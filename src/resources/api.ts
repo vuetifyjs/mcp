@@ -3,7 +3,7 @@ import { readdirSync } from 'node:fs'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 
-import { cacheApi, getApiCacheDirRoot } from '@/utils/api.js'
+import { cacheApi, getApiCacheDirRoot } from '#utils/api'
 
 export async function registerApiResources (server: McpServer) {
   server.resource(
