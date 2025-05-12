@@ -72,7 +72,7 @@ export async function registerApiTools (server: McpServer) {
     'get_vuetify_api_by_version',
     'Download and cache Vuetify API types by version',
     {
-      version: z.string().describe('The version of Vuetify to retrieve API types for, e.g., "latest" or "3.0.0"'),
+      version: z.string().default('latest').describe('The version of Vuetify to retrieve API types for, e.g., "latest" or "3.0.0"'),
     },
     async ({ version }) => {
       await cacheApi(version)
@@ -82,7 +82,7 @@ export async function registerApiTools (server: McpServer) {
       return {
         content: [{
           type: 'text',
-          text: `Downloaded and cached Vuetify ${version}`,
+          text: `Downloaded and cached vuetify@${version}`,
         }],
       }
     },

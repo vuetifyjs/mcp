@@ -19,7 +19,7 @@ export async function registerDocumentationTools (server: McpServer) {
     'get_installation_guide',
     'Get detailed information about how to install Vuetify in a variety of environments.',
     {
-      platform: z.enum(platforms).describe(`The platform for which to get the installation guide. Available platforms: ${platforms.join(', ')}`),
+      platform: z.enum(platforms).default('vite').describe(`The platform for which to get the installation guide. Available platforms: ${platforms.join(', ')}`),
       ssr: z.boolean().default(false).describe('Whether to return the SSR version of the installation guide.'),
       fresh: z.boolean().default(false).describe('Whether the user has an existing project or is starting fresh.'),
     },
