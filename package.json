@@ -24,7 +24,7 @@
     "start": "node dist/index.js",
     "dev": "pnpm watch && node --watch dist/index.js",
     "cli": "node dist/cli/index.js",
-    "bootstrap": "node --run build && node --run cli",
+    "config": "node --run build && node --run cli",
     "watch": "tsc --watch",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
@@ -40,6 +40,7 @@
   "dependencies": {
     "@clack/prompts": "^0.10.1",
     "@modelcontextprotocol/sdk": "^1.10.2",
+    "citty": "^0.1.6",
     "dotenv": "^16.5.0",
     "jsonc-parser": "^3.3.1",
     "kolorist": "^1.8.0",
@@ -63,6 +64,7 @@
   "packageManager": "pnpm@10.9.0",
   "pnpm": {
     "onlyBuiltDependencies": [
+      "esbuild",
       "unrs-resolver"
     ]
   }

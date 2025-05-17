@@ -14,6 +14,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.10.2
         version: 1.10.2
+      citty:
+        specifier: ^0.1.6
+        version: 0.1.6
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
