@@ -7,15 +7,45 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+function setupEnvironment (args) {
+  const env = { ...process.env }
+  if (args['api-key']) {
+    env.VUETIFY_API_KEY = args['api-key']
+  }
+  if (args['github-token']) {
+    env.GITHUB_TOKEN = args['github-token']
+  }
+  return env
+}
+
+const defaultArgs = {
+  'api-key': {
+    type: 'string',
+    description: 'Your Vuetify API key',
+    valueHint: 'KEY',
+  },
+  'github-token': {
+    type: 'string',
+    description: 'GitHub token for accessing documentation',
+    valueHint: 'TOKEN',
+  },
+}
+
 const config = defineCommand({
   meta: {
     name: 'config',
     description: 'Configure Vuetify MCP Server for your IDE',
   },
-  run () {
+  args: defaultArgs,
+  run ({ args }) {
     const serverPath = path.resolve(__dirname, '../dist/cli/index.js')
+
+    const env = setupEnvironment(args)
+
     const server = spawn('node', [serverPath], {
       stdio: 'inherit',
+      env,
+      shell: process.platform === 'win32',
     })
 
     server.on('error', err => {
@@ -39,18 +69,7 @@ const main = defineCommand({
     version: pkg.version,
     description: 'Vuetify MCP Server',
   },
-  args: {
-    'api-key': {
-      type: 'string',
-      description: 'Your Vuetify API key',
-      valueHint: 'KEY',
-    },
-    'github-token': {
-      type: 'string',
-      description: 'GitHub token for accessing documentation',
-      valueHint: 'TOKEN',
-    },
-  },
+  args: defaultArgs,
   subCommands: {
     config,
   },
@@ -61,13 +80,7 @@ const main = defineCommand({
     }
     const serverPath = path.resolve(__dirname, '../dist/index.js')
 
-    const env = { ...process.env }
-    if (args['api-key']) {
-      env.VUETIFY_API_KEY = args['api-key']
-    }
-    if (args['github-token']) {
-      env.GITHUB_TOKEN = args['github-token']
-    }
+    const env = setupEnvironment(args)
 
     const server = spawn('node', [serverPath], {
       stdio: 'inherit',
