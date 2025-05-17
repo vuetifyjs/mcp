@@ -1,19 +1,32 @@
-import { resolve } from 'pathe'
 import type { IDEId } from './ide/types.js'
-
-const dirname = new URL('.', import.meta.url).pathname
-const mcpPath = resolve(dirname, '../index.js')
+import { detectProgram } from './detect/npx.js'
 
 export const SERVER_NAME = 'vuetify-mcp'
 
-export const serverConfig = {
-  command: 'node',
+export const npx = await detectProgram('npx')
+
+const env = {
+  VUETIFY_API_KEY: process.env.VUETIFY_API_KEY,
+  GITHUB_TOKEN: process.env.GITHUB_TOKEN,
+}
+
+const wslConfig = {
+  command: 'wsl.exe',
   args: [
-    mcpPath,
+    'sh',
+    '-c',
+    `${npx?.path} -y @vuetify/mcp`,
   ],
-  env: {
-    VUETIFY_API_KEY: 'your_api_key_here',
-  },
+  env,
+}
+
+export const defaultConfig = {
+  command: 'npx',
+  args: [
+    '-y',
+    '@vuetify/mcp',
+  ],
+  env,
 }
 
 export const getSettingsPath = (ide: IDEId): string => {
@@ -27,6 +40,8 @@ export const getSettingsPath = (ide: IDEId): string => {
     }
   }
 }
+
+export const serverConfig = npx?.wsl ? wslConfig : defaultConfig
 
 export const getSettingsBuilder = (ide: IDEId): string => {
   switch (ide) {
