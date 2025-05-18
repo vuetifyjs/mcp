@@ -1,9 +1,25 @@
 import isWsl from 'is-wsl'
 import which from 'which'
+import { platform } from 'std-env'
 
 type ResolvedNpx = {
   path: string
   wsl: boolean
+  pure: boolean
+}
+
+const macPaths = [
+  '/usr/local/bin',
+  '/opt/homebrew/bin',
+  '/opt/local/bin',
+  '/usr/bin',
+]
+
+const detectPureProgram = async (program: 'node' | 'npx'): Promise<boolean> => {
+  if (platform !== 'darwin') {
+    return true
+  }
+  return !!(await which(program, { nothrow: true, path: macPaths.join(':') }))
 }
 
 export async function detectProgram (program: 'node' | 'npx'): Promise<ResolvedNpx | null> {
@@ -17,6 +33,7 @@ export async function detectProgram (program: 'node' | 'npx'): Promise<ResolvedN
       return {
         path: windowsPath,
         wsl: false,
+        pure: true,
       }
     } else {
       let wslPath: string | undefined
@@ -29,20 +46,22 @@ export async function detectProgram (program: 'node' | 'npx'): Promise<ResolvedN
         ? {
             path: wslPath,
             wsl: true,
+            pure: true,
           }
         : null
     }
   } else {
-    let wslPath: string | undefined
+    let programPath: string | undefined
     try {
-      wslPath = await which(program)
+      programPath = await which(program)
     } catch {
       return null
     }
-    return wslPath
+    return programPath
       ? {
-          path: wslPath,
+          path: programPath,
           wsl: false,
+          pure: await detectPureProgram(program),
         }
       : null
   }
