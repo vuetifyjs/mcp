@@ -17,7 +17,7 @@ let idesToInstall: DetectedIDE | symbol | null = null
 
 if (ides.length > 1) {
   idesToInstall = await select({
-    message: 'Select IDEs to add to global settings',
+    message: 'Select IDE to configure',
     options: ides.map(ide => ({ value: ide, label: ide.brand })),
   })
 }
