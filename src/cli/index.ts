@@ -1,43 +1,45 @@
 #!/usr/bin/env node
-import { intro } from '../cli/intro.js'
-import { intro as clackIntro, confirm, multiselect, outro } from '@clack/prompts'
+import { config, startMessage } from '../cli/intro.js'
+import { intro as clackIntro, confirm, outro, select } from '@clack/prompts'
 import { detectIDEs } from './detect-ide.js'
 import { installGlobally } from './install-globally.js'
 import type { DetectedIDE } from './ide/types.js'
 
 const ides = await detectIDEs()
 
-intro('config')
-
 if (ides.length === 0) {
   process.exit(0)
 }
 
-clackIntro()
+clackIntro(startMessage)
 
-const shouldAddGlobally = await confirm({
-  message: 'Add to global settings?',
-})
+let idesToInstall: DetectedIDE | symbol | null = null
 
-let idesToInstall: DetectedIDE[] | symbol = []
-if (shouldAddGlobally !== true) { // might be symbol or boolean
-  process.exit(0)
-}
-
-if (shouldAddGlobally && ides.length > 1) {
-  idesToInstall = await multiselect({
+if (ides.length > 1) {
+  idesToInstall = await select({
     message: 'Select IDEs to add to global settings',
     options: ides.map(ide => ({ value: ide, label: ide.brand })),
   })
 }
 
-if (shouldAddGlobally && ides.length === 1) {
-  idesToInstall = ides
+if (ides.length === 1) {
+  idesToInstall = ides[0]
 }
 
-if (Array.isArray(idesToInstall) && idesToInstall.length > 0) {
-  await installGlobally(idesToInstall)
+if (idesToInstall === null) {
+  config()
+  process.exit(0)
+}
+
+config(idesToInstall as DetectedIDE)
+
+const shouldInstall = await confirm({
+  message: 'Would you like to apply these settings automatically?',
+})
+
+if (shouldInstall) {
+  await installGlobally([idesToInstall as DetectedIDE])
   outro('IDE settings updated successfully')
 } else {
-  outro('No IDEs selected')
+  outro('Installation cancelled')
 }
