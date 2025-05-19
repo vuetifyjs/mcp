@@ -8,6 +8,7 @@ import 'dotenv/config'
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
+import { intro } from './cli/intro.js'
 import packageJson from '../package.json' with { type: 'json' }
 
 import { registerPrompts } from '#prompts/index'
@@ -36,6 +37,7 @@ await registerPrompts(server)
 await registerTools(server)
 
 async function main () {
+  intro()
   const auth = new AuthTransportWrapper()
   await server.connect(auth)
 }

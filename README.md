@@ -17,11 +17,8 @@ This MCP server provides Claude with access to Vuetify component information, la
 # Install dependencies
 pnpm install
 
-# Build the project
-pnpm run build
-
 # Start the server
-pnpm start
+pnpm bootstrap
 ```
 
 ## Quick Start
