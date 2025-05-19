@@ -1,6 +1,6 @@
 # Vuetify MCP
 
-Machine Context Protocol (MCP) server for Vuetify assistance in Claude.
+Model Context Protocol (MCP) server for Vuetify assistance in Claude.
 
 ## Overview
 
@@ -108,7 +108,7 @@ To add new features or extend existing ones:
 
 ## MCP SDK Integration
 
-This project uses the `@modelcontextprotocol/sdk` package to create a Machine Context Protocol server that Claude can interact with. The MCP architecture enables Claude to:
+This project uses the `@modelcontextprotocol/sdk` package to create a Model Context Protocol server that Claude can interact with. The MCP architecture enables Claude to:
 
 - Call specific tools defined in the server
 - Receive structured responses

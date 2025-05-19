@@ -1,7 +1,7 @@
 {
   "name": "@vuetify/mcp",
   "version": "0.0.6",
-  "description": "Machine Context Protocol server for Vuetify assistance",
+  "description": "Model Context Protocol server for Vuetify assistance",
   "bin": "bin/cli.js",
   "main": "./dist/index.js",
   "type": "module",
@@ -39,7 +39,7 @@
   "license": "MIT",
   "dependencies": {
     "@clack/prompts": "^0.10.1",
-    "@modelcontextprotocol/sdk": "^1.10.2",
+    "@modelcontextprotocol/sdk": "^1.11.3",
     "citty": "^0.1.6",
     "dotenv": "^16.5.0",
     "is-wsl": "^3.1.0",
@@ -50,20 +50,20 @@
     "std-env": "^3.9.0",
     "tinyexec": "^1.0.1",
     "which": "^5.0.0",
-    "zod": "^3.24.3"
+    "zod": "^3.24.4"
   },
   "devDependencies": {
-    "@types/node": "^22.15.2",
+    "@types/node": "^22.15.18",
     "@types/which": "^3.0.4",
     "conventional-changelog-cli": "^5.0.0",
     "conventional-changelog-vuetify": "^2.0.2",
     "conventional-github-releaser": "^3.1.5",
-    "eslint": "^9.25.1",
+    "eslint": "^9.26.0",
     "eslint-config-vuetify": "^4.0.0",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@10.9.0",
+  "packageManager": "pnpm@10.11.0",
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
