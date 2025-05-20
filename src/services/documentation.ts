@@ -502,5 +502,24 @@ export function createDocumentationService () {
         ],
       }
     },
+    getReleaseNotesByVersion: async ({ version }: { version: string }) => {
+      const isLatest = version === 'latest'
+      const method = isLatest ? 'getLatestRelease' : 'getReleaseByTag'
+
+      const { data } = await octokit.rest.repos[method]({
+        owner: 'vuetifyjs',
+        repo: 'vuetify',
+        tag: isLatest ? '' : (version.startsWith('v') ? version : `v${version}`),
+      })
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Release notes for version ${version}:\n\n${data.body} (published ${data.published_at})`,
+          } as const,
+        ],
+      }
+    },
   }
 }

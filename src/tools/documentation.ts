@@ -46,4 +46,13 @@ export async function registerDocumentationTools (server: McpServer) {
     'Get a list of frequently asked questions about Vuetify.',
     documentation.getFrequentlyAskedQuestions,
   )
+
+  server.tool(
+    'get_release_notes_by_version',
+    'Get release notes for one or more versions of Vuetify.',
+    {
+      version: z.string().describe('One or more Vuetify versions for which to get the release notes.').default('latest'),
+    },
+    documentation.getReleaseNotesByVersion,
+  )
 }
