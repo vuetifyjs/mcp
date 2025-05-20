@@ -31,6 +31,16 @@ npx -y @vuetify/mcp --api-key=YOUR_API_KEY
 
 ## Configuration for Claude
 
+### Automatic Discovery
+
+Get ready to use with a single command:
+
+```bash
+npx -y @vuetify/mcp config --api-key=YOUR_API_KEY
+```
+
+### Manual Configuration
+
 To use this MCP server with Claude, add the following to your `.vscode/mcp.json` file (or move it to `settings.json` for global usage):
 
 ```json
