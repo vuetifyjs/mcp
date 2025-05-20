@@ -40,4 +40,10 @@ export async function registerDocumentationTools (server: McpServer) {
     'Get a list of exports from the Vuetify npm package',
     documentation.getExposedExports,
   )
+
+  server.tool(
+    'get_frequently_asked_questions',
+    'Get a list of frequently asked questions about Vuetify.',
+    documentation.getFrequentlyAskedQuestions,
+  )
 }

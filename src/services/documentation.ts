@@ -483,5 +483,24 @@ export function createDocumentationService () {
         ],
       }
     },
+    getFrequentlyAskedQuestions: async () => {
+      const { data } = await octokit.rest.repos.getContent({
+        owner: 'vuetifyjs',
+        repo: 'vuetify',
+        path: 'packages/docs/src/pages/en/getting-started/frequently-asked-questions.md',
+        mediaType: {
+          format: 'raw',
+        },
+      })
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Review the Frequently Asked Questions section of the installation guide:\n\n${data}`,
+          } as const,
+        ],
+      }
+    },
   }
 }
