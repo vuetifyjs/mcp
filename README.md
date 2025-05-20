@@ -33,7 +33,7 @@ npx -y @vuetify/mcp --api-key=YOUR_API_KEY
 
 ### Automatic Discovery
 
-Get ready to use with a single command:
+Quickly set up the config using our CLI:
 
 ```bash
 npx -y @vuetify/mcp config --api-key=YOUR_API_KEY
