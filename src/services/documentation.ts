@@ -464,5 +464,24 @@ export function createDocumentationService () {
         ],
       }
     },
+    getExposedExports: async () => {
+      const { data } = await octokit.rest.repos.getContent({
+        owner: 'vuetifyjs',
+        repo: 'vuetify',
+        path: 'packages/docs/src/pages/en/getting-started/installation.md',
+        mediaType: {
+          format: 'raw',
+        },
+      })
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Review the Exposed exports section of the installation guide:\n\n${data}`,
+          } as const,
+        ],
+      }
+    },
   }
 }
