@@ -1,9 +1,10 @@
 import { readdirSync } from 'node:fs'
 
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 
 import { cacheApi, getApiCacheDirRoot } from '#utils/api'
+import type { VuetifyWebTypes } from '#tools/api'
 
 export async function registerApiResources (server: McpServer) {
   server.resource(
@@ -15,25 +16,27 @@ export async function registerApiResources (server: McpServer) {
           .map(dirent => dirent.name)
 
         return {
-          resources: versions.map(v => ({
-            uri: `vuetify://api@${v}.json`,
-            name: `Vuetify API Types (${v})`,
+          resources: versions.map(version => ({
+            uri: `vuetify://api@${version}.json`,
+            name: `Vuetify API Types (${version})`,
             mimeType: 'application/json',
           })),
         }
       },
     }),
-    async (uri, { version }) => {
-      const api = await cacheApi(Array.isArray(version) ? version[0] : version)
+    async (uri, { version: _version }) => {
+      const version = Array.isArray(_version) ? _version[0] : _version
+
+      const webtypes: VuetifyWebTypes = JSON.parse(await cacheApi(version))
+
+      const components = webtypes.contributions.html.tags.filter(tag => tag.name.startsWith('V'))
 
       return {
-        contents: [
-          {
-            uri: uri.href,
-            mimeType: 'application/json',
-            text: api,
-          },
-        ],
+        contents: components.map(component => ({
+          uri: `vuetify://api@${version}/${component.name}`,
+          mimeType: 'text/plain',
+          text: `For a detailed list of features call the <get_component_api_by_version> tool with *componentName* ${component.name} and *version* ${version}`,
+        })),
       }
     },
   )
