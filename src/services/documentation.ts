@@ -5,9 +5,11 @@
  */
 import octokit from '#plugins/octokit'
 
+const VUETIFY_DEPENDENCIES = 'vue vuetify @mdi/font'
+const VITE_DEPENDENCIES = 'vite @vitejs/plugin-vue vite-plugin-vuetify unplugin-fonts'
+
 export const SSR_NOTE = `
-  > **SSR Configuration**: When using Server-Side Rendering, you must pass the \`ssr: true\` option to all \`createVuetify()\` instances in your code.
-  > For example: \`createVuetify({ ssr: true })\` or \`createVuetify({ ssr: true, components, directives })\`
+  > **SSR Configuration**: When using Server-Side Rendering use *ssr: true*: \`createVuetify({ ssr: true })\`
 `
 
 export const FRESH_INSTALLATION_PLATFORMS = {
@@ -43,17 +45,17 @@ export const INSTALLATION_PLATFORMS = {
     markdown: `
       # Dependencies
       \`\`\`bash
-      [npm|pnpm|yarn|bun] install vue vite @vitejs/plugin-vue vuetify vite-plugin-vuetify @mdi/font
+      [npm|pnpm|yarn|bun] install ${VUETIFY_DEPENDENCIES} ${VITE_DEPENDENCIES}
       \`\`\`
       # Files
-      \`\`\`ts [plugins/vuetify.ts]
+      \`\`\`ts [src/plugins/vuetify.ts]
       import '@mdi/font/css/materialdesignicons.css'
       import 'vuetify/styles'
       import { createVuetify } from 'vuetify'
 
       export default createVuetify()
       \`\`\`
-      \`\`\`ts [app|main.ts]
+      \`\`\`ts [src/main.ts]
       import { createApp } from 'vue'
       import App from './App.vue'
       import vuetify from './plugins/vuetify'
@@ -63,16 +65,37 @@ export const INSTALLATION_PLATFORMS = {
       \`\`\`
       \`\`\`ts [vite.config.ts]
       import { defineConfig } from 'vite'
-      import vue from '@vitejs/plugin-vue'
-      import vuetify from 'vite-plugin-vuetify'
+      import Vue from '@vitejs/plugin-vue'
+      import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+      import { fileURLToPath, URL } from 'node:url'
 
       export default defineConfig({
         plugins: [
-          vue(),
-          vuetify({
-            autoImport: true,
-          }),
+          Vue({ template: { transformAssetUrls } }),
+          Vuetify({ autoImport: true }),
+          Fonts({
+            google: {
+              families: [{
+                name: 'Roboto',
+                styles: 'wght@100;300;400;500;700;900',
+              }],
+            },
+          })
         ],
+        resolve: {
+          alias: {
+            '@': fileURLToPath(new URL('src', import.meta.url)),
+          },
+          extensions: [
+            '.js',
+            '.json',
+            '.jsx',
+            '.mjs',
+            '.ts',
+            '.tsx',
+            '.vue',
+          ],
+        },
       })
       \`\`\`
     `,
@@ -83,7 +106,7 @@ export const INSTALLATION_PLATFORMS = {
     markdown: `
       # Dependencies
       \`\`\`bash
-      [npm|pnpm|yarn|bun] vuetify vite-plugin-vuetify @mdi/font
+      [npm|pnpm|yarn|bun] install ${VUETIFY_DEPENDENCIES} ${VITE_DEPENDENCIES}
       \`\`\`
       # Files
       \`\`\`ts [nuxt.config.ts]
@@ -120,7 +143,7 @@ export const INSTALLATION_PLATFORMS = {
         app.vueApp.use(vuetify)
       })
       \`\`\`
-      \`\`\`vue [app.vue]
+      \`\`\`vue [App.vue]
       <template>
         <NuxtLayout>
           <v-app>
@@ -157,33 +180,19 @@ export const INSTALLATION_PLATFORMS = {
     name: 'Laravel Vite',
     description: 'Installation guide for Laravel Vite projects.',
     markdown: `
-      # Laravel Vite Installation
-      The following dependencies are required to use Vuetify with Laravel Vite:
-      TODO
-    `,
-  },
-  'laravel-mix': {
-    name: 'Laravel Mix',
-    description: 'Installation guide for Laravel Mix projects.',
-    markdown: `
       # Dependencies
       \`\`\`bash
-      [npm|pnpm|yarn|bun] vuetify @mdi/font
+      [npm|pnpm|yarn|bun] install ${VUETIFY_DEPENDENCIES} ${VITE_DEPENDENCIES}
       \`\`\`
       # Files
-      \`\`\`ts [plugins/vuetify.ts]
+      \`\`\`ts [resources/js/plugins/vuetify.ts]
       import '@mdi/font/css/materialdesignicons.css'
       import 'vuetify/styles'
       import { createVuetify } from 'vuetify'
-      import * as components from 'vuetify/components'
-      import * as directives from 'vuetify/directives'
 
-      export default createVuetify({
-        components,
-        directives,
-      })
+      export default createVuetify()
       \`\`\`
-      \`\`\`ts [app.ts]
+      \`\`\`ts [resources/js/app.ts]
       import { createApp } from 'vue'
       import App from './App.vue'
       import vuetify from './plugins/vuetify'
@@ -191,10 +200,46 @@ export const INSTALLATION_PLATFORMS = {
       const app = createApp(App)
       app.use(vuetify).mount('#app')
       \`\`\`
-      \`\`\`webpack.mix.[js|ts]
-      const mix = require('laravel-mix')
+      \`\`\`ts [vite.config.ts]
+      import { defineConfig } from 'vite'
+      import laravel from 'laravel-vite-plugin'
+      import vue from '@vitejs/plugin-vue'
+      import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+      import fonts from 'unplugin-fonts/vite'
+      import { fileURLToPath, URL } from 'node:url'
 
-      mix.copy('node_modules/@mdi/font/fonts/', 'dist/fonts/')
+      export default defineConfig({
+        plugins: [
+          laravel({
+            input: ['resources/js/app.ts', 'resources/css/app.css'],
+            refresh: true,
+          }),
+          vue({ template: { transformAssetUrls } }),
+          vuetify({ autoImport: true }),
+          fonts({
+            google: {
+              families: [{
+                name: 'Roboto',
+                styles: 'wght@100;300;400;500;700;900',
+              }],
+            },
+          }),
+        ],
+        resolve: {
+          alias: {
+            '@': fileURLToPath(new URL('src', import.meta.url)),
+          },
+          extensions: [
+            '.js',
+            '.json',
+            '.jsx',
+            '.mjs',
+            '.ts',
+            '.tsx',
+            '.vue',
+          ],
+        },
+      })
       \`\`\`
     `,
   },
@@ -236,7 +281,7 @@ export const INSTALLATION_PLATFORMS = {
       <script type="importmap">
       {
         "imports": {
-          "vue": "https://cdn.jsdelivr.net/npm/vue@latest/dist/vue.esm-browser.js",
+          "vue": "https://cdn.jsdelivr.net/npm/vue@3.0.0/dist/vue.esm-browser.js",
           "vuetify": "https://cdn.jsdelivr.net/npm/vuetify@3.0.0/dist/vuetify.esm.js"
         }
       }
@@ -247,6 +292,7 @@ export const INSTALLATION_PLATFORMS = {
 
       const vuetify = createVuetify()
       const app = createApp()
+
       app.use(vuetify).mount('#app')
       </script>
       \`\`\`
@@ -260,7 +306,6 @@ export const INSTALLATION_PLATFORMS = {
       The following dependencies are required to use Vuetify with VitePress:
       - vue, vitepress, vuetify, @mdi/font
       # Files
-      -
       \`\`\`ts [.vitepress/theme/index.ts]
       import DefaultTheme from 'vitepress/theme'
       import '@mdi/font/css/materialdesignicons.css'
