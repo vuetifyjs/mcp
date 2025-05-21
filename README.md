@@ -11,25 +11,25 @@ This MCP server provides Claude with access to Vuetify component information, la
 - Providing information about Vuetify features
 - Answering questions about the Vuetify framework
 
-## Installation
-
-```bash
-# Install dependencies
-pnpm install
-
-# Start the server
-pnpm bootstrap
-```
-
 ## Quick Start
 
 Run Vuetify MCP with a single command:
 
 ```bash
-npx -y @vuetify/mcp --api-key=YOUR_API_KEY
+npx -y @vuetify/mcp
 ```
 
 ## Configuration for Claude
+
+### Automatic Discovery
+
+Quickly set up the config using our CLI:
+
+```bash
+npx -y @vuetify/mcp config
+```
+
+### Manual Configuration
 
 To use this MCP server with Claude, add the following to your `.vscode/mcp.json` file (or move it to `settings.json` for global usage):
 
@@ -42,15 +42,10 @@ To use this MCP server with Claude, add the following to your `.vscode/mcp.json`
         "-y",
         "@vuetify/mcp"
       ],
-      "env": {
-        "VUETIFY_API_KEY": "your_api_key_here"
-      }
     }
   }
 }
 ```
-
-Make sure to replace `/absolute/path/to` with the actual absolute path to the `vuetify-mcp` directory.
 
 Additionally, ensure that automatic discovery is enabled in your `settings.json` file:
 
@@ -99,6 +94,15 @@ vuetify-mcp/
 ```
 
 ## Development
+
+
+```bash
+# Install dependencies
+pnpm install
+
+# Run development server
+pnpm dev
+```
 
 To add new features or extend existing ones:
 
