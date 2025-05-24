@@ -40,6 +40,7 @@ npx -y @vuetify/mcp config
 ```
 
 The CLI will:
+
 1. Detect supported IDEs on your system (VS Code, Claude, Cursor, Trae, Windsurf)
 2. Prompt you if multiple IDEs are found
 3. Apply the necessary settings automatically to your selected environment
@@ -57,6 +58,7 @@ Below are the locations and JSON snippets for each supported environment. Copy t
 | Windsurf | `<user home>/.config/Windsurf/User/mcp.json`                                                                                                   | `mcpServers.vuetify-mcp`  |
 
 **Example JSON snippet for most IDEs (non-VS Code):**
+
 ```json
 {
   "mcpServers": {
@@ -72,6 +74,7 @@ Below are the locations and JSON snippets for each supported environment. Copy t
 ```
 
 **Example JSON snippet for VSCode:**
+
 ```json
 {
   "mcp": {
@@ -120,6 +123,7 @@ The Vuetify MCP server provides a comprehensive set of tools to enhance your dev
 
 - `get_vuetify_api_by_version`: Download and cache Vuetify API types by version. Supports all major Vuetify versions (2.x and 3.x).
 - `get_component_api_by_version`: Return the API list for a specific Vuetify component, including props, events, slots, and exposed methods.
+- `get_directive_api_by_version`: Return the API information for a specific Vuetify directive (e.g., `v-ripple`, `v-scroll`). Includes directive description, arguments, default values, and source reference.
 
 ### Documentation Tools
 
@@ -133,7 +137,7 @@ The Vuetify MCP server provides a comprehensive set of tools to enhance your dev
 
 The Vuetify MCP server follows a modular architecture that separates concerns and makes the codebase easier to navigate and extend:
 
-```
+```text
 vuetify-mcp/
 ├── src/
 │   ├── index.ts        # Main entry point and server initialization
@@ -184,6 +188,7 @@ This project uses the `@modelcontextprotocol/sdk` package to create a Model Cont
 - Provide a better experience for Vuetify-related inquiries
 
 The implementation follows the standard MCP patterns with:
+
 - Server initialization using `McpServer` class
 - Parameter validation with Zod schemas for type safety
 - StdioServerTransport for communication between the client and server
@@ -221,6 +226,7 @@ export const getComponentApiByVersion = {
 ### Getting Help
 
 If you encounter issues not covered here, please:
+
 1. Check the [GitHub issues](https://github.com/vuetifyjs/mcp/issues) for similar problems
 2. Join the [Vuetify Discord](https://discord.com/invite/vuetify) for community support
 3. Open a new issue with detailed reproduction steps
@@ -228,6 +234,7 @@ If you encounter issues not covered here, please:
 ## Version Compatibility
 
 The Vuetify MCP server is compatible with:
+
 - Vuetify 3.x
 - Node.js 22 and higher
 - All major MCP-compatible clients (Claude, VSCode, etc.)

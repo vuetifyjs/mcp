@@ -14,6 +14,7 @@ export interface VuetifyWebTypes {
       'types-syntax': string
       'description-markup': string
       'tags': VuetifyHtmlTag[]
+      'attributes'?: VuetifyAttr[]
     }
   }
 }
@@ -118,6 +119,46 @@ export async function registerApiTools (server: McpServer) {
         content: [{
           type: 'text',
           text: JSON.stringify(tag),
+        }],
+      }
+    },
+  )
+
+  server.tool(
+    'get_directive_api_by_version',
+    'Return the API information for a Vuetify directive',
+    {
+      directiveName: z.string().describe('The name of a Vuetify directive, e.g., "v-ripple" or "ripple"'),
+      version: z.string().default('latest').describe('The version of Vuetify to retrieve API types for, e.g., "latest" or "3.0.0"'),
+    },
+    async ({ directiveName, version }) => {
+      const api: VuetifyWebTypes = JSON.parse(await cacheApi(version))
+
+      let target = directiveName.toLowerCase()
+
+      // Normalise directive naming to include leading "v-"
+      if (!target.startsWith('v')) {
+        target = `v-${target}`
+      } else if (!target.startsWith('v-')) {
+        // Handles case where provided as "vripple" etc.
+        target = target.replace(/^v/, 'v-')
+      }
+
+      const attr = api.contributions.html.attributes?.find(attr => attr.name.toLowerCase() === target)
+
+      if (!attr) {
+        return {
+          content: [{
+            type: 'text',
+            text: `Directive "${target}" not found in Vuetify version ${version}.`,
+          }],
+        }
+      }
+
+      return {
+        content: [{
+          type: 'text',
+          text: JSON.stringify(attr),
         }],
       }
     },
