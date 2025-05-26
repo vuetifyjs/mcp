@@ -443,6 +443,18 @@ export function createDocumentationService () {
         ],
       }
     },
+    getFeatureGuides: async () => {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: 'Available Vuetify 3 features:\n\n' + Object.entries(AVAILABLE_FEATURES)
+              .map(([feature, description]) => `${feature}: ${description}`)
+              .join('\n'),
+          } as const,
+        ],
+      }
+    },
     getUpgradeGuide: async ({ version }: { version: UpgradeFromVersion }) => {
       const guide = UPGRADE_FROM_VERSIONS[version]
 

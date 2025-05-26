@@ -27,8 +27,14 @@ export async function registerDocumentationTools (server: McpServer) {
   )
 
   server.tool(
-    'get_available_features',
+    'get_feature_guides',
     'Get a list of available features in the documentation.',
+    documentation.getFeatureGuides,
+  )
+
+  server.tool(
+    'get_feature_guide',
+    'Get the information about a specific feature in the documentation.',
     {
       feature: z.enum(features).describe(`The feature for which to get the documentation. Available features: ${features.join(', ')}`),
     },
