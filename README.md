@@ -1,4 +1,13 @@
-# Vuetify MCP
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.vuetifyjs.com/docs/images/logos/vmcp-logo-dark.png">
+    <img alt="Vuetify One Logo" src="https://cdn.vuetifyjs.com/docs/images/logos/vmcp-logo-light.png" height="150">
+  </picture>
+</p>
+
+[![npm version](https://img.shields.io/npm/v/@vuetify/mcp.svg)](https://www.npmjs.com/package/@vuetify/mcp)
+[![npm downloads](https://img.shields.io/npm/dm/@vuetify/mcp?color=blue)](https://npm.chart.dev/@vuetify/mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Model Context Protocol (MCP) server providing Vuetify component information and documentation to any MCP-compatible client or IDE.
 
