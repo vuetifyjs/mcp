@@ -66,7 +66,12 @@ function findFileRecursive (startPath: string, filter: string) {
 
   let results = [] as string[]
 
-  const files = fs.readdirSync(startPath)
+  let files = [] as string[]
+  try {
+    files = fs.readdirSync(startPath)
+  } catch {
+    return []
+  }
   for (const file of files) {
     const filename = path.join(startPath, file)
     let stat
