@@ -59,14 +59,17 @@ export async function checkMacOSApp (programName: string): Promise<boolean> {
   return false
 }
 
-function findFileRecursive (startPath: string, filter: string) {
+function findFileRecursive (startPath: string, filter: string): string[] {
   if (!fs.existsSync(startPath)) {
     return []
   }
 
-  let results = [] as string[]
-
-  const files = fs.readdirSync(startPath)
+  let files: string[] = []
+  try {
+    files = fs.readdirSync(startPath)
+  } catch {
+    return []
+  }
   for (const file of files) {
     const filename = path.join(startPath, file)
     let stat
@@ -76,12 +79,17 @@ function findFileRecursive (startPath: string, filter: string) {
       continue
     }
 
+    if (filename.endsWith(filter)) {
+      return [filename]
+    }
+
     if (stat.isDirectory()) {
-      results = results.concat(findFileRecursive(filename, filter))
-    } else if (filename.endsWith(filter)) {
-      results.push(filename)
+      const found = findFileRecursive(filename, filter)
+      if (found.length > 0) {
+        return found
+      }
     }
   }
 
-  return results
+  return []
 }
