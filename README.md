@@ -250,4 +250,6 @@ The Vuetify MCP server is compatible with:
 
 ## License
 
-MIT
+Vuetify MCP is available under the [MIT](http://opensource.org/licenses/MIT) software license.
+
+Copyright (c) 2025-present Vuetify, LLC
