@@ -61,4 +61,10 @@ export async function registerDocumentationTools (server: McpServer) {
     },
     documentation.getReleaseNotesByVersion,
   )
+
+  server.tool(
+    'get_vuetify_one_installation_guide',
+    'Get the README contents for @vuetify/one package from GitHub, including installation and usage instructions.',
+    documentation.getVuetifyOneInstallationGuide,
+  )
 }

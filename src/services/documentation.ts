@@ -533,5 +533,24 @@ export function createDocumentationService () {
         ],
       }
     },
+    getVuetifyOneInstallationGuide: async () => {
+      const { data } = await octokit.rest.repos.getContent({
+        owner: 'vuetifyjs',
+        repo: 'one',
+        path: 'README.md',
+        mediaType: {
+          format: 'raw',
+        },
+      })
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `# @vuetify/one Documentation\n\nSource: https://github.com/vuetifyjs/one\n\n${data}`,
+          } as const,
+        ],
+      }
+    },
   }
 }
