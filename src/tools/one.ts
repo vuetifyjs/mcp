@@ -30,7 +30,7 @@ export async function registerOneTools (server: McpServer) {
             const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
             const binResponse = await fetch(`${apiServer}/one/mcp/bins`, {
                 method: 'POST',
-                body: JSON.stringify({bin}),
+                body: JSON.stringify({bin: {...bin, aiGenerated: true}}),
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${apiKey}`
