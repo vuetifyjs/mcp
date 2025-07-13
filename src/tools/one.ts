@@ -2,14 +2,14 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import {z} from "zod";
 
 interface bin  {
-    id: String,
-    slug: String,
-    title: String,
-    language: String,
-    content: String,
-    favorite: Boolean,
-    pinned: Boolean,
-    locked: Boolean,
+    id: string,
+    slug: string,
+    title: string,
+    language: string,
+    content: string,
+    favorite: boolean,
+    pinned: boolean,
+    locked: boolean,
     visibility: 'private' | 'public',
     createdAt: Date,
     updatedAt: Date,
@@ -32,46 +32,42 @@ export async function registerOneTools (server: McpServer) {
             openWorldHint:true
         },
         async (bin) => {
-            const apiKey = process.env.VUETIFY_API_KEY || ''
+            try {
+                const apiKey = process.env.VUETIFY_API_KEY || ''
+                if (!apiKey) {
+                   throw new Error('Invalid or No Api Key provided')
 
-            if (!apiKey) {
+                }
+                const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
+                const binResponse = await fetch(`${apiServer}/one/mcp/bins`, {
+                    method: 'POST',
+                    body: JSON.stringify({bin: {...bin, aiGenerated: true}}),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                })
+                if (!binResponse.ok) {
+                    throw new Error('Invalid Bin')
+                }
+
+                const data = await binResponse.json();
+                const createdBin: bin = data.bin;
+
                 return {
-                    isError: true,
+                    content: [{
+                        type: 'text',
+                        text: `Successfully created bin ${createdBin.title}, you can view it at https://bin.vuetifyjs.com/${createdBin.id}`,
+                    }],
+                }
+            }catch(error: any){
+                return {
                     content: [{
                         isError: true,
                         type: 'text',
-                        text: 'Invalid or No Api Key provided'
+                        text: error.message,
                     }]
                 }
-            }
-            const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
-            const binResponse = await fetch(`${apiServer}/one/mcp/bins`, {
-                method: 'POST',
-                body: JSON.stringify({bin: {...bin, aiGenerated: true}}),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-            })
-
-            if (!binResponse.ok) {
-                return {
-                    content: [{
-                        isError: true,
-                        type: 'text',
-                        text: 'Invalid bin',
-                    }]
-                }
-            }
-
-            const data = await binResponse.json();
-            const createdBin: bin = data.bin;
-
-            return {
-                content: [{
-                    type: 'text',
-                    text: `Successfully created bin ${createdBin.title}, you can view it at https://bin.vuetifyjs.com/${createdBin.id}`,
-                }],
             }
         })
 
@@ -105,12 +101,81 @@ export async function registerOneTools (server: McpServer) {
             const data = await binResponse.json();
             const binList: bin[] = data.bins
 
+            const binText = binList
+                .map(bin => {
+                    return [
+                        `id: ${bin.id}`,
+                        `Title: ${bin.title}`,
+                        `Language: ${bin.language}`,
+                        `Visibility: ${bin.visibility}`,
+                        `Favorite: ${bin.favorite}`,
+                        `Pinned: ${bin.pinned}`,
+                        `Locked: ${bin.locked}`,
+                        `Created: ${new Date(bin.createdAt).toLocaleDateString()}`,
+                        `Updated: ${new Date(bin.updatedAt).toLocaleDateString()}`,
+                        '---'
+                    ].join('\n')
+                })
+                .join('\n\n');
+
             return {
-                content: [{
+                content:[{
                     type: 'text',
-                    text: binList.map(bin => bin.title).join('\n'),
-                }],
-            }}
+                    text: binText
+                }]}
+            }
+            catch(error: any){
+                return {
+                    isError: true,
+                    content: [{
+                        isError: true,
+                        type: 'text',
+                        text: error.message
+                    }]
+                }
+            }
+        })
+
+
+    server.tool(
+        'get_bins',
+        'Get bins',
+        {
+            id: z.string()
+        },
+        {
+            openWorldHint: true
+        },
+        async ({id}) => {
+
+            try{
+                const apiKey = process.env.VUETIFY_API_KEY || ''
+
+                if (!apiKey) {
+                    throw new Error('Invalid API key')
+                }
+
+                const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
+                const binResponse = await fetch(`${apiServer}/one/mcp/bins/${id}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                })
+
+                if (!binResponse.ok) {
+                    throw new Error('Error retrieving bin')
+                }
+
+                const data = await binResponse.json();
+                const { bin } : {bin: bin} = data
+
+                return {
+                    content: [{
+                        type: 'text',
+                        text: bin.content
+                    }],
+                }}
             catch(error: any){
                 return {
                     isError: true,
