@@ -39,7 +39,7 @@ export async function registerOneTools (server: McpServer) {
 
                 }
                 const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
-                const binResponse = await fetch(`${apiServer}/one/mcp/bins`, {
+                const binResponse = await fetch(`${apiServer}/mcp/bins`, {
                     method: 'POST',
                     body: JSON.stringify({bin: {...bin, aiGenerated: true}}),
                     headers: {
@@ -87,7 +87,7 @@ export async function registerOneTools (server: McpServer) {
             }
 
             const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
-            const binResponse = await fetch(`${apiServer}/one/mcp/bins`, {
+            const binResponse = await fetch(`${apiServer}/one/bins`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${apiKey}`
@@ -156,7 +156,7 @@ export async function registerOneTools (server: McpServer) {
                 }
 
                 const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
-                const binResponse = await fetch(`${apiServer}/one/mcp/bins/${id}`, {
+                const binResponse = await fetch(`${apiServer}/one/bins/${id}`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${apiKey}`
