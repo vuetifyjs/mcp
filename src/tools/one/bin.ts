@@ -1,32 +1,28 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import {z} from "zod";
 
-interface bin  {
-    id: string,
-    slug: string,
-    title: string,
-    language: string,
-    content: string,
-    favorite: boolean,
-    pinned: boolean,
-    locked: boolean,
-    visibility: 'private' | 'public',
-    createdAt: Date,
-    updatedAt: Date,
-}
+export const BinSchema = z.object({
+    id: z.string(),
+    slug: z.string(),
+    title: z.string(),
+    language: z.string(),
+    content: z.string(),
+    favorite: z.boolean(),
+    pinned: z.boolean(),
+    locked: z.boolean(),
+    visibility: z.enum(['private', 'public']),
+    createdAt: z.coerce.date(),
+    updatedAt: z.coerce.date(),
+})
 
+export type Bin = z.infer<typeof BinSchema>
 
 export async function registerBinTools (server: McpServer) {
     server.tool(
         'create_vuetify_bin',
         'Create vuetify bin',
         {
-            title: z.string().default('My vuetify bin').describe('Title of your bin'),
-            language: z.string().default('markdown').describe('Language of your vuetify bin'),
-            content: z.string().describe('The content of you bin'),
-            favorite: z.boolean().default(false).describe('If you want to favorite this bin or not'),
-            pinned: z.boolean().default(false).describe('Pin bin'),
-            visibility:z.string().default('public').describe('Visibility of bin')
+            BinSchema
         },
         {
             openWorldHint:true
@@ -52,7 +48,7 @@ export async function registerBinTools (server: McpServer) {
                 }
 
                 const data = await binResponse.json();
-                const createdBin: bin = data.bin;
+                const createdBin: Bin = data.bin;
 
                 return {
                     content: [{
@@ -99,7 +95,7 @@ export async function registerBinTools (server: McpServer) {
             }
 
             const data = await binResponse.json();
-            const binList: bin[] = data.bins
+            const binList: Bin[] = data.bins
 
             const binText = binList
                 .map(bin => {
@@ -137,8 +133,8 @@ export async function registerBinTools (server: McpServer) {
 
 
     server.tool(
-        'get_bins',
-        'Get bins',
+        'get_bin',
+        'Get bin',
         {
             id: z.string()
         },
@@ -167,7 +163,7 @@ export async function registerBinTools (server: McpServer) {
                 }
 
                 const data = await binResponse.json();
-                const { bin } : {bin: bin} = data
+                const { bin } : {bin: Bin} = data
 
                 return {
                     content: [{
