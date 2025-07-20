@@ -33,7 +33,7 @@ export async function registerPlaygroundTools(server: McpServer) {
 
                 }
                 const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
-                const playgroundResponse = await fetch(`${apiServer}/mcp/playgrounds`, {
+                const playgroundResponse = await fetch(`${apiServer}/one/playgrounds`, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${apiKey}`
@@ -41,7 +41,7 @@ export async function registerPlaygroundTools(server: McpServer) {
                 })
 
                 if (!playgroundResponse.ok) {
-                    throw new Error('Invalid Playground response')
+                    throw new Error(await playgroundResponse.text())
                 }
 
                 const data = await playgroundResponse.json();
@@ -85,7 +85,7 @@ export async function registerPlaygroundTools(server: McpServer) {
         'create_playground',
         'Create a new playground',
         {
-            playground: PlaygroundSchema
+            playground: CreatePlaygroundInputSchema
         },
         {
             openWorldHint: true
@@ -97,7 +97,7 @@ export async function registerPlaygroundTools(server: McpServer) {
                     throw new Error('Invalid API Key provided')
                 }
                 const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
-                const playgroundResponse = await fetch(`${apiServer}/mcp/playgrounds`, {
+                const playgroundResponse = await fetch(`${apiServer}/one/playgrounds`, {
                     method: 'POST',
                     body: JSON.stringify({playground: {...playground, aiGenerated: true}}),
                     headers: {
@@ -107,7 +107,7 @@ export async function registerPlaygroundTools(server: McpServer) {
                 })
 
                 if (!playgroundResponse.ok) {
-                    throw new Error('Invalid Playground')
+                    throw new Error(await playgroundResponse.text())
                 }
 
                 const data = await playgroundResponse.json();
