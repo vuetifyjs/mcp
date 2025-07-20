@@ -1,22 +1,18 @@
 import type {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod"
 
-export const CreatePlaygroundInputSchema = z.object({
-    title: z.string().default("My Vuetify Playground").describe('Title of vuetify playground'),
-    content: z.string().describe('The content of your playground'),
-    favorite: z.boolean().default(false).describe('Favorite playground'),
-    pinned: z.boolean().default(false).describe('Playground playground'),
-    locked: z.boolean().default(false).describe('Lock playground'),
-    visibility: z.enum(['private', 'public']).default('public'),
-})
-
-export const PlaygroundSchema = CreatePlaygroundInputSchema.extend({
-    id: z.string(),
-    createdAt: z.coerce.date(),
-    updatedAt: z.coerce.date(),
-})
-
-export type Playground = z.infer<typeof PlaygroundSchema>
+export interface Playground {
+    id: string
+    title: string
+    content: string
+    favorite: boolean
+    pinned: boolean
+    locked: boolean
+    visibility: 'private' | 'public'
+    aiGenerated: boolean
+    createdAt: Date
+    updatedAt: Date
+}
 
 export async function registerPlaygroundTools(server: McpServer) {
     server.tool(
@@ -85,7 +81,12 @@ export async function registerPlaygroundTools(server: McpServer) {
         'create_playground',
         'Create a new playground',
         {
-            playground: CreatePlaygroundInputSchema
+            title: z.string().default("My Vuetify Playground").describe('Title of vuetify playground'),
+            content: z.string().describe('The content of your playground'),
+            favorite: z.boolean().default(false).describe('Favorite playground'),
+            pinned: z.boolean().default(false).describe('Playground playground'),
+            locked: z.boolean().default(false).describe('Lock playground'),
+            visibility: z.enum(['private', 'public']).default('public'),
         },
         {
             openWorldHint: true
@@ -99,7 +100,7 @@ export async function registerPlaygroundTools(server: McpServer) {
                 const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
                 const playgroundResponse = await fetch(`${apiServer}/one/playgrounds`, {
                     method: 'POST',
-                    body: JSON.stringify({playground: {...playground, aiGenerated: true}}),
+                    body: JSON.stringify({...playground, aiGenerated: true}),
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${apiKey}`
@@ -111,7 +112,7 @@ export async function registerPlaygroundTools(server: McpServer) {
                 }
 
                 const data = await playgroundResponse.json();
-                const createdPlayground: Playground = data.Playground;
+                const createdPlayground: Playground = data.playground;
 
                 return {
                     content: [{

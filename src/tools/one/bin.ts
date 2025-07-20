@@ -1,30 +1,33 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import {z} from "zod";
 
-export const CreateBinInputSchema = z.object({
-    title: z.string().default('My vuetify bin').describe('Title of your bin'),
-    language: z.string().default('markdown').describe('Language of your vuetify bin'),
-    content: z.string().describe('The content of you bin'),
-    favorite: z.boolean().default(false).describe('If you want to favorite this bin or not'),
-    pinned: z.boolean().default(false).describe('Pin bin'),
-    locked: z.boolean().default(false).describe('Lock bin'),
-    visibility:z.string().default('public').describe('Visibility of bin')
-})
+export interface Bin {
+    id: string
+    slug: string
+    title: string
+    language: string
+    content: string
+    favorite: boolean
+    pinned: boolean
+    locked: boolean
+    visibility: 'private' | 'public'
+    createdAt: Date
+    updatedAt: Date
+}
 
-export const BinSchema = CreateBinInputSchema.extend({
-    id: z.string(),
-    createdAt: z.coerce.date(),
-    updatedAt: z.coerce.date(),
-})
-
-export type Bin = z.infer<typeof BinSchema>
 
 export async function registerBinTools (server: McpServer) {
     server.tool(
         'create_vuetify_bin',
         'Create vuetify bin',
         {
-            bin: CreateBinInputSchema
+            title: z.string().default('My vuetify bin').describe('Title of your bin'),
+            language: z.string().default('markdown').describe('Language of your vuetify bin'),
+            content: z.string().describe('The content of you bin'),
+            favorite: z.boolean().default(false).describe('If you want to favorite this bin or not'),
+            pinned: z.boolean().default(false).describe('Pin bin'),
+            locked: z.boolean().default(false).describe('Lock bin'),
+            visibility:z.string().default('public').describe('Visibility of bin')
         },
         {
             openWorldHint:true
