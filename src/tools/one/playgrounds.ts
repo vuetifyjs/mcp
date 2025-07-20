@@ -97,7 +97,7 @@ export async function registerPlaygroundTools(server: McpServer) {
                     throw new Error('Invalid API Key provided')
                 }
                 const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
-                const playgroundResponse = await fetch(`${apiServer}/mcp/bins`, {
+                const playgroundResponse = await fetch(`${apiServer}/mcp/playgrounds`, {
                     method: 'POST',
                     body: JSON.stringify({playground: {...playground, aiGenerated: true}}),
                     headers: {
