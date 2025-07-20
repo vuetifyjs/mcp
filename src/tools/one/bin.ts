@@ -27,7 +27,8 @@ export async function registerBinTools (server: McpServer) {
             favorite: z.boolean().default(false).describe('If you want to favorite this bin or not'),
             pinned: z.boolean().default(false).describe('Pin bin'),
             locked: z.boolean().default(false).describe('Lock bin'),
-            visibility:z.string().default('public').describe('Visibility of bin')
+            visibility: z.string().default('public').describe('Visibility of bin'),
+            aiGenerated: z.boolean().default(true)
         },
         {
             openWorldHint:true
@@ -42,14 +43,14 @@ export async function registerBinTools (server: McpServer) {
                 const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
                 const binResponse = await fetch(`${apiServer}/mcp/bins`, {
                     method: 'POST',
-                    body: JSON.stringify({bin: {...bin, aiGenerated: true}}),
+                    body: JSON.stringify({bin}),
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${apiKey}`
                     },
                 })
                 if (!binResponse.ok) {
-                    throw new Error('Invalid Bin')
+                    throw new Error(await binResponse.text())
                 }
 
                 const data = await binResponse.json();
@@ -96,7 +97,7 @@ export async function registerBinTools (server: McpServer) {
             })
 
             if (!binResponse.ok) {
-                throw new Error('Error retrieving bins')
+                throw new Error(await binResponse.text())
             }
 
             const data = await binResponse.json();
@@ -164,7 +165,7 @@ export async function registerBinTools (server: McpServer) {
                 })
 
                 if (!binResponse.ok) {
-                    throw new Error('Error retrieving bin')
+                    throw new Error(await binResponse.text())
                 }
 
                 const data = await binResponse.json();
