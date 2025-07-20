@@ -16,7 +16,7 @@ interface bin  {
 }
 
 
-export async function registerOneTools (server: McpServer) {
+export async function registerBinTools (server: McpServer) {
     server.tool(
         'create_vuetify_bin',
         'Create vuetify bin',
@@ -62,8 +62,8 @@ export async function registerOneTools (server: McpServer) {
                 }
             }catch(error: any){
                 return {
+                    isError: true,
                     content: [{
-                        isError: true,
                         type: 'text',
                         text: error.message,
                     }]
@@ -128,7 +128,6 @@ export async function registerOneTools (server: McpServer) {
                 return {
                     isError: true,
                     content: [{
-                        isError: true,
                         type: 'text',
                         text: error.message
                     }]
@@ -180,7 +179,6 @@ export async function registerOneTools (server: McpServer) {
                 return {
                     isError: true,
                     content: [{
-                        isError: true,
                         type: 'text',
                         text: error.message
                     }]
