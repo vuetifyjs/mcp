@@ -1,15 +1,17 @@
 import type {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js";
 import z from "zod"
-import {Bin} from "./bin.js";
 
-export const PlaygroundSchema = z.object({
+export const CreatePlaygroundInputSchema = z.object({
+    title: z.string().default("My Vuetify Playground").describe('Title of vuetify playground'),
+    content: z.string().describe('The content of your playground'),
+    favorite: z.boolean().default(false).describe('Favorite playground'),
+    pinned: z.boolean().default(false).describe('Playground playground'),
+    locked: z.boolean().default(false).describe('Lock playground'),
+    visibility: z.enum(['private', 'public']).default('public'),
+})
+
+export const PlaygroundSchema = CreatePlaygroundInputSchema.extend({
     id: z.string(),
-    content: z.string(),
-    favorite: z.boolean(),
-    pinned: z.boolean(),
-    locked: z.boolean().optional(),
-    title: z.string(),
-    visibility: z.enum(['private', 'public']),
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
 })
@@ -83,7 +85,7 @@ export async function registerPlaygroundTools(server: McpServer) {
         'create_playground',
         'Create a new playground',
         {
-            PlaygroundSchema
+            playground: PlaygroundSchema
         },
         {
             openWorldHint: true

@@ -1,16 +1,18 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import {z} from "zod";
 
-export const BinSchema = z.object({
+export const CreateBinInputSchema = z.object({
+    title: z.string().default('My vuetify bin').describe('Title of your bin'),
+    language: z.string().default('markdown').describe('Language of your vuetify bin'),
+    content: z.string().describe('The content of you bin'),
+    favorite: z.boolean().default(false).describe('If you want to favorite this bin or not'),
+    pinned: z.boolean().default(false).describe('Pin bin'),
+    locked: z.boolean().default(false).describe('Lock bin'),
+    visibility:z.string().default('public').describe('Visibility of bin')
+})
+
+export const BinSchema = CreateBinInputSchema.extend({
     id: z.string(),
-    slug: z.string(),
-    title: z.string(),
-    language: z.string(),
-    content: z.string(),
-    favorite: z.boolean(),
-    pinned: z.boolean(),
-    locked: z.boolean(),
-    visibility: z.enum(['private', 'public']),
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
 })
@@ -22,7 +24,7 @@ export async function registerBinTools (server: McpServer) {
         'create_vuetify_bin',
         'Create vuetify bin',
         {
-            BinSchema
+            bin: CreateBinInputSchema
         },
         {
             openWorldHint:true
