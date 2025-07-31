@@ -28,7 +28,6 @@ export async function registerBinTools (server: McpServer) {
             pinned: z.boolean().default(false).describe('Pin bin'),
             locked: z.boolean().default(false).describe('Lock bin'),
             visibility: z.enum(['private', 'public']).default('public').describe('Visibility of bin'),
-            aiGenerated: z.boolean().default(true)
         },
         {
             openWorldHint:true

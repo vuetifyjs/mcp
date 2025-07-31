@@ -87,7 +87,6 @@ export async function registerPlaygroundTools(server: McpServer) {
             pinned: z.boolean().default(false).describe('Playground playground'),
             locked: z.boolean().default(false).describe('Lock playground'),
             visibility: z.enum(['private', 'public']).default('public'),
-            aiGenerated: z.boolean().default(true)
         },
         {
             openWorldHint: true
@@ -101,7 +100,9 @@ export async function registerPlaygroundTools(server: McpServer) {
                 const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
                 const playgroundResponse = await fetch(`${apiServer}/one/playgrounds`, {
                     method: 'POST',
-                    body: JSON.stringify({playground}),
+                    body: JSON.stringify({
+                        ...playground,
+                        aiGenerated: true}),
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${apiKey}`
