@@ -27,7 +27,7 @@ export async function registerBinTools (server: McpServer) {
             favorite: z.boolean().default(false).describe('If you want to favorite this bin or not'),
             pinned: z.boolean().default(false).describe('Pin bin'),
             locked: z.boolean().default(false).describe('Lock bin'),
-            visibility: z.string().default('public').describe('Visibility of bin'),
+            visibility: z.enum(['private', 'public']).default('public').describe('Visibility of bin'),
             aiGenerated: z.boolean().default(true)
         },
         {
