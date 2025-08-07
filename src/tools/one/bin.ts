@@ -24,9 +24,6 @@ export async function registerBinTools (server: McpServer) {
             title: z.string().default('My vuetify bin').describe('Title of your bin'),
             language: z.string().default('markdown').describe('Language of your vuetify bin'),
             content: z.string().describe('The content of you bin'),
-            favorite: z.boolean().default(false).describe('If you want to favorite this bin or not'),
-            pinned: z.boolean().default(false).describe('Pin bin'),
-            locked: z.boolean().default(false).describe('Lock bin'),
             visibility: z.enum(['private', 'public']).default('public').describe('Visibility of bin'),
         },
         {
