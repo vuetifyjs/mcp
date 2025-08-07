@@ -8,7 +8,6 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { registerApiTools } from '#tools/api'
 import { registerDocumentationTools } from '#tools/documentation'
 import { registerBinTools } from "./one/bin.js";
-import { registerPlaygroundTools} from "./one/playgrounds.js";
 
 export async function registerTools (server: McpServer) {
   await registerApiTools(server)
@@ -16,6 +15,5 @@ export async function registerTools (server: McpServer) {
   const apiKey = process.env.VUETIFY_API_KEY || ''
   if(apiKey.length) {
     await registerBinTools(server)
-    await registerPlaygroundTools(server)
   }
 }
