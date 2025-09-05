@@ -14,7 +14,7 @@ import packageJson from '../package.json' with { type: 'json' }
 import { registerPrompts } from '#prompts/index'
 import { registerResources } from '#resources/index'
 import { registerTools } from '#tools/index'
-import { AuthTransportWrapper } from '#transports/auth'
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
 const server = new McpServer({
   name: 'Vuetify',
@@ -38,8 +38,8 @@ await registerTools(server)
 
 async function main () {
   intro()
-  const auth = new AuthTransportWrapper()
-  await server.connect(auth)
+  const transport = new StdioServerTransport()
+  await server.connect(transport)
 }
 
 main().catch(error => {
