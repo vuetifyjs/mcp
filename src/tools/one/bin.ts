@@ -1,5 +1,5 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { z } from 'zod'
+import type {McpServer} from '@modelcontextprotocol/sdk/server/mcp.js'
+import {z} from 'zod'
 
 export interface Bin {
   id: string
@@ -15,7 +15,7 @@ export interface Bin {
   updatedAt: Date
 }
 
-export async function registerBinTools (server: McpServer) {
+export async function registerBinTools(server: McpServer) {
   server.tool(
     'create_vuetify_bin',
     'Create vuetify bin',
@@ -24,6 +24,9 @@ export async function registerBinTools (server: McpServer) {
       language: z.string().default('markdown').describe('Language of your vuetify bin'),
       content: z.string().describe('The content of you bin'),
       visibility: z.enum(['private', 'public']).default('public').describe('Visibility of bin'),
+      favorite: z.boolean().default(false),
+      pinned: z.boolean().default(false),
+      locked: z.boolean().default(false)
     },
     {
       openWorldHint: true,
@@ -35,11 +38,13 @@ export async function registerBinTools (server: McpServer) {
           throw new Error('Invalid or No Api Key provided')
         }
         const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
-        const binResponse = await fetch(`${apiServer}/mcp/bins`, {
+        const binResponse = await fetch(`${apiServer}/one/bins`, {
           method: 'POST',
           body: JSON.stringify({
-            ...bin,
-            aiGenerated: true,
+            bin: {
+              ...bin,
+              aiGenerated: true,
+            }
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -120,7 +125,8 @@ export async function registerBinTools (server: McpServer) {
           content: [{
             type: 'text',
             text: binText,
-          }] }
+          }]
+        }
       } catch (error: any) {
         return {
           isError: true,
@@ -141,7 +147,7 @@ export async function registerBinTools (server: McpServer) {
     {
       openWorldHint: true,
     },
-    async ({ id }) => {
+    async ({id}) => {
       try {
         const apiKey = process.env.VUETIFY_API_KEY || ''
 
@@ -162,7 +168,7 @@ export async function registerBinTools (server: McpServer) {
         }
 
         const data = await binResponse.json()
-        const { bin }: { bin: Bin } = data
+        const {bin}: { bin: Bin } = data
 
         return {
           content: [{
