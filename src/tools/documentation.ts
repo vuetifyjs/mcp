@@ -67,4 +67,16 @@ export async function registerDocumentationTools (server: McpServer) {
     'Get the README contents for @vuetify/one package from GitHub, including installation and usage instructions.',
     documentation.getVuetifyOneInstallationGuide,
   )
+
+  server.tool(
+    'get_vuetify0_installation_guide',
+    'Get the README contents for Vuetify0 from GitHub, including installation and usage instructions for unstyled components and composables.',
+    documentation.getVuetify0InstallationGuide,
+  )
+
+  server.tool(
+    'get_vuetify0_package_guide',
+    'Get the README contents for the @vuetify/v0 package from GitHub.',
+    documentation.getVuetify0PackageGuide,
+  )
 }

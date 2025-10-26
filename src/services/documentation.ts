@@ -7,6 +7,7 @@ import octokit from '#plugins/octokit'
 
 const VUETIFY_DEPENDENCIES = 'vue vuetify @mdi/font'
 const VITE_DEPENDENCIES = 'vite @vitejs/plugin-vue vite-plugin-vuetify unplugin-fonts'
+const VUETIFY0_DEPENDENCIES = 'vue @vuetify/v0'
 
 export const SSR_NOTE = `
   > **SSR Configuration**: When using Server-Side Rendering use *ssr: true*: \`createVuetify({ ssr: true })\`
@@ -328,6 +329,50 @@ export const INSTALLATION_PLATFORMS = {
       \`\`\`
 `,
   },
+  'vuetify0': {
+    name: 'Vuetify0 (@vuetify/v0)',
+    description: 'Installation guide for Vuetify0 - unstyled components and composables.',
+    markdown: `
+      # Vuetify0 (@vuetify/v0) Installation
+
+      Vuetify0 provides unstyled components, composables, and utilities as low-level primitives for building modern web applications and design systems.
+
+      # Dependencies
+      \`\`\`bash
+      [npm|pnpm|yarn|bun] install ${VUETIFY0_DEPENDENCIES}
+      \`\`\`
+
+      # Files
+      \`\`\`ts [src/plugins/vuetify0.ts]
+      import { createV0 } from '@vuetify/v0'
+
+      export default createV0()
+      \`\`\`
+      \`\`\`ts [src/main.ts]
+      import { createApp } from 'vue'
+      import App from './App.vue'
+      import v0 from './plugins/vuetify0'
+
+      const app = createApp(App)
+      app.use(v0).mount('#app')
+      \`\`\`
+
+      # Usage Example
+      \`\`\`vue
+      <template>
+        <Atom>
+          <h1>Hello Vuetify0</h1>
+        </Atom>
+      </template>
+
+      <script setup lang="ts">
+      import { Atom } from '@vuetify/v0'
+      </script>
+      \`\`\`
+
+      For more information, see the [Vuetify0 GitHub repository](https://github.com/vuetifyjs/0).
+    `,
+  },
 } as const
 
 export const UPGRADE_FROM_VERSIONS = {
@@ -548,6 +593,44 @@ export function createDocumentationService () {
           {
             type: 'text',
             text: `# @vuetify/one Documentation\n\nSource: https://github.com/vuetifyjs/one\n\n${data}`,
+          } as const,
+        ],
+      }
+    },
+    getVuetify0InstallationGuide: async () => {
+      const { data } = await octokit.rest.repos.getContent({
+        owner: 'vuetifyjs',
+        repo: '0',
+        path: 'README.md',
+        mediaType: {
+          format: 'raw',
+        },
+      })
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `# Vuetify0 Documentation\n\nSource: https://github.com/vuetifyjs/0\n\n${data}`,
+          } as const,
+        ],
+      }
+    },
+    getVuetify0PackageGuide: async () => {
+      const { data } = await octokit.rest.repos.getContent({
+        owner: 'vuetifyjs',
+        repo: '0',
+        path: 'packages/0/README.md',
+        mediaType: {
+          format: 'raw',
+        },
+      })
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `# @vuetify/v0 Package Documentation\n\nSource: https://github.com/vuetifyjs/0/tree/main/packages/0\n\n${data}`,
           } as const,
         ],
       }
