@@ -339,7 +339,7 @@ export const INSTALLATION_PLATFORMS = {
 
       # Dependencies
       \`\`\`bash
-      [npm|pnpm|yarn|bun] install ${VUETIFY0_DEPENDENCIES}
+      [npm|pnpm|yarn|bun|deno] install ${VUETIFY0_DEPENDENCIES}
       \`\`\`
 
       # Files
