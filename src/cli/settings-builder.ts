@@ -33,7 +33,7 @@ export const getSettingsPath = (ide: IDEId): string => {
   switch (ide) {
     case 'code':
     case 'code-insiders': {
-      return `mcp.servers.${SERVER_NAME}`
+      return `servers.${SERVER_NAME}`
     }
     default: {
       return `mcpServers.${SERVER_NAME}`
@@ -47,7 +47,7 @@ export const getSettingsBuilder = (ide: IDEId): string => {
   switch (ide) {
     case 'code':
     case 'code-insiders': {
-      return JSON.stringify({ mcp: { servers: { [SERVER_NAME]: serverConfig } } }, null, 2)
+      return JSON.stringify({ servers: { [SERVER_NAME]: serverConfig } }, null, 2)
     }
     default: {
       return JSON.stringify({ mcpServers: { [SERVER_NAME]: serverConfig } }, null, 2)

@@ -31,5 +31,4 @@ export const VSCODE_INSIDERS: KnownIDE = {
     win32: () => path.join(process.env.APPDATA!, 'Code - Insiders', 'User'),
     linux: () => path.join(homedir(), '.config', 'Code - Insiders', 'User'),
   },
-  settingsFile: 'settings.json',
 }
