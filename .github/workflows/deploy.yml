@@ -19,7 +19,7 @@ jobs:
       - uses: vuetifyjs/coolify-action@master
         with:
           imageName: mcp
-          dockerfilePath: ./apps/docs/Dockerfile
+          dockerfilePath: ./Dockerfile
           token: ${{ secrets.GITHUB_TOKEN  }}
           coolifyWebhook: ${{ secrets.COOLIFY_WEBHOOK }}
           coolifySecret: ${{ secrets.COOLIFY_TOKEN }}
