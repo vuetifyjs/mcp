@@ -13,17 +13,22 @@ async function setIdeSettings (ideInstance: DetectedIDE, remote?: boolean) {
   const configFilePath = resolve(ideInstance.settingsDir, ideInstance.settingsFile)
   const settingsPath = getSettingsPath(ideInstance.ide)
   const serverConfig = getServerConfig(undefined, remote)
+
+  let config = {}
   if (existsSync(configFilePath)) {
-    const fileContent = await readFile(configFilePath, { encoding: 'utf8' })
-    const existingConfig = parse(fileContent)
-    deepset(existingConfig, settingsPath, serverConfig)
-    await writeFile(configFilePath, prettyPrint(existingConfig))
-    return
-  } else {
-    const config = {}
-    deepset(config, settingsPath, serverConfig)
-    await writeFile(configFilePath, prettyPrint(config))
+    try {
+      const fileContent = await readFile(configFilePath, { encoding: 'utf8' })
+      const parsed = parse(fileContent)
+      if (parsed && typeof parsed === 'object') {
+        config = parsed
+      }
+    } catch {
+      console.error('Failed to parse existing config, creating new one')
+    }
   }
+
+  deepset(config, settingsPath, serverConfig)
+  await writeFile(configFilePath, prettyPrint(config))
 }
 
 export async function installGlobally (ides: DetectedIDE[], remote?: boolean) {
