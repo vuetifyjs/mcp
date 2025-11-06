@@ -15,6 +15,8 @@ import { registerPrompts } from '#prompts/index'
 import { registerResources } from '#resources/index'
 import { registerTools } from '#tools/index'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { HttpTransport } from '#transports/http'
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 
 const server = new McpServer({
   name: 'Vuetify',
@@ -36,9 +38,56 @@ await registerResources(server)
 await registerPrompts(server)
 await registerTools(server)
 
+function parseArgs () {
+  const args = process.argv.slice(2)
+  let transport = 'stdio'
+  let port = 3000
+  let host = 'localhost'
+  let path = '/mcp'
+  let stateless = false
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]
+    if (arg === '--transport' && i + 1 < args.length) {
+      transport = args[++i]
+    }
+    else if (arg === '--port' && i + 1 < args.length) {
+      port = parseInt(args[++i], 10)
+    }
+    else if (arg === '--host' && i + 1 < args.length) {
+      host = args[++i]
+    }
+    else if (arg === '--path' && i + 1 < args.length) {
+      path = args[++i]
+    }
+    else if (arg === '--stateless') {
+      stateless = true
+    }
+  }
+
+  return { transport, port, host, path, stateless }
+}
+
+function createTransport (options: ReturnType<typeof parseArgs>): Transport {
+  if (options.transport === 'http') {
+    return new HttpTransport({
+      port: options.port,
+      host: options.host,
+      path: options.path,
+      stateless: options.stateless,
+    })
+  }
+  return new StdioServerTransport()
+}
+
 async function main () {
-  intro()
-  const transport = new StdioServerTransport()
+  const options = parseArgs()
+
+  if (options.transport === 'stdio') {
+    intro()
+  }
+
+  const transport = createTransport(options)
   await server.connect(transport)
 }
 

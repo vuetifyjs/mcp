@@ -29,6 +29,27 @@ export const defaultConfig = {
   env,
 }
 
+export const httpConfig = {
+  command: 'npx',
+  args: [
+    '-y',
+    '@vuetify/mcp',
+    '--transport',
+    'http',
+  ],
+  env,
+}
+
+const wslHttpConfig = {
+  command: 'wsl.exe',
+  args: [
+    'sh',
+    '-c',
+    `${npx?.path} -y @vuetify/mcp --transport http`,
+  ],
+  env,
+}
+
 export const getSettingsPath = (ide: IDEId): string => {
   switch (ide) {
     case 'code':
@@ -43,14 +64,22 @@ export const getSettingsPath = (ide: IDEId): string => {
 
 export const serverConfig = npx?.wsl ? wslConfig : defaultConfig
 
-export const getSettingsBuilder = (ide: IDEId): string => {
+export function getServerConfig (transport?: 'stdio' | 'http') {
+  if (transport === 'http') {
+    return npx?.wsl ? wslHttpConfig : httpConfig
+  }
+  return serverConfig
+}
+
+export const getSettingsBuilder = (ide: IDEId, transport?: 'stdio' | 'http'): string => {
+  const config = getServerConfig(transport)
   switch (ide) {
     case 'code':
     case 'code-insiders': {
-      return JSON.stringify({ servers: { [SERVER_NAME]: serverConfig } }, null, 2)
+      return JSON.stringify({ servers: { [SERVER_NAME]: config } }, null, 2)
     }
     default: {
-      return JSON.stringify({ mcpServers: { [SERVER_NAME]: serverConfig } }, null, 2)
+      return JSON.stringify({ mcpServers: { [SERVER_NAME]: config } }, null, 2)
     }
   }
 }

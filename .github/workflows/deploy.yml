@@ -1,0 +1,19 @@
+name: Deploy to Coolify
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Coolify
+        uses: vuetifyjs/coolify-action@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          imageName: mcp
+          coolifyWebhook: ${{ secrets.COOLIFY_WEBHOOK }}
+          coolifySecret: ${{ secrets.COOLIFY_SECRET }}

@@ -18,6 +18,26 @@ function setupEnvironment (args) {
   return env
 }
 
+function buildServerArgs (args) {
+  const serverArgs = []
+  if (args.transport) {
+    serverArgs.push('--transport', args.transport)
+  }
+  if (args.port) {
+    serverArgs.push('--port', args.port)
+  }
+  if (args.host) {
+    serverArgs.push('--host', args.host)
+  }
+  if (args.path) {
+    serverArgs.push('--path', args.path)
+  }
+  if (args.stateless) {
+    serverArgs.push('--stateless')
+  }
+  return serverArgs
+}
+
 const defaultArgs = {
   'api-key': {
     type: 'string',
@@ -28,6 +48,30 @@ const defaultArgs = {
     type: 'string',
     description: 'GitHub token for accessing documentation',
     valueHint: 'TOKEN',
+  },
+  'transport': {
+    type: 'string',
+    description: 'Transport type (stdio or http)',
+    valueHint: 'TYPE',
+  },
+  'port': {
+    type: 'string',
+    description: 'Port for HTTP transport',
+    valueHint: 'PORT',
+  },
+  'host': {
+    type: 'string',
+    description: 'Host for HTTP transport',
+    valueHint: 'HOST',
+  },
+  'path': {
+    type: 'string',
+    description: 'Path for HTTP transport',
+    valueHint: 'PATH',
+  },
+  'stateless': {
+    type: 'boolean',
+    description: 'Run HTTP transport in stateless mode',
   },
 }
 
@@ -41,8 +85,9 @@ const config = defineCommand({
     const serverPath = path.resolve(__dirname, '../dist/cli/index.js')
 
     const env = setupEnvironment(args)
+    const serverArgs = buildServerArgs(args)
 
-    const server = spawn('node', [serverPath], {
+    const server = spawn('node', [serverPath, ...serverArgs], {
       stdio: 'inherit',
       env,
       shell: process.platform === 'win32',
@@ -81,8 +126,9 @@ const main = defineCommand({
     const serverPath = path.resolve(__dirname, '../dist/index.js')
 
     const env = setupEnvironment(args)
+    const serverArgs = buildServerArgs(args)
 
-    const server = spawn('node', [serverPath], {
+    const server = spawn('node', [serverPath, ...serverArgs], {
       stdio: 'inherit',
       env,
       shell: process.platform === 'win32',

@@ -124,6 +124,34 @@ If you prefer to run the MCP server from Windows using WSL:
 
 Replace `<user>` and `<version>` with your actual WSL username and Node.js version.
 
+### HTTP Transport
+
+The server supports HTTP transport for stateless or persistent connections:
+
+```bash
+# Start with HTTP transport
+npx -y @vuetify/mcp --transport=http --port=3000 --stateless
+```
+
+**HTTP Configuration:**
+
+```json
+{
+  "mcpServers": {
+    "vuetify": {
+      "url": "http://localhost:3000/mcp"
+    }
+  }
+}
+```
+
+**Available Arguments:**
+- `--transport=http` - Use HTTP instead of stdio
+- `--port=3000` - Port number (default: 3000)
+- `--host=localhost` - Host address (default: localhost)
+- `--path=/mcp` - Endpoint path (default: /mcp)
+- `--stateless` - Run in stateless mode (no session management)
+
 ## Features
 
 The Vuetify MCP server provides a comprehensive set of tools to enhance your development experience. These tools are automatically available to any MCP-compatible client once the server is configured.
@@ -148,20 +176,22 @@ The Vuetify MCP server follows a modular architecture that separates concerns an
 
 ```text
 vuetify-mcp/
+├── bin/
+│   └── cli.js          # CLI entry point with argument handling
 ├── src/
-│   ├── index.ts        # Main entry point and server initialization
+│   ├── index.ts        # Main server entry point
 │   ├── services/       # Core business logic
-│   │   ├── auth.ts        # Authentication service for API access
-│   │   ├── component.ts   # Component-related service for API information
-│   │   ├── documentation.ts # Documentation-related service for guides and FAQs
-│   └── tools/          # MCP tool definitions
-│       ├── component.ts   # Component-related tools (API, props, etc.)
-│       ├── documentation.ts # Documentation-related tools (guides, FAQs, etc.)
-│   └── transports/     # Transport wrappers
-│       ├── auth.ts        # Authentication transport wrapper
-├── package.json        # Project dependencies
-├── tsconfig.json       # TypeScript configuration
-└── README.md           # This file
+│   │   ├── api.ts         # API-related services
+│   │   ├── documentation.ts # Documentation services
+│   ├── tools/          # MCP tool definitions
+│   │   ├── api.ts         # API tools
+│   │   ├── documentation.ts # Documentation tools
+│   ├── transports/     # Transport implementations
+│   │   └── http.ts        # HTTP transport with stateless/stateful modes
+│   └── cli/            # Interactive CLI configuration
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
 This structure makes it easy to locate specific functionality and extend the server with new features.
@@ -200,7 +230,7 @@ The implementation follows the standard MCP patterns with:
 
 - Server initialization using `McpServer` class
 - Parameter validation with Zod schemas for type safety
-- StdioServerTransport for communication between the client and server
+- Multiple transport options: stdio (default) and HTTP with session management
 
 ### Example Tool Implementation
 
