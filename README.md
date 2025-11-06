@@ -81,38 +81,55 @@ Below are the locations and JSON snippets for each supported environment. Copy t
 | Trae     | `<user home>/.config/Trae/User/mcp.json`                                                                                                       | `mcpServers.vuetify-mcp`  |
 | Windsurf | `<user home>/.config/Windsurf/User/mcp.json`                                                                                                   | `mcpServers.vuetify-mcp`  |
 
-**Example JSON snippet for most IDEs (non-VS Code):**
+**Local stdio (most IDEs):**
 
 ```json
 {
   "mcpServers": {
-    "vuetify": {
+    "vuetify-mcp": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@vuetify/mcp"
-      ],
+      "args": ["-y", "@vuetify/mcp"]
     }
   }
 }
 ```
 
-**Example JSON snippet for VSCode:**
+**Hosted remote server (most IDEs):**
 
 ```json
 {
-  "mcp": {
-    "servers": {
-      "vuetify-mcp": {
-        "command": "npx",
-        "args": ["-y", "@vuetify/mcp"],
-        "env": {
-          // Optional: API key for accessing premium Vuetify features
-          "VUETIFY_API_KEY": "<YOUR_API_KEY>",
-          // Optional: GitHub token for accessing private repositories
-          "GITHUB_TOKEN": "<YOUR_GITHUB_TOKEN>"
-        }
+  "mcpServers": {
+    "vuetify-mcp": {
+      "url": "https://mcp.vuetifyjs.com/mcp"
+    }
+  }
+}
+```
+
+**VSCode local:**
+
+```json
+{
+  "servers": {
+    "vuetify-mcp": {
+      "command": "npx",
+      "args": ["-y", "@vuetify/mcp"],
+      "env": {
+        "VUETIFY_API_KEY": "<YOUR_API_KEY>",
+        "GITHUB_TOKEN": "<YOUR_GITHUB_TOKEN>"
       }
+    }
+  }
+}
+```
+
+**VSCode remote:**
+
+```json
+{
+  "servers": {
+    "vuetify-mcp": {
+      "url": "https://mcp.vuetifyjs.com/mcp"
     }
   }
 }
@@ -139,33 +156,33 @@ If you prefer to run the MCP server from Windows using WSL:
 
 Replace `<user>` and `<version>` with your actual WSL username and Node.js version.
 
-### HTTP Transport
+### Self-Hosted HTTP Server
 
-The server supports HTTP transport for stateless or persistent connections:
+Run your own HTTP server for remote access:
 
 ```bash
 # Start with HTTP transport
-npx -y @vuetify/mcp --transport=http --port=3000 --stateless
+npx -y @vuetify/mcp --transport=http --port=3000 --host=0.0.0.0 --stateless
 ```
 
-**HTTP Configuration:**
+**Configuration:**
 
 ```json
 {
   "mcpServers": {
-    "vuetify": {
-      "url": "http://localhost:3000/mcp"
+    "vuetify-mcp": {
+      "url": "http://your-server:3000/mcp"
     }
   }
 }
 ```
 
-**Available Arguments:**
-- `--transport=http` - Use HTTP instead of stdio
+**CLI Arguments:**
+- `--transport=http` - Enable HTTP transport
 - `--port=3000` - Port number (default: 3000)
-- `--host=localhost` - Host address (default: localhost)
+- `--host=0.0.0.0` - Host address (default: localhost)
 - `--path=/mcp` - Endpoint path (default: /mcp)
-- `--stateless` - Run in stateless mode (no session management)
+- `--stateless` - Stateless mode (recommended for public servers)
 
 ## Features
 
