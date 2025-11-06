@@ -98,6 +98,8 @@ export class HttpTransport implements Transport {
     req: IncomingMessage,
     res: ServerResponse,
   ): Promise<void> {
+    console.error(`[${new Date().toISOString()}] ${req.method} ${req.url}`)
+
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
       res.writeHead(204, {
@@ -109,10 +111,29 @@ export class HttpTransport implements Transport {
       return
     }
 
+    // Health check endpoint
+    if (req.url === '/health' && req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ status: 'ok' }))
+      return
+    }
+
+    // Root endpoint - info page
+    if (req.url === '/' && req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({
+        name: 'Vuetify MCP Server',
+        version: '0.1.1',
+        mcp_endpoint: this.options.path,
+        health_endpoint: '/health'
+      }))
+      return
+    }
+
     // Only handle requests to the MCP path
     if (req.url !== this.options.path) {
       res.writeHead(404, { 'Content-Type': 'text/plain' })
-      res.end('Not Found')
+      res.end(`Not Found. Try ${this.options.path} for MCP endpoint or /health for health check.`)
       return
     }
 
