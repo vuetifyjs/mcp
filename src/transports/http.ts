@@ -125,7 +125,7 @@ export class HttpTransport implements Transport {
         name: 'Vuetify MCP Server',
         version: '0.1.1',
         mcp_endpoint: this.options.path,
-        health_endpoint: '/health'
+        health_endpoint: '/health',
       }))
       return
     }

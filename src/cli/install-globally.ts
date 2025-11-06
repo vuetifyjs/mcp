@@ -6,13 +6,13 @@ import { getServerConfig, getSettingsPath } from './settings-builder.js'
 import type { DetectedIDE } from './ide/types.js'
 import { deepset } from './utils/deepset.js'
 
-async function setIdeSettings (ideInstance: DetectedIDE) {
+async function setIdeSettings (ideInstance: DetectedIDE, remote?: boolean) {
   if (!ideInstance.settingsDir || !existsSync(ideInstance.settingsDir)) {
     return
   }
   const configFilePath = resolve(ideInstance.settingsDir, ideInstance.settingsFile)
   const settingsPath = getSettingsPath(ideInstance.ide)
-  const serverConfig = getServerConfig()
+  const serverConfig = getServerConfig(undefined, remote)
   if (existsSync(configFilePath)) {
     const fileContent = await readFile(configFilePath, { encoding: 'utf8' })
     const existingConfig = parse(fileContent)
@@ -26,9 +26,9 @@ async function setIdeSettings (ideInstance: DetectedIDE) {
   }
 }
 
-export async function installGlobally (ides: DetectedIDE[]) {
+export async function installGlobally (ides: DetectedIDE[], remote?: boolean) {
   for (const ide of ides) {
-    await setIdeSettings(ide)
+    await setIdeSettings(ide, remote)
   }
 }
 

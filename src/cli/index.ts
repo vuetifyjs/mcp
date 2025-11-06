@@ -46,7 +46,7 @@ const shouldInstall = await confirm({
 })
 
 if (shouldInstall) {
-  await installGlobally([idesToInstall as DetectedIDE])
+  await installGlobally([idesToInstall as DetectedIDE], useRemote)
   outro('IDE settings updated successfully')
 } else {
   outro('Installation cancelled')
