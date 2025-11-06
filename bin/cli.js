@@ -35,6 +35,9 @@ function buildServerArgs (args) {
   if (args.stateless) {
     serverArgs.push('--stateless')
   }
+  if (args.remote) {
+    serverArgs.push('--remote')
+  }
   return serverArgs
 }
 
@@ -72,6 +75,10 @@ const defaultArgs = {
   'stateless': {
     type: 'boolean',
     description: 'Run HTTP transport in stateless mode',
+  },
+  'remote': {
+    type: 'boolean',
+    description: 'Use hosted MCP server at https://mcp.vuetifyjs.com',
   },
 }
 

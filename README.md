@@ -26,7 +26,18 @@ By connecting your development environment to the Vuetify MCP server, you gain A
 
 ## Quick Start
 
-Run Vuetify MCP with a single command:
+### Hosted HTTP Server (Easiest)
+
+Use the hosted MCP server directly:
+
+```bash
+# Claude Desktop
+claude mcp add --transport http vuetify-mcp https://mcp.vuetifyjs.com/mcp
+```
+
+### Local Installation
+
+Run Vuetify MCP locally:
 
 ```bash
 # Start the Vuetify MCP server
@@ -44,7 +55,10 @@ You can configure the Vuetify MCP server in your IDE or client by running the in
 The interactive CLI provides the simplest way to configure your environment:
 
 ```bash
-# Run the configuration helper
+# Configure for hosted remote server
+npx -y @vuetify/mcp config --remote
+
+# Or configure for local installation
 npx -y @vuetify/mcp config
 ```
 
@@ -53,6 +67,7 @@ The CLI will:
 1. Detect supported IDEs on your system (VS Code, Claude, Cursor, Trae, Windsurf)
 2. Prompt you if multiple IDEs are found
 3. Apply the necessary settings automatically to your selected environment
+4. Use the hosted server (with `--remote`) or local installation
 
 ### Manual Configuration
 

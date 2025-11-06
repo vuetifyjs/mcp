@@ -7,6 +7,8 @@ import { installGlobally } from './install-globally.js'
 import type { DetectedIDE } from './ide/types.js'
 import { npx } from './settings-builder.js'
 
+const useRemote = process.argv.includes('--remote')
+
 const ides = await detectIDEs()
 
 if (ides.length === 0) {
@@ -29,11 +31,11 @@ if (ides.length === 1) {
 }
 
 if (idesToInstall === null) {
-  config()
+  config(undefined, useRemote)
   process.exit(0)
 }
 
-config(idesToInstall as DetectedIDE)
+config(idesToInstall as DetectedIDE, useRemote)
 
 if ((!npx || !npx?.pure) && (idesToInstall as DetectedIDE).ide === 'claude') {
   log.warn(`Claude probably will fail with resolving your \`npx\`. ${link('See more', 'https://github.com/modelcontextprotocol/servers/issues/64#issuecomment-2878569805')}`)

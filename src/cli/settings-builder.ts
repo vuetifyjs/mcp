@@ -62,17 +62,23 @@ export const getSettingsPath = (ide: IDEId): string => {
   }
 }
 
-export const serverConfig = npx?.wsl ? wslConfig : defaultConfig
+export const remoteConfig = {
+  url: 'https://mcp.vuetifyjs.com/mcp',
+}
 
-export function getServerConfig (transport?: 'stdio' | 'http') {
+export function getServerConfig (transport?: 'stdio' | 'http', remote?: boolean) {
+  // Remote always takes precedence
+  if (remote) {
+    return remoteConfig
+  }
   if (transport === 'http') {
     return npx?.wsl ? wslHttpConfig : httpConfig
   }
-  return serverConfig
+  return npx?.wsl ? wslConfig : defaultConfig
 }
 
-export const getSettingsBuilder = (ide: IDEId, transport?: 'stdio' | 'http'): string => {
-  const config = getServerConfig(transport)
+export const getSettingsBuilder = (ide: IDEId, transport?: 'stdio' | 'http', remote?: boolean): string => {
+  const config = getServerConfig(transport, remote)
   switch (ide) {
     case 'code':
     case 'code-insiders': {

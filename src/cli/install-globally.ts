@@ -2,7 +2,7 @@ import { parse } from 'jsonc-parser'
 import { writeFile, readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { resolve } from 'pathe'
-import { serverConfig, getSettingsPath } from './settings-builder.js'
+import { getServerConfig, getSettingsPath } from './settings-builder.js'
 import type { DetectedIDE } from './ide/types.js'
 import { deepset } from './utils/deepset.js'
 
@@ -12,6 +12,7 @@ async function setIdeSettings (ideInstance: DetectedIDE) {
   }
   const configFilePath = resolve(ideInstance.settingsDir, ideInstance.settingsFile)
   const settingsPath = getSettingsPath(ideInstance.ide)
+  const serverConfig = getServerConfig()
   if (existsSync(configFilePath)) {
     const fileContent = await readFile(configFilePath, { encoding: 'utf8' })
     const existingConfig = parse(fileContent)

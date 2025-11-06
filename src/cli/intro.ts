@@ -25,7 +25,7 @@ export const intro = (): void => {
   console.warn(startMessage)
 }
 
-export const config = (ide: DetectedIDE = defaultIde): void => {
-  const message = `\n${configMessage(ide)}\n\n${getSettingsBuilder(ide.ide)}`
+export const config = (ide: DetectedIDE = defaultIde, remote?: boolean): void => {
+  const message = `\n${configMessage(ide)}\n\n${getSettingsBuilder(ide.ide, undefined, remote)}`
   console.warn(message)
 }
