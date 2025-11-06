@@ -7,13 +7,19 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: Production
+    permissions:
+      contents: read
+      packages: write
+      deployments: write
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to Coolify
-        uses: vuetifyjs/coolify-action@master
+      - uses: actions/checkout@v5
+      - uses: vuetifyjs/setup-action@master
+      - run: pnpm run build
+      - uses: vuetifyjs/coolify-action@master
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           imageName: mcp
+          dockerfilePath: ./apps/docs/Dockerfile
+          token: ${{ secrets.GITHUB_TOKEN  }}
           coolifyWebhook: ${{ secrets.COOLIFY_WEBHOOK }}
-          coolifySecret: ${{ secrets.COOLIFY_SECRET }}
+          coolifySecret: ${{ secrets.COOLIFY_TOKEN }}
