@@ -21,6 +21,7 @@ This MCP server enables IDEs and other Model Context clients to assist with:
 - Creating common UI layouts and patterns following best practices
 - Providing comprehensive information about Vuetify features and APIs
 - Accessing installation guides, FAQs, and release notes without leaving your IDE
+- Working with @vuetify/v0 composables and headless components for building custom design systems
 
 By connecting your development environment to the Vuetify MCP server, you gain AI-powered assistance that understands Vuetify's component structure, styling conventions, and implementation details.
 
@@ -201,6 +202,18 @@ The Vuetify MCP server provides a comprehensive set of tools to enhance your dev
 - `get_exposed_exports`: Get a list of exports from the Vuetify npm package, useful for understanding what can be imported directly.
 - `get_frequently_asked_questions`: Get the FAQ section from the Vuetify docs, providing answers to common questions and issues.
 - `get_release_notes_by_version`: Get release notes for one or more Vuetify versions, helping you understand changes between versions.
+- `get_vuetify_one_installation_guide`: Get the README contents for @vuetify/one package from GitHub.
+
+### Vuetify0 (@vuetify/v0) Tools
+
+Support for @vuetify/v0, a headless meta-framework providing unstyled components and composables for building design systems:
+
+- `get_vuetify0_installation_guide`: Get installation and usage instructions for @vuetify/v0 from GitHub.
+- `get_vuetify0_package_guide`: Get package-specific documentation for @vuetify/v0.
+- `get_vuetify0_composable_list`: List all 28+ composables organized by category (foundation, registration, selection, forms, system, plugins, transformers).
+- `get_vuetify0_component_list`: List all 8 headless components (Atom, Avatar, ExpansionPanel, Group, Popover, Selection, Single, Step).
+- `get_vuetify0_composable_guide`: Get detailed documentation and source code for specific composables.
+- `get_vuetify0_component_guide`: Get detailed documentation and source code for specific components.
 
 ## Project Structure
 
@@ -215,9 +228,10 @@ vuetify-mcp/
 │   ├── services/       # Core business logic
 │   │   ├── api.ts         # API-related services
 │   │   ├── documentation.ts # Documentation services
+│   │   └── vuetify0.ts    # @vuetify/v0 services
 │   ├── tools/          # MCP tool definitions
 │   │   ├── api.ts         # API tools
-│   │   ├── documentation.ts # Documentation tools
+│   │   ├── documentation.ts # Documentation tools (includes @vuetify/v0)
 │   ├── transports/     # Transport implementations
 │   │   └── http.ts        # HTTP transport with stateless/stateful modes
 │   └── cli/            # Interactive CLI configuration

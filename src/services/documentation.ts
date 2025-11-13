@@ -328,6 +328,80 @@ export const INSTALLATION_PLATFORMS = {
       \`\`\`
 `,
   },
+  'vuetify0': {
+    name: 'Vuetify0 (@vuetify/v0)',
+    description: 'Installation guide for @vuetify/v0 - a headless meta-framework for building UI libraries.',
+    markdown: `
+      # @vuetify/v0 Installation
+
+      @vuetify/v0 is a headless meta-framework providing unstyled components and composables for building design systems.
+
+      # Dependencies
+      \`\`\`bash
+      [npm|pnpm|yarn|bun] install vue @vuetify/v0
+      \`\`\`
+
+      # Basic Setup
+      \`\`\`ts [src/main.ts]
+      import { createApp } from 'vue'
+      import App from './App.vue'
+
+      const app = createApp(App)
+      app.mount('#app')
+      \`\`\`
+
+      # Usage Example
+      \`\`\`vue [src/components/Example.vue]
+      <script setup lang="ts">
+      import { createSelection } from '@vuetify/v0'
+
+      const selection = createSelection({
+        mandatory: true,
+        multiple: true
+      })
+
+      // Register items with the selection
+      selection.onboard([
+        { id: 'item-1', value: 'Item 1' },
+        { id: 'item-2', value: 'Item 2', disabled: true },
+        { id: 'item-3', value: 'Item 3' },
+      ])
+
+      // Select items
+      selection.select('item-1')
+      selection.select('item-3')
+      </script>
+
+      <template>
+        <div>
+          <p>Selected: {{ selection.selectedIds.size }}</p>
+          <button
+            v-for="ticket in selection.tickets.value"
+            :key="ticket.id"
+            @click="ticket.toggle()"
+            :class="{ selected: ticket.isSelected }"
+            :disabled="ticket.disabled"
+          >
+            {{ ticket.value }}
+          </button>
+        </div>
+      </template>
+      \`\`\`
+
+      # Available Composables
+      - Foundation: createContext, createTrinity, createPlugin
+      - Registration: useRegistry, useProxyRegistry, useQueue, useTimeline, useTokens
+      - Selection: createSelection, useSelection, createGroup, useGroup, createSingle, useSingle, createStep, useStep, useFilter
+      - Forms: useForm, useProxyModel
+      - System: useEventListener, useIntersectionObserver, useKeydown, useMutationObserver, useResizeObserver
+      - Plugins: useBreakpoints, useFeatures, useHydration, useLocale, useLogger, usePermissions, useStorage, useTheme
+      - Transformers: toArray, toReactive
+
+      # Documentation
+      - Website: https://0.vuetifyjs.com/
+      - GitHub: https://github.com/vuetifyjs/0
+`,
+  },
 } as const
 
 export const UPGRADE_FROM_VERSIONS = {
