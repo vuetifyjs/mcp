@@ -137,6 +137,12 @@ export class HttpTransport implements Transport {
       return
     }
 
+    // Workaround: Ensure Accept header includes text/event-stream for SSE
+    // Some clients (e.g., Claude Code) may not send the correct Accept header
+    if (!req.headers.accept?.includes('text/event-stream')) {
+      req.headers.accept = 'application/json, text/event-stream'
+    }
+
     // For POST requests, parse the body first
     if (req.method === 'POST') {
       let body = ''
