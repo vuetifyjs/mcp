@@ -10,12 +10,15 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
+import { RateLimiter } from '../utils/rate-limiter.js'
+import type { RateLimiterOptions } from '../utils/rate-limiter.js'
 
 export interface HttpTransportOptions {
   port?: number
   host?: string
   path?: string
   stateless?: boolean
+  rateLimit: RateLimiterOptions
 }
 
 export class HttpTransport implements Transport {
@@ -26,23 +29,31 @@ export class HttpTransport implements Transport {
   private streamableTransport: StreamableHTTPServerTransport
   private httpServer: ReturnType<typeof createServer> | null = null
   private options: Required<Omit<HttpTransportOptions, 'stateless'>> & { stateless: boolean }
+  private rateLimiter: RateLimiter
 
-  constructor (options: HttpTransportOptions = {}) {
+  constructor (options: Partial<HttpTransportOptions> & { rateLimit: RateLimiterOptions }) {
     this.options = {
       port: options.port ?? 3000,
       host: options.host ?? 'localhost',
       path: options.path ?? '/mcp',
       stateless: options.stateless ?? false,
+      rateLimit: options.rateLimit,
     }
 
     // Create streamable transport with session management
     this.streamableTransport = new StreamableHTTPServerTransport({
       sessionIdGenerator: this.options.stateless ? undefined : () => randomUUID(),
     })
+
+    // Initialize rate limiter
+    this.rateLimiter = new RateLimiter(this.options.rateLimit)
   }
 
   async close (): Promise<void> {
     await this.streamableTransport.close()
+
+    // Clean up rate limiter
+    this.rateLimiter.destroy()
 
     if (this.httpServer) {
       return new Promise((resolve, reject) => {
@@ -94,6 +105,21 @@ export class HttpTransport implements Transport {
     })
   }
 
+  private getClientIdentifier (req: IncomingMessage): string {
+    // Use session ID if available (for stateful mode)
+    const sessionId = req.headers['mcp-session-id']
+    if (sessionId && typeof sessionId === 'string') {
+      return `session:${sessionId}`
+    }
+
+    // Fall back to IP address
+    const forwarded = req.headers['x-forwarded-for']
+    const ip = forwarded
+      ? (typeof forwarded === 'string' ? forwarded.split(',')[0] : forwarded[0])
+      : req.socket.remoteAddress
+    return `ip:${ip ?? 'unknown'}`
+  }
+
   private async handleRequest (
     req: IncomingMessage,
     res: ServerResponse,
@@ -109,6 +135,32 @@ export class HttpTransport implements Transport {
       })
       res.end()
       return
+    }
+
+    // Check rate limit (skip if VUETIFY_API_KEY is defined, or for health check and root endpoints)
+    const hasApiKey = !!process.env.VUETIFY_API_KEY
+    if (!hasApiKey && req.url !== '/health' && req.url !== '/') {
+      const clientId = this.getClientIdentifier(req)
+      const rateLimitResult = this.rateLimiter.check(clientId)
+
+      // Always add rate limit headers
+      res.setHeader('X-RateLimit-Limit', this.options.rateLimit.maxRequests.toString())
+      res.setHeader('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
+      res.setHeader('X-RateLimit-Reset', new Date(rateLimitResult.resetTime).toISOString())
+
+      if (!rateLimitResult.allowed) {
+        res.writeHead(429, {
+          'Content-Type': 'application/json',
+          'Retry-After': rateLimitResult.retryAfter?.toString() ?? '60',
+        })
+        res.end(JSON.stringify({
+          error: 'Too Many Requests',
+          message: 'Rate limit exceeded. Please try again later.',
+          retryAfter: rateLimitResult.retryAfter,
+          resetTime: new Date(rateLimitResult.resetTime).toISOString(),
+        }))
+        return
+      }
     }
 
     // Health check endpoint
