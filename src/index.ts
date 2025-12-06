@@ -50,17 +50,13 @@ function parseArgs () {
     const arg = args[i]
     if (arg === '--transport' && i + 1 < args.length) {
       transport = args[++i]
-    }
-    else if (arg === '--port' && i + 1 < args.length) {
-      port = parseInt(args[++i], 10)
-    }
-    else if (arg === '--host' && i + 1 < args.length) {
+    } else if (arg === '--port' && i + 1 < args.length) {
+      port = Number.parseInt(args[++i], 10)
+    } else if (arg === '--host' && i + 1 < args.length) {
       host = args[++i]
-    }
-    else if (arg === '--path' && i + 1 < args.length) {
+    } else if (arg === '--path' && i + 1 < args.length) {
       path = args[++i]
-    }
-    else if (arg === '--stateless') {
+    } else if (arg === '--stateless') {
       stateless = true
     }
   }
@@ -75,6 +71,10 @@ function createTransport (options: ReturnType<typeof parseArgs>): Transport {
       host: options.host,
       path: options.path,
       stateless: options.stateless,
+      rateLimit: {
+        maxRequests: 100,
+        windowMs: 60,
+      },
     })
   }
   return new StdioServerTransport()
