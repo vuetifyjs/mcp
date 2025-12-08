@@ -70,7 +70,7 @@ export async function registerBinTools (server: McpServer) {
         return {
           content: [{
             type: 'text',
-            text: `Successfully created bin ${createdBin.title}, you can view it at https://bin.vuetifyjs.com/${createdBin.id}`,
+            text: `Successfully created bin ${createdBin.title}, you can view it at https://bin.vuetifyjs.com/bins/${createdBin.id}`,
           }],
         }
       } catch (error: any) {
