@@ -40,6 +40,7 @@ export const VUETIFY0_COMPOSABLES = {
       createStep: 'Creates a step/stepper instance for managing multi-step processes',
       useStep: 'Returns the current step context instance',
       useFilter: 'Filter arrays based on search queries',
+      usePagination: 'Lightweight pagination for navigating through pages with next/prev/first/last methods',
     },
   },
   forms: {
@@ -58,7 +59,10 @@ export const VUETIFY0_COMPOSABLES = {
       useIntersectionObserver: 'Detect element visibility changes',
       useKeydown: 'Keyboard event handling',
       useMutationObserver: 'Observe DOM mutations',
+      useOverflow: 'Computes how many items fit in a container based on available width',
       useResizeObserver: 'Detect element dimension changes',
+      useToggleScope: 'Conditionally manages an effect scope based on a reactive boolean',
+      useVirtual: 'Virtual scrolling for efficiently rendering large lists',
     },
   },
   plugins: {
@@ -91,6 +95,7 @@ export const VUETIFY0_COMPONENTS = {
   Avatar: 'Image loading with fallback system',
   ExpansionPanel: 'Expandable panel component',
   Group: 'Component grouping/container',
+  Pagination: 'Pagination controls with Root, Item, Ellipsis, First, Last, Next, Prev sub-components',
   Popover: 'Popover overlay component',
   Selection: 'Selection handling component',
   Single: 'Single item component',
@@ -157,7 +162,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 28+ tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
+            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 32+ tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
           } as const,
         ],
       }
@@ -172,7 +177,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Components\n\nVuetify0 provides 8 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
+            text: `# @vuetify/v0 Components\n\nVuetify0 provides 9 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
           } as const,
         ],
       }
