@@ -107,6 +107,44 @@ Below are the locations and JSON snippets for each supported environment. Copy t
 }
 ```
 
+### Authentication
+
+Some tools (like creating bins) require a Vuetify API key. How you pass the key depends on your transport type.
+
+**Local stdio servers** use environment variables:
+
+```json
+{
+  "mcpServers": {
+    "vuetify-mcp": {
+      "command": "npx",
+      "args": ["-y", "@vuetify/mcp"],
+      "env": {
+        "VUETIFY_API_KEY": "<YOUR_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+**HTTP/remote servers** require headers (env vars don't work for HTTP transport):
+
+```json
+{
+  "mcpServers": {
+    "vuetify-mcp": {
+      "type": "http",
+      "url": "https://mcp.vuetifyjs.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+The server accepts either `Authorization: Bearer <token>` or `X-Vuetify-Api-Key: <token>` headers.
+
 **VSCode local:**
 
 ```json
