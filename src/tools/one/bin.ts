@@ -1,4 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js'
+import type { ServerRequest, ServerNotification } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
 
 export interface Bin {
@@ -15,10 +17,20 @@ export interface Bin {
   updatedAt: Date
 }
 
+type Extra = RequestHandlerExtra<ServerRequest, ServerNotification>
+
+function getApiKey (extra: Extra): string {
+  const key = extra.authInfo?.token || process.env.VUETIFY_API_KEY || ''
+  if (!key) {
+    throw new Error('No API key provided. Set VUETIFY_API_KEY env var or pass Authorization: Bearer header.')
+  }
+  return key
+}
+
 export async function registerBinTools (server: McpServer) {
   server.tool(
     'create_vuetify_bin',
-    'Create vuetify bin',
+    'Create a Vuetify bin. Requires VUETIFY_API_KEY.',
     {
       title: z.string().default('My vuetify bin').describe('Title of your bin'),
       language: z.string().default('markdown').describe('Language of your vuetify bin'),
@@ -31,13 +43,10 @@ export async function registerBinTools (server: McpServer) {
     {
       openWorldHint: true,
     },
-    async bin => {
+    async (bin, extra) => {
       try {
-        const apiKey = process.env.VUETIFY_API_KEY || ''
-        if (!apiKey) {
-          throw new Error('Invalid or No Api Key provided')
-        }
-        const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
+        const apiKey = getApiKey(extra)
+        const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
         const binResponse = await fetch(`${apiServer}/one/bins`, {
           method: 'POST',
           body: JSON.stringify({
@@ -77,19 +86,15 @@ export async function registerBinTools (server: McpServer) {
 
   server.tool(
     'get_all_bins',
-    'Get all a users bins',
+    'Get all user bins. Requires VUETIFY_API_KEY.',
+    {},
     {
       openWorldHint: true,
     },
-    async () => {
+    async (_args, extra) => {
       try {
-        const apiKey = process.env.VUETIFY_API_KEY || ''
-
-        if (!apiKey) {
-          throw new Error('Invalid API key')
-        }
-
-        const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
+        const apiKey = getApiKey(extra)
+        const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
         const binResponse = await fetch(`${apiServer}/one/bins`, {
           headers: {
             'Content-Type': 'application/json',
@@ -140,22 +145,17 @@ export async function registerBinTools (server: McpServer) {
 
   server.tool(
     'get_bin',
-    'Get bin',
+    'Get a bin by ID. Requires VUETIFY_API_KEY.',
     {
       id: z.string(),
     },
     {
       openWorldHint: true,
     },
-    async ({ id }) => {
+    async ({ id }, extra) => {
       try {
-        const apiKey = process.env.VUETIFY_API_KEY || ''
-
-        if (!apiKey) {
-          throw new Error('Invalid API key')
-        }
-
-        const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetify.js'
+        const apiKey = getApiKey(extra)
+        const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
         const binResponse = await fetch(`${apiServer}/one/bins/${id}`, {
           headers: {
             'Content-Type': 'application/json',

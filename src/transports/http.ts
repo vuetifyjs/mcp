@@ -10,6 +10,9 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import type { JSONRPCMessage } from '@modelcontextprotocol/sdk/types.js'
+import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js'
+
+type AuthenticatedRequest = IncomingMessage & { auth?: AuthInfo }
 
 export interface HttpTransportOptions {
   port?: number
@@ -95,17 +98,20 @@ export class HttpTransport implements Transport {
   }
 
   private async handleRequest (
-    req: IncomingMessage,
+    req: AuthenticatedRequest,
     res: ServerResponse,
   ): Promise<void> {
     console.error(`[${new Date().toISOString()}] ${req.method} ${req.url}`)
+
+    // Extract auth info from headers for tool handlers
+    this.extractAuthInfo(req)
 
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
       res.writeHead(204, {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Mcp-Session-Id',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Mcp-Session-Id, X-Vuetify-Api-Key',
       })
       res.end()
       return
@@ -174,5 +180,21 @@ export class HttpTransport implements Transport {
     // Method not allowed
     res.writeHead(405, { 'Content-Type': 'text/plain' })
     res.end('Method Not Allowed')
+  }
+
+  private extractAuthInfo (req: AuthenticatedRequest): void {
+    // Support both X-Vuetify-Api-Key and standard Authorization: Bearer
+    const customHeader = req.headers['x-vuetify-api-key']
+    const authHeader = req.headers.authorization
+    const bearer = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined
+    const token = (typeof customHeader === 'string' ? customHeader : undefined) || bearer
+
+    if (token) {
+      req.auth = {
+        token,
+        clientId: '',
+        scopes: [],
+      }
+    }
   }
 }

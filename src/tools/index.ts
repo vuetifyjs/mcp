@@ -12,8 +12,5 @@ import { registerBinTools } from './one/bin.js'
 export async function registerTools (server: McpServer) {
   await registerApiTools(server)
   await registerDocumentationTools(server)
-  const apiKey = process.env.VUETIFY_API_KEY || ''
-  if (apiKey.length > 0) {
-    await registerBinTools(server)
-  }
+  await registerBinTools(server)
 }
