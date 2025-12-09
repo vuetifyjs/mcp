@@ -8,6 +8,8 @@ jobs:
     if: github.event_name == 'push' && startswith(github.ref, 'refs/tags/v') && github.repository_owner == 'vuetifyjs'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
