@@ -144,6 +144,63 @@ export async function registerBinTools (server: McpServer) {
     })
 
   server.tool(
+    'update_vuetify_bin',
+    'Update an existing Vuetify bin. Requires VUETIFY_API_KEY.',
+    {
+      id: z.string().describe('The bin ID to update'),
+      title: z.string().describe('Title of your bin'),
+      language: z.string().describe('Language of your vuetify bin'),
+      content: z.string().describe('The content of your bin'),
+      visibility: z.enum(['private', 'public']).describe('Visibility of bin'),
+      favorite: z.boolean().default(false),
+      pinned: z.boolean().default(false),
+      locked: z.boolean().default(false),
+    },
+    {
+      openWorldHint: true,
+    },
+    async ({ id, ...bin }, extra) => {
+      try {
+        const apiKey = getApiKey(extra)
+        const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
+        const binResponse = await fetch(`${apiServer}/one/bins/${id}`, {
+          method: 'POST',
+          body: JSON.stringify({
+            bin: {
+              ...bin,
+              liveShare: false,
+            },
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+          },
+        })
+        if (!binResponse.ok) {
+          throw new Error(await binResponse.text())
+        }
+
+        const data = await binResponse.json()
+        const updatedBin: Bin = data.bin
+
+        return {
+          content: [{
+            type: 'text',
+            text: `Successfully updated bin ${updatedBin.title}, you can view it at https://bin.vuetifyjs.com/bins/${updatedBin.id}`,
+          }],
+        }
+      } catch (error: any) {
+        return {
+          isError: true,
+          content: [{
+            type: 'text',
+            text: error.message,
+          }],
+        }
+      }
+    })
+
+  server.tool(
     'get_bin',
     'Get a bin by ID. Requires VUETIFY_API_KEY.',
     {
