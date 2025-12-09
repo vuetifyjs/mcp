@@ -27,7 +27,7 @@
     "watch": "tsc --watch",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "release": "release-it"
+    "release": "pnpm build && bumpp -r"
   },
   "keywords": [
     "vuetify",
@@ -53,7 +53,7 @@
     "zod": "^3.25.56"
   },
   "devDependencies": {
-    "@release-it/conventional-changelog": "^8.0.2",
+    "bumpp": "^10.1.0",
     "@types/node": "^22.15.30",
     "@types/which": "^3.0.4",
     "conventional-changelog-cli": "^5.0.0",
@@ -61,7 +61,6 @@
     "conventional-github-releaser": "^3.1.5",
     "eslint": "^9.28.0",
     "eslint-config-vuetify": "^4.0.0",
-    "release-it": "^17.8.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"
   },
