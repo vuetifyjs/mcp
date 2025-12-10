@@ -115,7 +115,6 @@ async function handleRequest (
     const clientId = getClientIdentifier(req)
     const rateLimitResult = rateLimiter.check(clientId)
 
-    // Always add rate limit headers
     if (rateLimitOptions) {
       res.setHeader('X-RateLimit-Limit', rateLimitOptions.maxRequests.toString())
       res.setHeader('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
