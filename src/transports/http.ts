@@ -150,8 +150,15 @@ async function handleMcpPost (
     req.headers.accept = 'application/json, text/event-stream'
   }
 
-  // Extract auth from headers
+  // Extract auth from headers and set on request for transport
   const token = extractAuthToken(req)
+  if (token) {
+    ;(req as any).auth = {
+      token,
+      clientId: '',
+      scopes: [],
+    }
+  }
 
   // Create fresh transport for this request (stateless mode)
   const transport = new StreamableHTTPServerTransport({
@@ -163,13 +170,6 @@ async function handleMcpPost (
 
   // Connect server to transport
   await server.connect(transport)
-
-  // Inject auth info if present
-  if (token) {
-    // The transport needs to know about the auth for tool handlers
-    // We pass it via a custom header that handleRequest will pick up
-    ;(req as any)._mcpAuthToken = token
-  }
 
   // Set up cleanup on close
   transport.onclose = () => {
