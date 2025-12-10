@@ -52,7 +52,6 @@ export async function startHttpServer (options: HttpServerOptions = {}): Promise
   const host = options.host ?? 'localhost'
   const path = options.path ?? '/mcp'
 
-  // Initialize rate limiter if options provided
   const rateLimiter = options.rateLimit ? new RateLimiter(options.rateLimit) : null
 
   return new Promise((resolve, reject) => {
