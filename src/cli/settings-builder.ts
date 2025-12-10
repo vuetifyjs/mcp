@@ -62,14 +62,24 @@ export const getSettingsPath = (ide: IDEId): string => {
   }
 }
 
-export const remoteConfig = {
-  url: 'https://mcp.vuetifyjs.com/mcp',
+export function getRemoteConfig () {
+  const config: { url: string; headers?: Record<string, string> } = {
+    url: 'https://mcp.vuetifyjs.com/mcp',
+  }
+
+  if (process.env.VUETIFY_API_KEY) {
+    config.headers = {
+      Authorization: `Bearer ${process.env.VUETIFY_API_KEY}`,
+    }
+  }
+
+  return config
 }
 
 export function getServerConfig (transport?: 'stdio' | 'http', remote?: boolean) {
   // Remote always takes precedence
   if (remote) {
-    return remoteConfig
+    return getRemoteConfig()
   }
   if (transport === 'http') {
     return npx?.wsl ? wslHttpConfig : httpConfig
