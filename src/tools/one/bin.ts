@@ -148,13 +148,13 @@ export async function registerBinTools (server: McpServer) {
     'Update an existing Vuetify bin. Requires VUETIFY_API_KEY.',
     {
       id: z.string().describe('The bin ID to update'),
-      title: z.string().describe('Title of your bin'),
-      language: z.string().describe('Language of your vuetify bin'),
       content: z.string().describe('The content of your bin'),
-      visibility: z.enum(['private', 'public']).describe('Visibility of bin'),
-      favorite: z.boolean().default(false),
-      pinned: z.boolean().default(false),
-      locked: z.boolean().default(false),
+      title: z.string().optional().describe('Title of your bin'),
+      language: z.string().optional().describe('Language of your vuetify bin'),
+      visibility: z.enum(['private', 'public']).optional().describe('Visibility of bin'),
+      favorite: z.boolean().optional(),
+      pinned: z.boolean().optional(),
+      locked: z.boolean().optional(),
     },
     {
       openWorldHint: true,
@@ -163,11 +163,17 @@ export async function registerBinTools (server: McpServer) {
       try {
         const apiKey = getApiKey(extra)
         const apiServer = process.env.VUETIFY_API_SERVER || 'https://api.vuetifyjs.com'
+
+        // Filter out undefined values so API preserves existing
+        const updates = Object.fromEntries(
+          Object.entries(bin).filter(([_, v]) => v !== undefined)
+        )
+
         const binResponse = await fetch(`${apiServer}/one/bins/${id}`, {
           method: 'POST',
           body: JSON.stringify({
             bin: {
-              ...bin,
+              ...updates,
               liveShare: false,
             },
           }),
