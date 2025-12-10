@@ -70,7 +70,7 @@ export async function startHttpServer (options: HttpServerOptions = {}): Promise
     httpServer.on('error', reject)
 
     httpServer.listen(port, host, () => {
-      console.error(`MCP Server listening on http://${host}:${path}`)
+      console.error(`MCP Server listening on http://${host}:${port}${path}`)
       resolve(httpServer)
     })
   })
