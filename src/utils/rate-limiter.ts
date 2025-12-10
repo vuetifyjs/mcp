@@ -50,7 +50,6 @@ export class RateLimiter {
     const now = Date.now()
     const windowStart = now - this.options.windowMs
 
-    // Get or create record for this key
     let record = this.records.get(key)
     if (!record) {
       record = { timestamps: [] }
