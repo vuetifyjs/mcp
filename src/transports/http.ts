@@ -112,9 +112,8 @@ async function handleRequest (
     return
   }
 
-  // Check rate limit (skip if VUETIFY_API_KEY is defined, or for health check and root endpoints)
-  const hasApiKey = !!process.env.VUETIFY_API_KEY
-  if (rateLimiter && !hasApiKey && req.url !== '/health' && req.url !== '/') {
+  // Check rate limit (skip for health check and root endpoints)
+  if (rateLimiter && req.url !== '/health' && req.url !== '/') {
     const clientId = getClientIdentifier(req)
     const rateLimitResult = rateLimiter.check(clientId)
 
