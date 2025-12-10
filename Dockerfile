@@ -18,4 +18,4 @@ RUN pnpm build
 EXPOSE 3000
 
 # Start server with HTTP transport
-CMD ["node", "bin/cli.js", "--transport=http", "--host=0.0.0.0", "--port=3000", "--path=/mcp", "--stateless"]
+CMD ["node", "bin/cli.js", "--transport=http", "--host=0.0.0.0", "--port=3000", "--path=/mcp"]
