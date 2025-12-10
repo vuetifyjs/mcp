@@ -111,7 +111,6 @@ async function handleRequest (
     return
   }
 
-  // Check rate limit (skip for health check and root endpoints)
   if (rateLimiter && req.url !== '/health' && req.url !== '/') {
     const clientId = getClientIdentifier(req)
     const rateLimitResult = rateLimiter.check(clientId)
