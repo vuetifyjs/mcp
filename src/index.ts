@@ -11,11 +11,11 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
 import { intro } from './cli/intro.js'
 import packageJson from '../package.json' with { type: 'json' }
+import { startHttpServer } from './transports/http.js'
 
 import { registerPrompts } from '#prompts/index'
 import { registerResources } from '#resources/index'
 import { registerTools } from '#tools/index'
-import { startHttpServer } from '#transports/http'
 
 function parseArgs () {
   const args = process.argv.slice(2)

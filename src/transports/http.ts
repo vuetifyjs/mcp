@@ -13,11 +13,14 @@ import { registerPrompts } from '#prompts/index'
 import { registerResources } from '#resources/index'
 import { registerTools } from '#tools/index'
 import packageJson from '../../package.json' with { type: 'json' }
+import { RateLimiter } from '../utils/rate-limiter.js'
+import type { RateLimiterOptions } from '../utils/rate-limiter.js'
 
 export interface HttpServerOptions {
   port?: number
   host?: string
   path?: string
+  rateLimit?: RateLimiterOptions
 }
 
 async function createMcpServer () {
@@ -49,10 +52,12 @@ export async function startHttpServer (options: HttpServerOptions = {}): Promise
   const host = options.host ?? 'localhost'
   const path = options.path ?? '/mcp'
 
+  const rateLimiter = options.rateLimit ? new RateLimiter(options.rateLimit) : null
+
   return new Promise((resolve, reject) => {
     const httpServer = createServer(async (req, res) => {
       try {
-        await handleRequest(req, res, path)
+        await handleRequest(req, res, path, rateLimiter, options.rateLimit)
       } catch (error) {
         console.error('Error handling request:', error)
         if (!res.headersSent) {
@@ -71,10 +76,27 @@ export async function startHttpServer (options: HttpServerOptions = {}): Promise
   })
 }
 
+function getClientIdentifier (req: IncomingMessage): string {
+  // Use session ID if available (for stateful mode)
+  const sessionId = req.headers['mcp-session-id']
+  if (sessionId && typeof sessionId === 'string') {
+    return `session:${sessionId}`
+  }
+
+  // Fall back to IP address
+  const forwarded = req.headers['x-forwarded-for']
+  const ip = forwarded
+    ? (typeof forwarded === 'string' ? forwarded.split(',')[0] : forwarded[0])
+    : req.socket.remoteAddress
+  return `ip:${ip ?? 'unknown'}`
+}
+
 async function handleRequest (
   req: IncomingMessage,
   res: ServerResponse,
   mcpPath: string,
+  rateLimiter: RateLimiter | null,
+  rateLimitOptions?: RateLimiterOptions,
 ): Promise<void> {
   console.error(`[${new Date().toISOString()}] ${req.method} ${req.url}`)
 
@@ -87,6 +109,31 @@ async function handleRequest (
     })
     res.end()
     return
+  }
+
+  if (rateLimiter && req.url !== '/health' && req.url !== '/') {
+    const clientId = getClientIdentifier(req)
+    const rateLimitResult = rateLimiter.check(clientId)
+
+    if (rateLimitOptions) {
+      res.setHeader('X-RateLimit-Limit', rateLimitOptions.maxRequests.toString())
+      res.setHeader('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
+      res.setHeader('X-RateLimit-Reset', new Date(rateLimitResult.resetTime).toISOString())
+    }
+
+    if (!rateLimitResult.allowed) {
+      res.writeHead(429, {
+        'Content-Type': 'application/json',
+        'Retry-After': rateLimitResult.retryAfter?.toString() ?? '60',
+      })
+      res.end(JSON.stringify({
+        error: 'Too Many Requests',
+        message: 'Rate limit exceeded. Please try again later.',
+        retryAfter: rateLimitResult.retryAfter,
+        resetTime: new Date(rateLimitResult.resetTime).toISOString(),
+      }))
+      return
+    }
   }
 
   // Health check endpoint
