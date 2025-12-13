@@ -12,14 +12,21 @@ const WELCOME_MESSAGE = 'Welcome to the Vuetify MCP Server'
 const CONFIG_TEMPLATE = `
 Open your IDE and paste this into your
 %settings% file (for %brand%):`
+const CLAUDE_CODE_TEMPLATE = `
+Run this command to configure Claude Code:`
 
 export const startMessage = blue(WELCOME_MESSAGE)
 
-const configMessage = (ide: DetectedIDE) => blue(
-  CONFIG_TEMPLATE
-    .replace('%settings%', underline(join(ide.settingsDir, ide.settingsFile)))
-    .replace('%brand%', ide.brand),
-)
+function configMessage (ide: DetectedIDE) {
+  if (ide.ide === 'claude-code') {
+    return blue(CLAUDE_CODE_TEMPLATE)
+  }
+  return blue(
+    CONFIG_TEMPLATE
+      .replace('%settings%', underline(join(ide.settingsDir, ide.settingsFile)))
+      .replace('%brand%', ide.brand),
+  )
+}
 
 export const intro = (): void => {
   console.warn(startMessage)

@@ -166,7 +166,7 @@ export async function registerBinTools (server: McpServer) {
 
         // Filter out undefined values so API preserves existing
         const updates = Object.fromEntries(
-          Object.entries(bin).filter(([_, v]) => v !== undefined)
+          Object.entries(bin).filter(([_, v]) => v !== undefined),
         )
 
         const binResponse = await fetch(`${apiServer}/one/bins/${id}`, {

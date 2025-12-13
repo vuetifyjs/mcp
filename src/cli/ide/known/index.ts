@@ -1,3 +1,4 @@
+export * from './claude-code.js'
 export * from './claude.js'
 export * from './cursor.js'
 export * from './trae.js'

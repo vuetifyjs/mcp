@@ -63,7 +63,7 @@ export const getSettingsPath = (ide: IDEId): string => {
 }
 
 export function getRemoteConfig () {
-  const config: { url: string; headers?: Record<string, string> } = {
+  const config: { url: string, headers?: Record<string, string> } = {
     url: 'https://mcp.vuetifyjs.com/mcp',
   }
 
@@ -87,7 +87,35 @@ export function getServerConfig (transport?: 'stdio' | 'http', remote?: boolean)
   return npx?.wsl ? wslConfig : defaultConfig
 }
 
+export function getClaudeCodeArgs (): string[] {
+  const apiKey = process.env.VUETIFY_API_KEY
+  const args = [
+    'mcp',
+    'add',
+    '--transport',
+    'http',
+    '--scope',
+    'user',
+    SERVER_NAME,
+    'https://mcp.vuetifyjs.com/mcp',
+  ]
+
+  if (apiKey) {
+    args.push('--header', `Authorization:Bearer ${apiKey}`)
+  }
+
+  return args
+}
+
+export function getClaudeCodeCommand (): string {
+  const args = getClaudeCodeArgs()
+  return `claude ${args.map(a => a.includes(':') ? `"${a}"` : a).join(' ')}`
+}
+
 export const getSettingsBuilder = (ide: IDEId, transport?: 'stdio' | 'http', remote?: boolean): string => {
+  if (ide === 'claude-code') {
+    return getClaudeCodeCommand()
+  }
   const config = getServerConfig(transport, remote)
   switch (ide) {
     case 'code':

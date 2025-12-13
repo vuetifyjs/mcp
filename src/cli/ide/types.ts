@@ -1,4 +1,4 @@
-export type IDEId = 'code' | 'trae' | 'cursor' | 'code-insiders' | 'claude' | 'windsurf'
+export type IDEId = 'code' | 'trae' | 'cursor' | 'code-insiders' | 'claude' | 'claude-code' | 'windsurf'
 export type OperatingSystem = 'win32' | 'darwin' | 'linux'
 
 export interface KnownIDE {
