@@ -12,6 +12,7 @@ import type { IncomingMessage, ServerResponse, Server } from 'node:http'
 import { registerPrompts } from '#prompts/index'
 import { registerResources } from '#resources/index'
 import { registerTools } from '#tools/index'
+import { setApiKey, withToolLogging } from '#services/logger'
 import packageJson from '../../package.json' with { type: 'json' }
 import { RateLimiter } from '../utils/rate-limiter.js'
 import type { RateLimiterOptions } from '../utils/rate-limiter.js'
@@ -39,6 +40,8 @@ async function createMcpServer () {
       },
     },
   })
+
+  withToolLogging(server)
 
   await registerResources(server)
   await registerPrompts(server)
@@ -206,6 +209,9 @@ async function handleMcpPost (
       scopes: [],
     }
   }
+
+  // Set API key for logging
+  setApiKey(token)
 
   // Create fresh transport for this request (stateless mode)
   const transport = new StreamableHTTPServerTransport({
