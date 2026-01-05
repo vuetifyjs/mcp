@@ -51,12 +51,12 @@ export function withToolLogging (server: McpServer): McpServer {
     }
 
     const handler = args[handlerIndex] as AnyFunction
-    const wrappedHandler = async (extra: unknown) => {
+    const wrappedHandler = async (params: unknown, extra: unknown) => {
       const start = performance.now()
       let error: string | undefined
 
       try {
-        return await handler(extra)
+        return await handler(params, extra)
       } catch (error_) {
         error = error_ instanceof Error ? error_.message : String(error_)
         throw error_
