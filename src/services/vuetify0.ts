@@ -20,7 +20,7 @@ export const VUETIFY0_COMPOSABLES = {
     name: 'Registration',
     description: 'Manage collections and registries',
     composables: {
-      useRegistry: 'Foundation for registration-based systems with automatic indexing',
+      createRegistry: 'Foundation for registration-based systems with automatic indexing',
       useProxyRegistry: 'Proxy-based registry with automatic reactivity',
       useQueue: 'Registry queue management',
       useTimeline: 'Bounded undo/redo system with fixed-size history',
@@ -32,13 +32,9 @@ export const VUETIFY0_COMPOSABLES = {
     description: 'Manage selection state in collections',
     composables: {
       createSelection: 'Creates a selection instance for managing multiple selected items (factory function)',
-      useSelection: 'Returns the current selection context instance',
       createGroup: 'Creates a group instance with batch selection operations (extends createSelection)',
-      useGroup: 'Returns the current group context instance',
       createSingle: 'Creates a single-selection instance (enforces only one selected item)',
-      useSingle: 'Returns the current single-selection context instance',
       createStep: 'Creates a step/stepper instance for managing multi-step processes',
-      useStep: 'Returns the current step context instance',
       useFilter: 'Filter arrays based on search queries',
       usePagination: 'Lightweight pagination for navigating through pages with next/prev/first/last methods',
     },
@@ -55,9 +51,11 @@ export const VUETIFY0_COMPOSABLES = {
     name: 'System',
     description: 'DOM observers and event handlers with automatic cleanup',
     composables: {
+      useClickOutside: 'Detect clicks outside an element',
       useEventListener: 'Event listener management with auto-cleanup',
+      useHotkey: 'Keyboard hotkey/shortcut handling',
       useIntersectionObserver: 'Detect element visibility changes',
-      useKeydown: 'Keyboard event handling',
+      useMediaQuery: 'Reactive CSS media query matching',
       useMutationObserver: 'Observe DOM mutations',
       useOverflow: 'Computes how many items fit in a container based on available width',
       useResizeObserver: 'Detect element dimension changes',
@@ -69,9 +67,8 @@ export const VUETIFY0_COMPOSABLES = {
     name: 'Plugins',
     description: 'Core system utilities',
     composables: {
-      createFeatures: 'Creates a feature flag management instance',
-      useFeatures: 'Returns the current features context instance',
       useBreakpoints: 'Responsive breakpoint detection',
+      useFeatures: 'Feature flag management',
       useHydration: 'SSR hydration utilities',
       useLocale: 'Internationalization support',
       useLogger: 'Logging system',
@@ -93,6 +90,7 @@ export const VUETIFY0_COMPOSABLES = {
 export const VUETIFY0_COMPONENTS = {
   Atom: 'Base element wrapper component',
   Avatar: 'Image loading with fallback system',
+  Dialog: 'Modal dialog component',
   ExpansionPanel: 'Expandable panel component',
   Group: 'Component grouping/container',
   Pagination: 'Pagination controls with Root, Item, Ellipsis, First, Last, Next, Prev sub-components',
@@ -162,7 +160,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 32+ tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
+            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 36 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
           } as const,
         ],
       }
@@ -177,7 +175,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Components\n\nVuetify0 provides 9 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
+            text: `# @vuetify/v0 Components\n\nVuetify0 provides 10 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
           } as const,
         ],
       }
