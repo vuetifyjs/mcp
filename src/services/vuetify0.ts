@@ -21,10 +21,10 @@ export const VUETIFY0_COMPOSABLES = {
     description: 'Manage collections and registries',
     composables: {
       createRegistry: 'Foundation for registration-based systems with automatic indexing',
+      createQueue: 'Registry queue management',
+      createTimeline: 'Bounded undo/redo system with fixed-size history',
+      createTokens: 'Design token management system with aliases and resolution',
       useProxyRegistry: 'Proxy-based registry with automatic reactivity',
-      useQueue: 'Registry queue management',
-      useTimeline: 'Bounded undo/redo system with fixed-size history',
-      useTokens: 'Design token management system with aliases and resolution',
     },
   },
   selection: {
@@ -43,7 +43,7 @@ export const VUETIFY0_COMPOSABLES = {
     name: 'Forms',
     description: 'Form handling and validation',
     composables: {
-      useForm: 'Form state management and validation',
+      createForm: 'Form state management and validation',
       useProxyModel: 'Proxy model utilities for reactive data binding',
     },
   },
@@ -68,6 +68,7 @@ export const VUETIFY0_COMPOSABLES = {
     description: 'Core system utilities',
     composables: {
       useBreakpoints: 'Responsive breakpoint detection',
+      useDate: 'Date utilities and formatting',
       useFeatures: 'Feature flag management',
       useHydration: 'SSR hydration utilities',
       useLocale: 'Internationalization support',
@@ -160,7 +161,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 36 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
+            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 37 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
           } as const,
         ],
       }
