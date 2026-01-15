@@ -1,9 +1,9 @@
-<p align="center">
+<div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://cdn.vuetifyjs.com/docs/images/logos/vmcp-logo2-dark.png">
-    <img alt="Vuetify One Logo" src="https://cdn.vuetifyjs.com/docs/images/logos/vmcp-logo-light.png" height="150">
+    <img alt="Vuetify MCP Logo" src="https://cdn.vuetifyjs.com/docs/images/logos/vmcp-logo-light.png" height="150">
   </picture>
-</p>
+</div>
 
 [![npm version](https://img.shields.io/npm/v/@vuetify/mcp.svg)](https://www.npmjs.com/package/@vuetify/mcp)
 [![npm downloads](https://img.shields.io/npm/dm/@vuetify/mcp?color=blue)](https://npm.chart.dev/@vuetify/mcp)
