@@ -20,8 +20,9 @@ export const VUETIFY0_COMPOSABLES = {
     name: 'Registration',
     description: 'Manage collections and registries',
     composables: {
-      createRegistry: 'Foundation for registration-based systems with automatic indexing',
+      createNested: 'Manage nested/hierarchical context structures with parent-child relationships',
       createQueue: 'Registry queue management',
+      createRegistry: 'Foundation for registration-based systems with automatic indexing',
       createTimeline: 'Bounded undo/redo system with fixed-size history',
       createTokens: 'Design token management system with aliases and resolution',
       useProxyRegistry: 'Proxy-based registry with automatic reactivity',
@@ -71,6 +72,7 @@ export const VUETIFY0_COMPOSABLES = {
       useDate: 'Date utilities and formatting',
       useFeatures: 'Feature flag management',
       useHydration: 'SSR hydration utilities',
+      useLazy: 'Deferred/lazy evaluation of expensive computations',
       useLocale: 'Internationalization support',
       useLogger: 'Logging system',
       usePermissions: 'Permission management',
@@ -91,18 +93,80 @@ export const VUETIFY0_COMPOSABLES = {
 export const VUETIFY0_COMPONENTS = {
   Atom: 'Base element wrapper component',
   Avatar: 'Image loading with fallback system',
+  Checkbox: 'Checkbox with tri-state and group support',
   Dialog: 'Modal dialog component',
   ExpansionPanel: 'Expandable panel component',
   Group: 'Component grouping/container',
   Pagination: 'Pagination controls with Root, Item, Ellipsis, First, Last, Next, Prev sub-components',
   Popover: 'Popover overlay component',
+  Radio: 'Radio button component',
   Selection: 'Selection handling component',
   Single: 'Single item component',
   Step: 'Step/stepper component',
+  Tabs: 'Tabbed interface component',
+} as const
+
+export const VUETIFY0_EXPORTS = {
+  utilities: {
+    name: 'Utilities',
+    path: '@vuetify/v0/utilities',
+    description: 'Helper functions for type checking, object manipulation, and common transformations',
+    exports: {
+      isFunction: 'Check if a value is a function',
+      isString: 'Check if a value is a string',
+      isNumber: 'Check if a value is a number',
+      isBoolean: 'Check if a value is a boolean',
+      isObject: 'Check if a value is a plain object (excludes null and arrays)',
+      isArray: 'Check if a value is an array',
+      isNull: 'Check if a value is null',
+      isUndefined: 'Check if a value is undefined',
+      isNullOrUndefined: 'Check if a value is null or undefined',
+      isPrimitive: 'Check if a value is a primitive (string, number, or boolean)',
+      isSymbol: 'Check if a value is a symbol',
+      isNaN: 'Check if a value is NaN',
+      mergeDeep: 'Deeply merge source objects into a target object',
+      useId: 'Generate unique IDs (SSR-safe with Vue\'s useId)',
+      clamp: 'Clamp a value between a minimum and maximum',
+      range: 'Create an array of sequential numbers',
+      debounce: 'Debounce a function call by a specified delay',
+    },
+  },
+  types: {
+    name: 'Types',
+    path: '@vuetify/v0/types',
+    description: 'Shared TypeScript type definitions',
+    exports: {
+      DOMElement: 'Valid element types for Vue\'s h() render function',
+      GenericObject: 'Generic object with string keys and any values',
+      UnknownObject: 'Object with string keys and unknown values (safer alternative)',
+      ID: 'Identifier type used throughout the registry system (string | number)',
+      DeepPartial: 'Recursively makes all properties of T optional',
+      MaybeArray: 'Union type that accepts either a single value or an array',
+      MaybeRef: 'Value that may be wrapped in a Vue ref, readonly ref, shallow ref, or getter',
+    },
+  },
+  constants: {
+    name: 'Constants',
+    path: '@vuetify/v0/constants',
+    description: 'Shared constants and element references',
+    exports: {
+      htmlElements: 'HTML element tag names',
+      globals: 'Global constants',
+    },
+  },
+  date: {
+    name: 'Date',
+    path: '@vuetify/v0/date',
+    description: 'Date adapter using the Temporal API',
+    exports: {
+      Vuetify0DateAdapter: 'Temporal API-based date adapter implementation',
+    },
+  },
 } as const
 
 export type Vuetify0Category = keyof typeof VUETIFY0_COMPOSABLES
 export type Vuetify0Component = keyof typeof VUETIFY0_COMPONENTS
+export type Vuetify0Export = keyof typeof VUETIFY0_EXPORTS
 
 export function createVuetify0Service () {
   return {
@@ -161,7 +225,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 37 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
+            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 39 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
           } as const,
         ],
       }
@@ -176,7 +240,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Components\n\nVuetify0 provides 10 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
+            text: `# @vuetify/v0 Components\n\nVuetify0 provides 13 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
           } as const,
         ],
       }
@@ -262,6 +326,27 @@ export function createVuetify0Service () {
             } as const,
           ],
         }
+      }
+    },
+
+    getExportsList: async () => {
+      const exports = Object.entries(VUETIFY0_EXPORTS)
+        .map(([_key, category]) => {
+          const items = Object.entries(category.exports)
+            .map(([name, description]) => `  - **${name}**: ${description}`)
+            .join('\n')
+
+          return `## ${category.name}\n**Import**: \`${category.path}\`\n${category.description}\n\n${items}`
+        })
+        .join('\n\n')
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `# @vuetify/v0 Subpath Exports\n\nVuetify0 provides additional subpath exports for utilities, types, constants, and date handling:\n\n${exports}\n\n**Documentation**: https://0.vuetifyjs.com/`,
+          } as const,
+        ],
       }
     },
   }

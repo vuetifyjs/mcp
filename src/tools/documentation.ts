@@ -118,4 +118,10 @@ export async function registerDocumentationTools (server: McpServer) {
     },
     vuetify0.getComponentGuide,
   )
+
+  server.tool(
+    'get_vuetify0_exports_list',
+    'Get a list of all subpath exports available in @vuetify/v0 (utilities, types, constants, date adapter).',
+    vuetify0.getExportsList,
+  )
 }
