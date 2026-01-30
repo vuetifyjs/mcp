@@ -436,7 +436,227 @@ export const UPGRADE_FROM_VERSIONS = {
       \`\`\`
     `,
   },
+  'v3': {
+    name: 'Vuetify v3 Upgrade',
+    description: 'Upgrade from Vuetify v3.x to v4.0',
+    path: 'packages/docs/src/pages/en/getting-started/upgrade-guide.md',
+    markdown: `
+      # Dependencies
+      \`\`\`bash
+      [npm|pnpm|yarn|bun] install vuetify@^4.0.0
+      \`\`\`
+    `,
+  },
 } as const
+
+export const V4_BREAKING_CHANGES = {
+  'styles': {
+    name: 'CSS & Styles',
+    description: 'CSS architecture changes including layers, reset, and entry points',
+    changes: [
+      {
+        title: 'CSS Layers are now mandatory',
+        description: 'Vuetify 4 always uses CSS layers for all styles. This changes how specificity works - you may need to adjust custom overrides that relied on !important or specificity hacks.',
+        migration: 'Replace !important overrides with layer-aware CSS. Use @layer to control specificity.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/3400',
+      },
+      {
+        title: 'Flattened layer names',
+        description: 'CSS layer names have been flattened for simpler organization.',
+        migration: 'Update any custom CSS that references Vuetify layer names.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/22443',
+      },
+      {
+        title: 'Reduced CSS reset',
+        description: 'The CSS reset has been cut down significantly.',
+        migration: 'If you relied on Vuetify\'s reset for certain elements, you may need to add your own reset styles.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/17633',
+      },
+      {
+        title: 'Removed overflow-y from reset',
+        description: 'The overflow-y rule has been removed from the CSS reset.',
+        migration: 'Add your own overflow-y styles if needed.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/1197',
+      },
+      {
+        title: 'Separate style entry points',
+        description: 'New granular style entry points: vuetify/styles, vuetify/styles/main, vuetify/styles/generic.',
+        migration: 'Optionally use specific entry points for smaller bundles.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/20100',
+      },
+      {
+        title: 'Opt-out from misc styles',
+        description: 'You can now opt-out from miscellaneous utility styles.',
+        migration: 'Use createVuetify({ styles: { misc: false } }) if desired.',
+        issue: null,
+      },
+    ],
+  },
+  'theme': {
+    name: 'Theme',
+    description: 'Theme system changes',
+    changes: [
+      {
+        title: 'Default theme changed to "system"',
+        description: 'The default theme is now "system" instead of "light", respecting user\'s OS preference.',
+        migration: 'If you need explicit light theme, set defaultTheme: "light" in createVuetify().',
+        issue: null,
+      },
+      {
+        title: 'Removed "unimportant" option',
+        description: 'The theme.unimportant option has been removed (no longer needed with CSS layers).',
+        migration: 'Remove any unimportant: true configuration.',
+        issue: null,
+      },
+      {
+        title: 'Transparent color support',
+        description: 'Theme colors now support transparency.',
+        migration: 'No migration needed - this is a new feature.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/10299',
+      },
+    ],
+  },
+  'display': {
+    name: 'Display & Breakpoints',
+    description: 'Breakpoint and display changes',
+    changes: [
+      {
+        title: 'Reduced default breakpoint sizes',
+        description: 'Default breakpoint values have been reduced to better match modern device sizes.',
+        migration: 'If you have layouts depending on specific breakpoint values, review and adjust accordingly or override the breakpoints in your Vuetify config.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/19759',
+      },
+    ],
+  },
+  'grid': {
+    name: 'Grid System',
+    description: 'Grid system overhaul',
+    changes: [
+      {
+        title: 'Grid system overhaul',
+        description: 'The grid system (v-container, v-row, v-col) has been overhauled.',
+        migration: 'Review grid usage and test layouts. Some class names or behaviors may have changed.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/8611',
+      },
+    ],
+  },
+  'typography': {
+    name: 'Typography',
+    description: 'Typography system changes',
+    changes: [
+      {
+        title: 'MD3 typography',
+        description: 'Typography now follows Material Design 3 specifications.',
+        migration: 'Review text styling - font sizes, weights, and line heights may differ.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/22557',
+      },
+    ],
+  },
+  'elevation': {
+    name: 'Elevation',
+    description: 'Elevation system changes',
+    changes: [
+      {
+        title: 'MD3 elevation levels',
+        description: 'Elevation now uses Material Design 3 levels.',
+        migration: 'Shadows may appear different. Review components using elevation prop.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/14198',
+      },
+    ],
+  },
+  'v-btn': {
+    name: 'VBtn',
+    description: 'Button component changes',
+    changes: [
+      {
+        title: 'Removed default text transform',
+        description: 'Buttons no longer have uppercase text by default.',
+        migration: 'Add text-transform: uppercase in CSS if you want the old behavior.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/21079',
+      },
+      {
+        title: 'Display changed from grid to flex',
+        description: 'VBtn internal layout changed from CSS grid to flexbox.',
+        migration: 'If you had custom CSS targeting button internals, review and adjust.',
+        issue: null,
+      },
+    ],
+  },
+  'v-snackbar': {
+    name: 'VSnackbar',
+    description: 'Snackbar component changes',
+    changes: [
+      {
+        title: 'Removed multi-line prop',
+        description: 'The multi-line prop has been removed.',
+        migration: 'Use CSS to style multi-line content instead.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/15996',
+      },
+    ],
+  },
+  'v-select': {
+    name: 'VSelect / VAutocomplete / VCombobox',
+    description: 'Select component changes',
+    changes: [
+      {
+        title: 'Renamed item to internalItem in slots',
+        description: 'The "item" slot prop has been renamed to "internalItem" for clarity.',
+        migration: 'Update slot templates: #item="{ item }" becomes #item="{ internalItem }".',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/18354',
+      },
+    ],
+  },
+  'v-date-picker': {
+    name: 'VDatePicker',
+    description: 'Date picker component changes',
+    changes: [
+      {
+        title: 'Range picker only emits start and end values',
+        description: 'When using range selection, the picker now only emits start and end values, not intermediate states.',
+        migration: 'Update range picker handlers if they relied on intermediate value emissions.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/18701',
+      },
+    ],
+  },
+  'v-form': {
+    name: 'VForm',
+    description: 'Form component changes',
+    changes: [
+      {
+        title: 'Slot props are unreffed',
+        description: 'VForm slot props are now unreffed (raw values instead of refs).',
+        migration: 'Remove .value access from form slot props if you were using them as refs.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/18355',
+      },
+    ],
+  },
+  'v-img': {
+    name: 'VImg',
+    description: 'Image component changes',
+    changes: [
+      {
+        title: 'Attributes pass through to img element',
+        description: 'VImg now passes attributes to the underlying <img> element.',
+        migration: 'Review any custom attributes - they will now apply to the img tag.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/18860',
+      },
+    ],
+  },
+  'nested': {
+    name: 'Nested / Tree',
+    description: 'Nested component changes',
+    changes: [
+      {
+        title: 'Added branch select strategy',
+        description: 'New "branch" select strategy for tree/nested components.',
+        migration: 'No migration needed - this is a new feature.',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/22404',
+      },
+    ],
+  },
+} as const
+
+export type V4BreakingChangeCategory = keyof typeof V4_BREAKING_CHANGES
 
 export const AVAILABLE_FEATURES = {
   'accessibility': 'Web accessibility (a11y for short), is the inclusive practice of ensuring there are no barriers that prevent the interaction with, or access to, websites on the World Wide Web by people with disabilities.',
@@ -532,10 +752,14 @@ export function createDocumentationService () {
     getUpgradeGuide: async ({ version }: { version: UpgradeFromVersion }) => {
       const guide = UPGRADE_FROM_VERSIONS[version]
 
+      // For v3 upgrade, fetch from next.vuetifyjs.com docs (v4 branch)
+      const ref = version === 'v3' ? 'next' : undefined
+
       const { data } = await octokit.rest.repos.getContent({
         owner: 'vuetifyjs',
         repo: 'vuetify',
-        path: `packages/docs/src/pages/en/features/${guide.path}`,
+        path: guide.path,
+        ref,
         mediaType: {
           format: 'raw',
         },
@@ -548,6 +772,35 @@ export function createDocumentationService () {
             text: `${guide.name}\n${guide.markdown}\n${data}`,
           } as const,
         ],
+      }
+    },
+    getV4BreakingChanges: async ({ category }: { category?: V4BreakingChangeCategory }) => {
+      if (category) {
+        const cat = V4_BREAKING_CHANGES[category]
+        if (!cat) {
+          throw new Error(`Breaking change category "${category}" not found.`)
+        }
+
+        const text = `# ${cat.name}\n\n${cat.description}\n\n` + cat.changes.map(change => (
+          `## ${change.title}\n\n${change.description}\n\n**Migration:** ${change.migration}`
+          + (change.issue ? `\n\n**Related issue:** ${change.issue}` : '')
+        )).join('\n\n---\n\n')
+
+        return {
+          content: [{ type: 'text', text } as const],
+        }
+      }
+
+      // Return all categories summary
+      const text = `# Vuetify 4 Breaking Changes\n\n`
+        + `Upgrade guide: https://next.vuetifyjs.com/en/getting-started/upgrade-guide/\n\n`
+        + Object.entries(V4_BREAKING_CHANGES).map(([key, cat]) => (
+          `## ${cat.name} (${key})\n\n${cat.description}\n\n`
+          + cat.changes.map(c => `- **${c.title}**: ${c.description}`).join('\n')
+        )).join('\n\n---\n\n')
+
+      return {
+        content: [{ type: 'text', text } as const],
       }
     },
     getExposedExports: async () => {

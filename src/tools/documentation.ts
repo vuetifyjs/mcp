@@ -6,14 +6,16 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 
-import { AVAILABLE_FEATURES, createDocumentationService, INSTALLATION_PLATFORMS } from '#services/documentation'
-import type { InstallationPlatform, AvailableFeature } from '#services/documentation'
+import { AVAILABLE_FEATURES, createDocumentationService, INSTALLATION_PLATFORMS, UPGRADE_FROM_VERSIONS, V4_BREAKING_CHANGES } from '#services/documentation'
+import type { InstallationPlatform, AvailableFeature, UpgradeFromVersion, V4BreakingChangeCategory } from '#services/documentation'
 import { createVuetify0Service, VUETIFY0_COMPOSABLES, VUETIFY0_COMPONENTS } from '#services/vuetify0'
 import type { Vuetify0Category, Vuetify0Component } from '#services/vuetify0'
 
 export async function registerDocumentationTools (server: McpServer) {
   const platforms = Object.keys(INSTALLATION_PLATFORMS) as [InstallationPlatform, ...InstallationPlatform[]]
   const features = Object.keys(AVAILABLE_FEATURES) as [AvailableFeature, ...AvailableFeature[]]
+  const upgradeVersions = Object.keys(UPGRADE_FROM_VERSIONS) as [UpgradeFromVersion, ...UpgradeFromVersion[]]
+  const breakingChangeCategories = Object.keys(V4_BREAKING_CHANGES) as [V4BreakingChangeCategory, ...V4BreakingChangeCategory[]]
 
   const documentation = createDocumentationService()
   const vuetify0 = createVuetify0Service()
@@ -70,6 +72,25 @@ export async function registerDocumentationTools (server: McpServer) {
     'get_vuetify_one_installation_guide',
     'Get the README contents for @vuetify/one package from GitHub, including installation and usage instructions.',
     documentation.getVuetifyOneInstallationGuide,
+  )
+
+  // Upgrade Tools
+  server.tool(
+    'get_upgrade_guide',
+    'Get the upgrade guide for migrating between Vuetify major versions (v1.5→v2, v2.7→v3, v3→v4).',
+    {
+      version: z.enum(upgradeVersions).describe(`The source Vuetify version to upgrade from. Available versions: ${upgradeVersions.join(', ')}`),
+    },
+    documentation.getUpgradeGuide,
+  )
+
+  server.tool(
+    'get_v4_breaking_changes',
+    'Get Vuetify 4 breaking changes, optionally filtered by category. Returns migration guidance for each change.',
+    {
+      category: z.enum(breakingChangeCategories).optional().describe(`Optional category to filter by. Available categories: ${breakingChangeCategories.join(', ')}. Omit to get all breaking changes.`),
+    },
+    documentation.getV4BreakingChanges,
   )
 
   // Vuetify0 (@vuetify/v0) Tools
