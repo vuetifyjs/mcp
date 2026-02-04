@@ -26,6 +26,7 @@ export const VUETIFY0_COMPOSABLES = {
       createTimeline: 'Bounded undo/redo system with fixed-size history',
       createTokens: 'Design token management system with aliases and resolution',
       useProxyRegistry: 'Proxy-based registry with automatic reactivity',
+      useStack: 'Stack-based state management for layered contexts (dialogs, menus, etc.)',
     },
   },
   selection: {
@@ -36,8 +37,8 @@ export const VUETIFY0_COMPOSABLES = {
       createGroup: 'Creates a group instance with batch selection operations (extends createSelection)',
       createSingle: 'Creates a single-selection instance (enforces only one selected item)',
       createStep: 'Creates a step/stepper instance for managing multi-step processes',
-      useFilter: 'Filter arrays based on search queries',
-      usePagination: 'Lightweight pagination for navigating through pages with next/prev/first/last methods',
+      createFilter: 'Filter arrays based on search queries',
+      createPagination: 'Lightweight pagination for navigating through pages with next/prev/first/last methods',
     },
   },
   forms: {
@@ -58,10 +59,10 @@ export const VUETIFY0_COMPOSABLES = {
       useIntersectionObserver: 'Detect element visibility changes',
       useMediaQuery: 'Reactive CSS media query matching',
       useMutationObserver: 'Observe DOM mutations',
-      useOverflow: 'Computes how many items fit in a container based on available width',
+      createOverflow: 'Computes how many items fit in a container based on available width',
       useResizeObserver: 'Detect element dimension changes',
       useToggleScope: 'Conditionally manages an effect scope based on a reactive boolean',
-      useVirtual: 'Virtual scrolling for efficiently rendering large lists',
+      createVirtual: 'Virtual scrolling for efficiently rendering large lists',
     },
   },
   plugins: {
@@ -100,6 +101,7 @@ export const VUETIFY0_COMPONENTS = {
   Pagination: 'Pagination controls with Root, Item, Ellipsis, First, Last, Next, Prev sub-components',
   Popover: 'Popover overlay component',
   Radio: 'Radio button component',
+  Scrim: 'Overlay backdrop component for modals and dialogs',
   Selection: 'Selection handling component',
   Single: 'Single item component',
   Step: 'Step/stepper component',
@@ -225,7 +227,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 39 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
+            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 40 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
           } as const,
         ],
       }
@@ -240,7 +242,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Components\n\nVuetify0 provides 13 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
+            text: `# @vuetify/v0 Components\n\nVuetify0 provides 14 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
           } as const,
         ],
       }
