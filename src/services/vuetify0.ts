@@ -372,7 +372,7 @@ export function createVuetify0Service () {
         const { data } = await octokit.rest.repos.getContent({
           owner: 'vuetifyjs',
           repo: '0',
-          path: 'packages/0/SKILL.md',
+          path: 'skills/vuetify0/SKILL.md',
           mediaType: {
             format: 'raw',
           },
