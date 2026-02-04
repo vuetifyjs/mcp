@@ -349,5 +349,44 @@ export function createVuetify0Service () {
         ],
       }
     },
+
+    getSkill: async () => {
+      try {
+        // Fetch from the docs site for the most up-to-date version
+        const response = await fetch('https://0.vuetifyjs.com/SKILL.md')
+        if (!response.ok) {
+          throw new Error(`Failed to fetch: ${response.status}`)
+        }
+        const data = await response.text()
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: data,
+            } as const,
+          ],
+        }
+      } catch {
+        // Fallback to GitHub if docs site is unavailable
+        const { data } = await octokit.rest.repos.getContent({
+          owner: 'vuetifyjs',
+          repo: '0',
+          path: 'packages/0/SKILL.md',
+          mediaType: {
+            format: 'raw',
+          },
+        })
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: String(data),
+            } as const,
+          ],
+        }
+      }
+    },
   }
 }

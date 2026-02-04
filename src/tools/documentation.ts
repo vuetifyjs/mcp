@@ -145,4 +145,10 @@ export async function registerDocumentationTools (server: McpServer) {
     'Get a list of all subpath exports available in @vuetify/v0 (utilities, types, constants, date adapter).',
     vuetify0.getExportsList,
   )
+
+  server.tool(
+    'get_vuetify0_skill',
+    'Get the latest SKILL.md reference for @vuetify/v0 — a compact guide with patterns, anti-patterns, and common mistakes optimized for AI coding assistants.',
+    vuetify0.getSkill,
+  )
 }
