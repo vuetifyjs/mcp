@@ -206,7 +206,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Package Documentation\n\nSource: https://github.com/vuetifyjs/0/tree/main/packages/0\n\n${data}`,
+            text: `# @vuetify/v0 Package Documentation\n\nSource: https://github.com/vuetifyjs/0/tree/master/packages/0\n\n${data}`,
           } as const,
         ],
       }
@@ -277,7 +277,7 @@ export function createVuetify0Service () {
           content: [
             {
               type: 'text',
-              text: `# ${name}\n\n**Category**: ${categoryData.name} (${category})\n**Description**: ${categoryData.composables[name as keyof typeof categoryData.composables]}\n\n**Documentation**: https://0.vuetifyjs.com/composables/${category}/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/main/packages/0/src/composables/${name}/index.ts\n\n## Source Code\n\n\`\`\`typescript\n${data}\n\`\`\``,
+              text: `# ${name}\n\n**Category**: ${categoryData.name} (${category})\n**Description**: ${categoryData.composables[name as keyof typeof categoryData.composables]}\n\n**Documentation**: https://0.vuetifyjs.com/composables/${category}/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/composables/${name}/index.ts\n\n## Source Code\n\n\`\`\`typescript\n${data}\n\`\`\``,
             } as const,
           ],
         }
@@ -287,7 +287,7 @@ export function createVuetify0Service () {
           content: [
             {
               type: 'text',
-              text: `# ${name}\n\n**Category**: ${categoryData.name} (${category})\n**Description**: ${categoryData.composables[name as keyof typeof categoryData.composables]}\n\n**Documentation**: https://0.vuetifyjs.com/composables/${category}/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/main/packages/0/src/composables/${name}/index.ts\n\n*Note*: For detailed API documentation, examples, and usage, please visit the documentation link above.`,
+              text: `# ${name}\n\n**Category**: ${categoryData.name} (${category})\n**Description**: ${categoryData.composables[name as keyof typeof categoryData.composables]}\n\n**Documentation**: https://0.vuetifyjs.com/composables/${category}/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/composables/${name}/index.ts\n\n*Note*: For detailed API documentation, examples, and usage, please visit the documentation link above.`,
             } as const,
           ],
         }
@@ -315,7 +315,7 @@ export function createVuetify0Service () {
           content: [
             {
               type: 'text',
-              text: `# ${name}\n\n**Description**: ${VUETIFY0_COMPONENTS[name]}\n\n**Documentation**: https://0.vuetifyjs.com/components/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/main/packages/0/src/components/${name}/index.ts\n\n## Source Code\n\n\`\`\`typescript\n${data}\n\`\`\``,
+              text: `# ${name}\n\n**Description**: ${VUETIFY0_COMPONENTS[name]}\n\n**Documentation**: https://0.vuetifyjs.com/components/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/components/${name}/index.ts\n\n## Source Code\n\n\`\`\`typescript\n${data}\n\`\`\``,
             } as const,
           ],
         }
@@ -324,7 +324,7 @@ export function createVuetify0Service () {
           content: [
             {
               type: 'text',
-              text: `# ${name}\n\n**Description**: ${VUETIFY0_COMPONENTS[name]}\n\n**Documentation**: https://0.vuetifyjs.com/components/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/main/packages/0/src/components/${name}/index.ts\n\n*Note*: For detailed API documentation, props, events, and usage examples, please visit the documentation link above.`,
+              text: `# ${name}\n\n**Description**: ${VUETIFY0_COMPONENTS[name]}\n\n**Documentation**: https://0.vuetifyjs.com/components/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/components/${name}/index.ts\n\n*Note*: For detailed API documentation, props, events, and usage examples, please visit the documentation link above.`,
             } as const,
           ],
         }
