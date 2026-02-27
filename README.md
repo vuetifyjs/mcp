@@ -9,6 +9,7 @@
   <a href="https://www.npmjs.com/package/@vuetify/mcp"><img src="https://img.shields.io/npm/v/@vuetify/mcp.svg" alt="npm version"></a>
   <a href="https://npm.chart.dev/@vuetify/mcp"><img src="https://img.shields.io/npm/dm/@vuetify/mcp?color=blue" alt="npm downloads"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="https://community.vuetifyjs.com"><img src="https://discordapp.com/api/guilds/340160225338195969/widget.png" alt="Discord"></a>
 </p>
 
 Model Context Protocol (MCP) server providing Vuetify component information and documentation to any MCP-compatible client or IDE.
