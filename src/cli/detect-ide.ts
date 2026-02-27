@@ -1,6 +1,8 @@
 import { platform } from 'std-env'
+import path from 'pathe'
 import type { DetectedIDE, KnownIDE } from './ide/types.js'
 import * as SupportedIDEList from './ide/known/index.js'
+import { findRunningIDEInstances } from './process-utils.js'
 
 const DEFAULT_SETTINGS_FILE = 'mcp.json'
 let cachedIDEs: DetectedIDE[] | null = null
@@ -35,17 +37,42 @@ export async function detectIDEs () {
   }
 
   const detectedIDEs: DetectedIDE[] = []
-  for (const ideName in SupportedIDEList) {
-    const exists = await isProgramInstalled(SupportedIDEList[ideName as keyof typeof SupportedIDEList])
+  const processedPaths = new Set<string>()
 
-    if (exists) {
-      const ide = SupportedIDEList[ideName as keyof typeof SupportedIDEList]
+  for (const ideName in SupportedIDEList) {
+    const ide = SupportedIDEList[ideName as keyof typeof SupportedIDEList]
+    const defaultSettingsDir = getSettingsDir(ide)
+    const resolvedDefaultSettingsDir = defaultSettingsDir ? path.resolve(defaultSettingsDir) : null
+
+    const customPaths = await findRunningIDEInstances(ide.id)
+    for (const customPath of customPaths) {
+      const isVSCodeFamily = ['code', 'code-insiders', 'trae', 'cursor', 'windsurf'].includes(ide.id)
+      const settingsDir = isVSCodeFamily ? path.join(customPath, 'User') : customPath
+      const resolvedSettingsDir = path.resolve(settingsDir)
+
+      if (!processedPaths.has(resolvedSettingsDir)) {
+        const isDefault = resolvedDefaultSettingsDir && resolvedSettingsDir === resolvedDefaultSettingsDir
+        detectedIDEs.push({
+          ide: ide.id,
+          brand: isDefault ? ide.brand : `${ide.brand} (Custom)`,
+          settingsDir,
+          settingsFile: getSettingsFile(ide),
+        })
+        processedPaths.add(resolvedSettingsDir)
+      }
+    }
+
+    const exists = await isProgramInstalled(ide)
+
+    if (exists && defaultSettingsDir && resolvedDefaultSettingsDir // Only add if not already added by process detection or previous iteration
+      && !processedPaths.has(resolvedDefaultSettingsDir)) {
       detectedIDEs.push({
         ide: ide.id,
         brand: ide.brand,
-        settingsDir: getSettingsDir(ide),
+        settingsDir: defaultSettingsDir,
         settingsFile: getSettingsFile(ide),
       })
+      processedPaths.add(resolvedDefaultSettingsDir)
     }
   }
 
