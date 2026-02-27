@@ -5,9 +5,11 @@
   </picture>
 </div>
 
-[![npm version](https://img.shields.io/npm/v/@vuetify/mcp.svg)](https://www.npmjs.com/package/@vuetify/mcp)
-[![npm downloads](https://img.shields.io/npm/dm/@vuetify/mcp?color=blue)](https://npm.chart.dev/@vuetify/mcp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <a href="https://www.npmjs.com/package/@vuetify/mcp"><img src="https://img.shields.io/npm/v/@vuetify/mcp.svg" alt="npm version"></a>
+  <a href="https://npm.chart.dev/@vuetify/mcp"><img src="https://img.shields.io/npm/dm/@vuetify/mcp?color=blue" alt="npm downloads"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+</p>
 
 Model Context Protocol (MCP) server providing Vuetify component information and documentation to any MCP-compatible client or IDE.
 
