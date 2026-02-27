@@ -26,6 +26,11 @@ if (ides.length > 1) {
   })
 }
 
+if (typeof idesToInstall === 'symbol') {
+  outro('Installation cancelled')
+  process.exit(0)
+}
+
 if (ides.length === 1) {
   idesToInstall = ides[0]
 }
