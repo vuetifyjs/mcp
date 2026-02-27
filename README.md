@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.vuetifyjs.com/docs/images/logos/vmcp-logo2-dark.png">
-    <img alt="Vuetify MCP Logo" src="https://cdn.vuetifyjs.com/docs/images/logos/vmcp-logo-light.png" height="150">
+    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.vuetifyjs.com/docs/images/one/logos/vmcp-logo-dark.png">
+    <img alt="Vuetify MCP Logo" src="https://cdn.vuetifyjs.com/docs/images/one/logos/vmcp-logo-light.png" height="100">
   </picture>
 </div>
 
