@@ -20,6 +20,9 @@ export const VUETIFY0_COMPOSABLES = {
     name: 'Registration',
     description: 'Manage collections and registries',
     composables: {
+      createBreadcrumbs: 'Breadcrumb navigation built on createSingle',
+      createDataTable: 'Composable data table that composes existing v0 primitives (selection, pagination, sorting, filtering)',
+      createModel: 'Value store layer extending createRegistry with a reactive Set of selected IDs and useProxyModel sync',
       createNested: 'Manage nested/hierarchical context structures with parent-child relationships',
       createQueue: 'Registry queue management',
       createRegistry: 'Foundation for registration-based systems with automatic indexing',
@@ -46,7 +49,9 @@ export const VUETIFY0_COMPOSABLES = {
     description: 'Form handling and validation',
     composables: {
       createForm: 'Form state management and validation',
+      createValidation: 'Per-input validation built on createGroup',
       useProxyModel: 'Proxy model utilities for reactive data binding',
+      useRules: 'Validation rule composable with Standard Schema support',
     },
   },
   system: {
@@ -60,9 +65,15 @@ export const VUETIFY0_COMPOSABLES = {
       useMediaQuery: 'Reactive CSS media query matching',
       useMutationObserver: 'Observe DOM mutations',
       createOverflow: 'Computes how many items fit in a container based on available width',
+      createSlider: 'Slider state management: value math, step snapping, percentage conversion, and multi-thumb support',
+      usePopover: 'Native popover API behavior with CSS anchor positioning',
+      useRaf: 'Scope-disposed safe requestAnimationFrame',
       useResizeObserver: 'Detect element dimension changes',
+      useRovingFocus: 'Roving tabindex for keyboard navigation within composite widgets',
+      useTimer: 'Reactive timer with pause/resume support',
       useToggleScope: 'Conditionally manages an effect scope based on a reactive boolean',
       createVirtual: 'Virtual scrolling for efficiently rendering large lists',
+      useVirtualFocus: 'Virtual focus via aria-activedescendant for keyboard navigation',
     },
   },
   plugins: {
@@ -76,7 +87,9 @@ export const VUETIFY0_COMPOSABLES = {
       useLazy: 'Deferred/lazy evaluation of expensive computations',
       useLocale: 'Internationalization support',
       useLogger: 'Logging system',
+      useNotifications: 'Notification management built on createRegistry and createQueue',
       usePermissions: 'Permission management',
+      useRtl: 'RTL (right-to-left) direction detection with adapter pattern',
       useStorage: 'Storage abstraction (localStorage/sessionStorage)',
       useTheme: 'Theme switching and CSS variable management',
     },
@@ -86,6 +99,7 @@ export const VUETIFY0_COMPOSABLES = {
     description: 'Helper functions for type transformations',
     composables: {
       toArray: 'Convert any value to an array with null/undefined handling',
+      toElement: 'Resolve various element reference types to a DOM Element',
       toReactive: 'Convert MaybeRef objects to reactive proxies',
     },
   },
@@ -94,25 +108,37 @@ export const VUETIFY0_COMPOSABLES = {
 export const VUETIFY0_COMPONENTS = {
   Atom: 'Base element wrapper component',
   Avatar: 'Image loading with fallback system',
+  Breadcrumbs: 'Responsive navigation trail with automatic overflow handling and ellipsis support',
+  Button: 'Interactive button controls with toggle groups, loading states, and icon support',
   Checkbox: 'Checkbox with tri-state and group support',
   Dialog: 'Modal dialog component',
   ExpansionPanel: 'Expandable panel component',
+  Form: 'Coordinates validation across fields with submit/reset handling',
   Group: 'Component grouping/container',
+  Input: 'Text input control with validation, error messages, and help text',
+  Locale: 'Scoped locale provider for internationalization within a component subtree',
   Pagination: 'Pagination controls with Root, Item, Ellipsis, First, Last, Next, Prev sub-components',
   Popover: 'Popover overlay component',
   Radio: 'Radio button component',
   Scrim: 'Overlay backdrop component for modals and dialogs',
+  Select: 'Dropdown selection with virtual focus, popover content, and keyboard navigation',
   Selection: 'Selection handling component',
   Single: 'Single item component',
+  Slider: 'Range input with drag interaction, keyboard navigation, and multi-thumb support',
+  Snackbar: 'Toast notification system with queue management, auto-dismiss, and accessibility',
+  Splitter: 'Resizable panel layout with draggable handles and flex-based sizing',
   Step: 'Step/stepper component',
+  Switch: 'Toggle control with group support, tri-state, and form integration',
   Tabs: 'Tabbed interface component',
+  Theme: 'Scoped theme provider for applying theme context to component subtrees',
+  Treeview: 'Hierarchical tree with expand/collapse, multi-selection, and keyboard navigation',
 } as const
 
 export const VUETIFY0_EXPORTS = {
   utilities: {
     name: 'Utilities',
     path: '@vuetify/v0/utilities',
-    description: 'Helper functions for type checking, object manipulation, and common transformations',
+    description: 'Helper functions for type checking, object manipulation, color, and common transformations',
     exports: {
       isFunction: 'Check if a value is a function',
       isString: 'Check if a value is a string',
@@ -126,11 +152,15 @@ export const VUETIFY0_EXPORTS = {
       isPrimitive: 'Check if a value is a primitive (string, number, or boolean)',
       isSymbol: 'Check if a value is a symbol',
       isNaN: 'Check if a value is NaN',
-      mergeDeep: 'Deeply merge source objects into a target object',
+      mergeDeep: 'Deeply merge source objects into a target object (non-mutating)',
       useId: 'Generate unique IDs (SSR-safe with Vue\'s useId)',
       clamp: 'Clamp a value between a minimum and maximum',
       range: 'Create an array of sequential numbers',
       debounce: 'Debounce a function call by a specified delay',
+      apca: 'APCA (Accessible Perceptual Contrast Algorithm) contrast calculation',
+      foreground: 'Determine optimal foreground color (black/white) for a given background hex',
+      hexToRgb: 'Convert hex color string to RGB object',
+      rgbToHex: 'Convert RGB object to hex color string',
     },
   },
   types: {
@@ -145,6 +175,8 @@ export const VUETIFY0_EXPORTS = {
       DeepPartial: 'Recursively makes all properties of T optional',
       MaybeArray: 'Union type that accepts either a single value or an array',
       MaybeRef: 'Value that may be wrapped in a Vue ref, readonly ref, shallow ref, or getter',
+      Extensible: 'Preserves string literal autocomplete while allowing arbitrary strings',
+      Activation: 'Keyboard activation mode: automatic (select follows focus) or manual (Enter/Space to select)',
     },
   },
   constants: {
@@ -163,6 +195,103 @@ export const VUETIFY0_EXPORTS = {
     exports: {
       Vuetify0DateAdapter: 'Temporal API-based date adapter implementation',
     },
+  },
+  dataTable: {
+    name: 'Data Table',
+    path: '@vuetify/v0/data-table',
+    description: 'Data table module with pluggable adapters for client-side, server-side, and virtual scrolling',
+    exports: {
+      'adapters/client': 'Client-side data table adapter with local sorting, filtering, and pagination',
+      'adapters/server': 'Server-side data table adapter for remote data fetching',
+      'adapters/virtual': 'Virtual scrolling data table adapter for large datasets',
+    },
+  },
+  features: {
+    name: 'Features',
+    path: '@vuetify/v0/features',
+    description: 'Feature flag management with pluggable provider adapters',
+    exports: {
+      'adapters/flagsmith': 'Flagsmith feature flag adapter',
+      'adapters/launchdarkly': 'LaunchDarkly feature flag adapter',
+      'adapters/posthog': 'PostHog feature flag adapter',
+    },
+  },
+  locale: {
+    name: 'Locale',
+    path: '@vuetify/v0/locale',
+    description: 'Internationalization module with pluggable locale adapters',
+    exports: {
+      'adapters/v0': 'Built-in v0 locale adapter',
+      'adapters/vue-i18n': 'Vue I18n locale adapter',
+    },
+  },
+  logger: {
+    name: 'Logger',
+    path: '@vuetify/v0/logger',
+    description: 'Logging module with pluggable logger adapters',
+    exports: {
+      'adapters/consola': 'Consola logger adapter',
+      'adapters/pino': 'Pino logger adapter',
+      'adapters/v0': 'Built-in v0 logger adapter',
+    },
+  },
+  notifications: {
+    name: 'Notifications',
+    path: '@vuetify/v0/notifications',
+    description: 'Notification system types and utilities',
+    exports: {},
+  },
+  palettes: {
+    name: 'Palettes',
+    path: '@vuetify/v0/palettes',
+    description: 'Color palette modules with generation utilities for popular design systems',
+    exports: {
+      'ant': 'Ant Design color palette',
+      'ant/generate': 'Ant Design palette generation',
+      'leonardo/generate': 'Adobe Leonardo contrast-based palette generation',
+      'material': 'Material Design color palette',
+      'material/generate': 'Material Design palette generation (HCT)',
+      'md1': 'Material Design 1 color palette',
+      'md2': 'Material Design 2 color palette',
+      'radix': 'Radix UI color palette',
+      'tailwind': 'Tailwind CSS color palette',
+    },
+  },
+  permissions: {
+    name: 'Permissions',
+    path: '@vuetify/v0/permissions',
+    description: 'Permission management with pluggable adapters',
+    exports: {
+      'adapters/v0': 'Built-in v0 permissions adapter',
+    },
+  },
+  rules: {
+    name: 'Rules',
+    path: '@vuetify/v0/rules',
+    description: 'Validation rules with Standard Schema support',
+    exports: {},
+  },
+  storage: {
+    name: 'Storage',
+    path: '@vuetify/v0/storage',
+    description: 'Storage abstraction with pluggable adapters',
+    exports: {
+      'adapters/memory': 'In-memory storage adapter',
+    },
+  },
+  theme: {
+    name: 'Theme',
+    path: '@vuetify/v0/theme',
+    description: 'Theme system with CSS variable management and pluggable adapters',
+    exports: {
+      'adapters/v0': 'Built-in v0 theme adapter',
+    },
+  },
+  browser: {
+    name: 'Browser',
+    path: '@vuetify/v0/browser',
+    description: 'Browser-specific build for non-SSR environments',
+    exports: {},
   },
 } as const
 
@@ -227,7 +356,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 40 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
+            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 54 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
           } as const,
         ],
       }
@@ -242,7 +371,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Components\n\nVuetify0 provides 14 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
+            text: `# @vuetify/v0 Components\n\nVuetify0 provides 26 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
           } as const,
         ],
       }
@@ -346,7 +475,7 @@ export function createVuetify0Service () {
         content: [
           {
             type: 'text',
-            text: `# @vuetify/v0 Subpath Exports\n\nVuetify0 provides additional subpath exports for utilities, types, constants, and date handling:\n\n${exports}\n\n**Documentation**: https://0.vuetifyjs.com/`,
+            text: `# @vuetify/v0 Subpath Exports\n\nVuetify0 provides subpath exports for utilities, types, constants, date handling, and feature modules with pluggable adapters:\n\n${exports}\n\n**Documentation**: https://0.vuetifyjs.com/`,
           } as const,
         ],
       }
