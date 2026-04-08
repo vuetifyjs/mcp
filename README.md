@@ -251,8 +251,8 @@ Support for @vuetify/v0, a headless meta-framework providing unstyled components
 
 - `get_vuetify0_installation_guide`: Get installation and usage instructions for @vuetify/v0 from GitHub.
 - `get_vuetify0_package_guide`: Get package-specific documentation for @vuetify/v0.
-- `get_vuetify0_composable_list`: List all 28+ composables organized by category (foundation, registration, selection, forms, system, plugins, transformers).
-- `get_vuetify0_component_list`: List all 8 headless components (Atom, Avatar, ExpansionPanel, Group, Popover, Selection, Single, Step).
+- `get_vuetify0_composable_list`: List all 63 composables organized by category (foundation, registration, selection, forms, system, plugins, data, reactivity, transformers).
+- `get_vuetify0_component_list`: List all 46 headless components available in @vuetify/v0.
 - `get_vuetify0_composable_guide`: Get detailed documentation and source code for specific composables.
 - `get_vuetify0_component_guide`: Get detailed documentation and source code for specific components.
 
