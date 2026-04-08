@@ -20,16 +20,12 @@ export const VUETIFY0_COMPOSABLES = {
     name: 'Registration',
     description: 'Manage collections and registries',
     composables: {
-      createBreadcrumbs: 'Breadcrumb navigation built on createSingle',
-      createDataTable: 'Composable data table that composes existing v0 primitives (selection, pagination, sorting, filtering)',
       createModel: 'Value store layer extending createRegistry with a reactive Set of selected IDs and useProxyModel sync',
       createNested: 'Manage nested/hierarchical context structures with parent-child relationships',
       createQueue: 'Registry queue management',
       createRegistry: 'Foundation for registration-based systems with automatic indexing',
       createTimeline: 'Bounded undo/redo system with fixed-size history',
       createTokens: 'Design token management system with aliases and resolution',
-      useProxyRegistry: 'Proxy-based registry with automatic reactivity',
-      useStack: 'Stack-based state management for layered contexts (dialogs, menus, etc.)',
     },
   },
   selection: {
@@ -40,17 +36,20 @@ export const VUETIFY0_COMPOSABLES = {
       createGroup: 'Creates a group instance with batch selection operations (extends createSelection)',
       createSingle: 'Creates a single-selection instance (enforces only one selected item)',
       createStep: 'Creates a step/stepper instance for managing multi-step processes',
-      createFilter: 'Filter arrays based on search queries',
-      createPagination: 'Lightweight pagination for navigating through pages with next/prev/first/last methods',
     },
   },
   forms: {
     name: 'Forms',
     description: 'Form handling and validation',
     composables: {
+      createCombobox: 'Combobox state management with filtering, selection, and keyboard navigation',
       createForm: 'Form state management and validation',
+      createInput: 'Input state management with focus, validation, and accessibility',
+      createNumberField: 'Number field state with increment/decrement, step, and min/max constraints',
+      createNumeric: 'Numeric formatting and parsing utilities for number inputs',
+      createRating: 'Rating state management with hover preview and half-star support',
+      createSlider: 'Slider state management: value math, step snapping, percentage conversion, and multi-thumb support',
       createValidation: 'Per-input validation built on createGroup',
-      useProxyModel: 'Proxy model utilities for reactive data binding',
       useRules: 'Validation rule composable with Standard Schema support',
     },
   },
@@ -58,21 +57,21 @@ export const VUETIFY0_COMPOSABLES = {
     name: 'System',
     description: 'DOM observers and event handlers with automatic cleanup',
     composables: {
+      createFocusTraversal: 'Internal factory for useRovingFocus and useVirtualFocus focus traversal patterns',
+      createObserver: 'Internal factory for observer composables (IntersectionObserver, MutationObserver, ResizeObserver)',
       useClickOutside: 'Detect clicks outside an element',
       useEventListener: 'Event listener management with auto-cleanup',
       useHotkey: 'Keyboard hotkey/shortcut handling',
       useIntersectionObserver: 'Detect element visibility changes',
       useMediaQuery: 'Reactive CSS media query matching',
       useMutationObserver: 'Observe DOM mutations',
-      createOverflow: 'Computes how many items fit in a container based on available width',
-      createSlider: 'Slider state management: value math, step snapping, percentage conversion, and multi-thumb support',
       usePopover: 'Native popover API behavior with CSS anchor positioning',
+      usePresence: 'Animate enter/exit transitions with DOM presence tracking',
       useRaf: 'Scope-disposed safe requestAnimationFrame',
       useResizeObserver: 'Detect element dimension changes',
       useRovingFocus: 'Roving tabindex for keyboard navigation within composite widgets',
       useTimer: 'Reactive timer with pause/resume support',
       useToggleScope: 'Conditionally manages an effect scope based on a reactive boolean',
-      createVirtual: 'Virtual scrolling for efficiently rendering large lists',
       useVirtualFocus: 'Virtual focus via aria-activedescendant for keyboard navigation',
     },
   },
@@ -90,8 +89,30 @@ export const VUETIFY0_COMPOSABLES = {
       useNotifications: 'Notification management built on createRegistry and createQueue',
       usePermissions: 'Permission management',
       useRtl: 'RTL (right-to-left) direction detection with adapter pattern',
+      useStack: 'Stack-based state management for layered contexts (dialogs, menus, etc.)',
       useStorage: 'Storage abstraction (localStorage/sessionStorage)',
       useTheme: 'Theme switching and CSS variable management',
+    },
+  },
+  data: {
+    name: 'Data',
+    description: 'Data processing, filtering, pagination, and virtualization',
+    composables: {
+      createBreadcrumbs: 'Breadcrumb navigation built on createSingle',
+      createDataTable: 'Composable data table that composes existing v0 primitives (selection, pagination, sorting, filtering)',
+      createFilter: 'Filter arrays based on search queries',
+      createOverflow: 'Computes how many items fit in a container based on available width',
+      createPagination: 'Lightweight pagination for navigating through pages with next/prev/first/last methods',
+      createProgress: 'Progress state management for determinate and indeterminate indicators',
+      createVirtual: 'Virtual scrolling for efficiently rendering large lists',
+    },
+  },
+  reactivity: {
+    name: 'Reactivity',
+    description: 'Reactive data binding and proxy utilities',
+    composables: {
+      useProxyModel: 'Proxy model utilities for reactive data binding',
+      useProxyRegistry: 'Proxy-based registry with automatic reactivity',
     },
   },
   transformers: {
@@ -106,20 +127,35 @@ export const VUETIFY0_COMPOSABLES = {
 } as const
 
 export const VUETIFY0_COMPONENTS = {
+  Alert: 'Contextual feedback messages for user actions',
+  AlertDialog: 'Modal confirmation dialog requiring user acknowledgment before proceeding',
   Atom: 'Base element wrapper component',
   Avatar: 'Image loading with fallback system',
   Breadcrumbs: 'Responsive navigation trail with automatic overflow handling and ellipsis support',
   Button: 'Interactive button controls with toggle groups, loading states, and icon support',
+  Carousel: 'Slideshow component for cycling through content panels',
   Checkbox: 'Checkbox with tri-state and group support',
+  Collapsible: 'Animated expand/collapse container for showing and hiding content',
+  Combobox: 'Filterable dropdown with text input for searching and selecting options',
+  DataGrid: 'Data grid component for tabular data display with sorting and filtering',
+  DatePicker: 'Calendar-based date selection component',
+  DateRangePicker: 'Calendar-based date range selection with start and end dates',
   Dialog: 'Modal dialog component',
   ExpansionPanel: 'Expandable panel component',
   Form: 'Coordinates validation across fields with submit/reset handling',
   Group: 'Component grouping/container',
+  Image: 'Image component with lazy loading, aspect ratio, and placeholder support',
   Input: 'Text input control with validation, error messages, and help text',
   Locale: 'Scoped locale provider for internationalization within a component subtree',
+  NumberField: 'Numeric input with increment/decrement controls and min/max constraints',
+  Overflow: 'Container that detects and manages content overflow',
   Pagination: 'Pagination controls with Root, Item, Ellipsis, First, Last, Next, Prev sub-components',
   Popover: 'Popover overlay component',
+  Portal: 'Teleport content to a different location in the DOM tree',
+  Presence: 'Animate mount/unmount transitions with DOM presence lifecycle',
+  Progress: 'Determinate and indeterminate progress indicators',
   Radio: 'Radio button component',
+  Rating: 'Star rating input with hover preview and fractional value support',
   Scrim: 'Overlay backdrop component for modals and dialogs',
   Select: 'Dropdown selection with virtual focus, popover content, and keyboard navigation',
   Selection: 'Selection handling component',
@@ -131,7 +167,12 @@ export const VUETIFY0_COMPONENTS = {
   Switch: 'Toggle control with group support, tri-state, and form integration',
   Tabs: 'Tabbed interface component',
   Theme: 'Scoped theme provider for applying theme context to component subtrees',
+  TimePicker: 'Time selection component with hour, minute, and period controls',
+  Toggle: 'Pressable toggle button with on/off state management',
+  Tooltip: 'Informational popup that appears on hover or focus',
+  Tour: 'Guided walkthrough system for onboarding and feature discovery',
   Treeview: 'Hierarchical tree with expand/collapse, multi-selection, and keyboard navigation',
+  Virtualizer: 'Virtual scrolling container for efficiently rendering large lists',
 } as const
 
 export const VUETIFY0_EXPORTS = {
@@ -299,6 +340,10 @@ export type Vuetify0Category = keyof typeof VUETIFY0_COMPOSABLES
 export type Vuetify0Component = keyof typeof VUETIFY0_COMPONENTS
 export type Vuetify0Export = keyof typeof VUETIFY0_EXPORTS
 
+function text (value: string) {
+  return { content: [{ type: 'text' as const, text: value }] }
+}
+
 export function createVuetify0Service () {
   return {
     getInstallationGuide: async () => {
@@ -311,14 +356,7 @@ export function createVuetify0Service () {
         },
       })
 
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `# @vuetify/v0 (Vuetify0) Documentation\n\nSource: https://github.com/vuetifyjs/0\nWebsite: https://0.vuetifyjs.com/\n\n${data}`,
-          } as const,
-        ],
-      }
+      return text(`# @vuetify/v0 (Vuetify0) Documentation\n\nSource: https://github.com/vuetifyjs/0\nWebsite: https://0.vuetifyjs.com/\n\n${data}`)
     },
 
     getPackageGuide: async () => {
@@ -331,14 +369,7 @@ export function createVuetify0Service () {
         },
       })
 
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `# @vuetify/v0 Package Documentation\n\nSource: https://github.com/vuetifyjs/0/tree/master/packages/0\n\n${data}`,
-          } as const,
-        ],
-      }
+      return text(`# @vuetify/v0 Package Documentation\n\nSource: https://github.com/vuetifyjs/0/tree/master/packages/0\n\n${data}`)
     },
 
     getComposableList: async () => {
@@ -352,14 +383,7 @@ export function createVuetify0Service () {
         })
         .join('\n\n')
 
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `# @vuetify/v0 Composables\n\nVuetify0 provides 54 tree-shakeable composables organized into 7 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Pre-Alpha. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`,
-          } as const,
-        ],
-      }
+      return text(`# @vuetify/v0 Composables\n\nVuetify0 provides 63 tree-shakeable composables organized into 9 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Alpha (v1.0.0-alpha.0). Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`)
     },
 
     getComponentList: async () => {
@@ -367,14 +391,7 @@ export function createVuetify0Service () {
         .map(([name, description]) => `- **${name}**: ${description}`)
         .join('\n')
 
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `# @vuetify/v0 Components\n\nVuetify0 provides 26 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`,
-          } as const,
-        ],
-      }
+      return text(`# @vuetify/v0 Components\n\nVuetify0 provides 46 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`)
     },
 
     getComposableGuide: async ({ category, name }: { category: Vuetify0Category, name: string }) => {
@@ -402,24 +419,10 @@ export function createVuetify0Service () {
           },
         })
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `# ${name}\n\n**Category**: ${categoryData.name} (${category})\n**Description**: ${categoryData.composables[name as keyof typeof categoryData.composables]}\n\n**Documentation**: https://0.vuetifyjs.com/composables/${category}/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/composables/${name}/index.ts\n\n## Source Code\n\n\`\`\`typescript\n${data}\n\`\`\``,
-            } as const,
-          ],
-        }
+        return text(`# ${name}\n\n**Category**: ${categoryData.name} (${category})\n**Description**: ${categoryData.composables[name as keyof typeof categoryData.composables]}\n\n**Documentation**: https://0.vuetifyjs.com/composables/${category}/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/composables/${name}/index.ts\n\n## Source Code\n\n\`\`\`typescript\n${data}\n\`\`\``)
       } catch {
         // If source code fetch fails, return basic info with documentation link
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `# ${name}\n\n**Category**: ${categoryData.name} (${category})\n**Description**: ${categoryData.composables[name as keyof typeof categoryData.composables]}\n\n**Documentation**: https://0.vuetifyjs.com/composables/${category}/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/composables/${name}/index.ts\n\n*Note*: For detailed API documentation, examples, and usage, please visit the documentation link above.`,
-            } as const,
-          ],
-        }
+        return text(`# ${name}\n\n**Category**: ${categoryData.name} (${category})\n**Description**: ${categoryData.composables[name as keyof typeof categoryData.composables]}\n\n**Documentation**: https://0.vuetifyjs.com/composables/${category}/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/composables/${name}/index.ts\n\n*Note*: For detailed API documentation, examples, and usage, please visit the documentation link above.`)
       }
     },
 
@@ -440,23 +443,9 @@ export function createVuetify0Service () {
           },
         })
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `# ${name}\n\n**Description**: ${VUETIFY0_COMPONENTS[name]}\n\n**Documentation**: https://0.vuetifyjs.com/components/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/components/${name}/index.ts\n\n## Source Code\n\n\`\`\`typescript\n${data}\n\`\`\``,
-            } as const,
-          ],
-        }
+        return text(`# ${name}\n\n**Description**: ${VUETIFY0_COMPONENTS[name]}\n\n**Documentation**: https://0.vuetifyjs.com/components/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/components/${name}/index.ts\n\n## Source Code\n\n\`\`\`typescript\n${data}\n\`\`\``)
       } catch {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `# ${name}\n\n**Description**: ${VUETIFY0_COMPONENTS[name]}\n\n**Documentation**: https://0.vuetifyjs.com/components/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/components/${name}/index.ts\n\n*Note*: For detailed API documentation, props, events, and usage examples, please visit the documentation link above.`,
-            } as const,
-          ],
-        }
+        return text(`# ${name}\n\n**Description**: ${VUETIFY0_COMPONENTS[name]}\n\n**Documentation**: https://0.vuetifyjs.com/components/${kebabName}\n**Source**: https://github.com/vuetifyjs/0/blob/master/packages/0/src/components/${name}/index.ts\n\n*Note*: For detailed API documentation, props, events, and usage examples, please visit the documentation link above.`)
       }
     },
 
@@ -471,14 +460,7 @@ export function createVuetify0Service () {
         })
         .join('\n\n')
 
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `# @vuetify/v0 Subpath Exports\n\nVuetify0 provides subpath exports for utilities, types, constants, date handling, and feature modules with pluggable adapters:\n\n${exports}\n\n**Documentation**: https://0.vuetifyjs.com/`,
-          } as const,
-        ],
-      }
+      return text(`# @vuetify/v0 Subpath Exports\n\nVuetify0 provides subpath exports for utilities, types, constants, date handling, and feature modules with pluggable adapters:\n\n${exports}\n\n**Documentation**: https://0.vuetifyjs.com/`)
     },
 
     getSkill: async () => {
@@ -490,14 +472,7 @@ export function createVuetify0Service () {
         }
         const data = await response.text()
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: data,
-            } as const,
-          ],
-        }
+        return text(data)
       } catch {
         // Fallback to GitHub if docs site is unavailable
         const { data } = await octokit.rest.repos.getContent({
@@ -509,14 +484,7 @@ export function createVuetify0Service () {
           },
         })
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: String(data),
-            } as const,
-          ],
-        }
+        return text(String(data))
       }
     },
   }
