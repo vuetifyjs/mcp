@@ -9,6 +9,7 @@ import { registerApiTools } from '#tools/api'
 import { registerDocumentationTools } from '#tools/documentation'
 import { registerIssuesTools } from '#tools/issues'
 import { registerBinTools } from './one/bin.js'
+import { registerLinkTools } from './one/link.js'
 import { registerPlaygroundTools } from './one/playground.js'
 
 export async function registerTools (server: McpServer) {
@@ -16,5 +17,6 @@ export async function registerTools (server: McpServer) {
   await registerDocumentationTools(server)
   await registerIssuesTools(server)
   await registerBinTools(server)
+  await registerLinkTools(server)
   await registerPlaygroundTools(server)
 }
