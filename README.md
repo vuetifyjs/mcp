@@ -32,10 +32,10 @@ By connecting your development environment to the Vuetify MCP server, you gain A
 
 ### Hosted HTTP Server (Easiest)
 
-Use the hosted MCP server directly:
+Use the hosted MCP server directly. The `claude` CLI below is **Claude Code**, not Claude Desktop — see [Claude Desktop](#claude-desktop) for that GUI client.
 
 ```bash
-# Claude Desktop
+# Claude Code
 claude mcp add --transport http vuetify-mcp https://mcp.vuetifyjs.com/mcp
 ```
 
@@ -109,6 +109,51 @@ Below are the locations and JSON snippets for each supported environment. Copy t
   }
 }
 ```
+
+### Claude Desktop
+
+Claude Desktop (the GUI app, distinct from the Claude Code CLI) **does not support direct HTTP transport** in `claude_desktop_config.json` — it only accepts stdio servers. Pick one of the configs below.
+
+**Local stdio:**
+
+```json
+{
+  "mcpServers": {
+    "vuetify-mcp": {
+      "command": "npx",
+      "args": ["-y", "@vuetify/mcp"]
+    }
+  }
+}
+```
+
+**Hosted via [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) bridge** (consumes the hosted server over stdio):
+
+```json
+{
+  "mcpServers": {
+    "vuetify-mcp": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.vuetifyjs.com/mcp"]
+    }
+  }
+}
+```
+
+**Hosted via mcp-remote on Windows + WSL2:**
+
+```json
+{
+  "mcpServers": {
+    "vuetify-mcp": {
+      "command": "wsl",
+      "args": ["npx", "-y", "mcp-remote", "https://mcp.vuetifyjs.com/mcp"]
+    }
+  }
+}
+```
+
+After editing `claude_desktop_config.json`, fully quit and relaunch Claude Desktop. Logs (useful for debugging) are at `<Claude folder>/logs/main.log` — search for `vuetify-mcp`.
 
 ### Authentication
 
