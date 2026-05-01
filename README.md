@@ -127,7 +127,7 @@ Claude Desktop (the GUI app, distinct from the Claude Code CLI) **does not suppo
 }
 ```
 
-**Hosted via [`mcp-remote`](https://www.npmjs.com/package/mcp-remote) bridge** (consumes the hosted server over stdio):
+**Hosted via [mcp-remote](https://www.npmjs.com/package/mcp-remote) bridge** (consumes the hosted server over stdio):
 
 ```json
 {
