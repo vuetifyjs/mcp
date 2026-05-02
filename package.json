@@ -23,7 +23,6 @@
     "build": "rimraf dist && tsc",
     "start": "node dist/index.js",
     "dev": "pnpm watch && node --watch dist/index.js",
-    "cli": "node dist/cli/index.js",
     "watch": "tsc --watch",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
@@ -42,24 +41,14 @@
     "url": "https://github.com/vuetifyjs/mcp"
   },
   "dependencies": {
-    "@clack/prompts": "^0.11.0",
     "@modelcontextprotocol/sdk": "^1.12.1",
-    "citty": "^0.1.6",
     "dotenv": "^16.5.0",
-    "is-wsl": "^3.1.0",
-    "jsonc-parser": "^3.3.1",
-    "kolorist": "^1.8.0",
     "octokit": "^5.0.3",
-    "pathe": "^2.0.3",
-    "std-env": "^3.9.0",
-    "tinyexec": "^1.0.1",
-    "which": "^5.0.0",
     "zod": "^3.25.56"
   },
   "devDependencies": {
     "bumpp": "^10.1.0",
     "@types/node": "^22.15.30",
-    "@types/which": "^3.0.4",
     "conventional-changelog-cli": "^5.0.0",
     "conventional-changelog-vuetify": "^2.0.2",
     "@vuetify/github-releaser": "^4.0.3",
