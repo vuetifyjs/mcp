@@ -9,7 +9,6 @@ import 'dotenv/config'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
-import { intro } from './cli/intro.js'
 import packageJson from '../package.json' with { type: 'json' }
 import { startHttpServer } from './transports/http.js'
 
@@ -52,7 +51,7 @@ async function main () {
     })
   } else {
     // Stdio transport - single server instance
-    intro()
+    console.warn('Welcome to the Vuetify MCP Server')
 
     const server = new McpServer({
       name: 'Vuetify',
