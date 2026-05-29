@@ -80,13 +80,6 @@ export async function startHttpServer (options: HttpServerOptions = {}): Promise
 }
 
 function getClientIdentifier (req: IncomingMessage): string {
-  // Use session ID if available (for stateful mode)
-  const sessionId = req.headers['mcp-session-id']
-  if (sessionId && typeof sessionId === 'string') {
-    return `session:${sessionId}`
-  }
-
-  // Fall back to IP address
   const forwarded = req.headers['x-forwarded-for']
   const ip = forwarded
     ? (typeof forwarded === 'string' ? forwarded.split(',')[0] : forwarded[0])
@@ -107,8 +100,8 @@ async function handleRequest (
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Mcp-Session-Id, X-Vuetify-Api-Key',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Vuetify-Api-Key',
     })
     res.end()
     return
