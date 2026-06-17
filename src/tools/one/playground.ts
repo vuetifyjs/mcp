@@ -26,6 +26,38 @@ function getApiKey (extra: Extra): string {
   return key
 }
 
+const APP_FILE = 'src/App.vue'
+
+function wrapSfcContent (sfc: string): string {
+  return JSON.stringify([
+    { [APP_FILE]: sfc },
+    null,
+    null,
+    false,
+    APP_FILE,
+    false,
+    'vuetify',
+    {},
+  ])
+}
+
+function unwrapSfcContent (content: string): string {
+  try {
+    const arr = JSON.parse(content)
+    if (Array.isArray(arr) && arr[0] && typeof arr[0] === 'object') {
+      const files = arr[0] as Record<string, string>
+      return files[APP_FILE] ?? content
+    }
+  } catch {
+    // legacy raw-SFC content — return as-is
+  }
+  return content
+}
+
+function playgroundUrl (id: string): string {
+  return `https://play.vuetifyjs.com/playgrounds/${id}`
+}
+
 export async function registerPlaygroundTools (server: McpServer) {
   server.tool(
     'create_vuetify_playground',
@@ -50,6 +82,7 @@ export async function registerPlaygroundTools (server: McpServer) {
           body: JSON.stringify({
             playground: {
               ...playground,
+              content: wrapSfcContent(playground.content),
               aiGenerated: true,
             },
           }),
@@ -68,7 +101,7 @@ export async function registerPlaygroundTools (server: McpServer) {
         return {
           content: [{
             type: 'text',
-            text: `Successfully created playground ${created.title}, you can view it at https://play.vuetifyjs.com/#/${created.id}`,
+            text: `Successfully created playground ${created.title}, you can view it at ${playgroundUrl(created.id)}`,
           }],
         }
       } catch (error: any) {
@@ -164,6 +197,10 @@ export async function registerPlaygroundTools (server: McpServer) {
           Object.entries(playground).filter(([_, v]) => v !== undefined),
         )
 
+        if (typeof updates.content === 'string') {
+          updates.content = wrapSfcContent(updates.content)
+        }
+
         const response = await fetch(`${apiServer}/one/playgrounds/${id}`, {
           method: 'POST',
           body: JSON.stringify({
@@ -184,7 +221,7 @@ export async function registerPlaygroundTools (server: McpServer) {
         return {
           content: [{
             type: 'text',
-            text: `Successfully updated playground ${updated.title}, you can view it at https://play.vuetifyjs.com/#/${updated.id}`,
+            text: `Successfully updated playground ${updated.title}, you can view it at ${playgroundUrl(updated.id)}`,
           }],
         }
       } catch (error: any) {
@@ -228,7 +265,7 @@ export async function registerPlaygroundTools (server: McpServer) {
         return {
           content: [{
             type: 'text',
-            text: playground.content,
+            text: unwrapSfcContent(playground.content),
           }],
         }
       } catch (error: any) {
