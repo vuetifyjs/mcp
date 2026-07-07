@@ -47,6 +47,7 @@ export const VUETIFY0_COMPOSABLES = {
       createInput: 'Input state management with focus, validation, and accessibility',
       createNumberField: 'Number field state with increment/decrement, step, and min/max constraints',
       createNumeric: 'Numeric formatting and parsing utilities for number inputs',
+      createOtp: 'Fixed-length one-time-password or verification-code value with pattern-gated entry and completion detection.',
       createRating: 'Rating state management with hover preview and half-star support',
       createSlider: 'Slider state management: value math, step snapping, percentage conversion, and multi-thumb support',
       createValidation: 'Per-input validation built on createGroup',
@@ -60,8 +61,11 @@ export const VUETIFY0_COMPOSABLES = {
       createFocusTraversal: 'Internal factory for useRovingFocus and useVirtualFocus focus traversal patterns',
       createObserver: 'Internal factory for observer composables (IntersectionObserver, MutationObserver, ResizeObserver)',
       useClickOutside: 'Detect clicks outside an element',
+      useDelay: 'Schedule open and close transitions with start, stop, pause, and resume controls and a reactive view of the pending delay.',
+      useDragDrop: 'Headless drag-and-drop primitive. Owns two registries — draggables and zones — plus the active-drag state.',
       useEventListener: 'Event listener management with auto-cleanup',
       useHotkey: 'Keyboard hotkey/shortcut handling',
+      useImage: 'Tracks image loading state as a reactive state machine with idle, loading, loaded, and error states.',
       useIntersectionObserver: 'Detect element visibility changes',
       useMediaQuery: 'Reactive CSS media query matching',
       useMutationObserver: 'Observe DOM mutations',
@@ -88,10 +92,12 @@ export const VUETIFY0_COMPOSABLES = {
       useLogger: 'Logging system',
       useNotifications: 'Notification management built on createRegistry and createQueue',
       usePermissions: 'Permission management',
+      useReducedMotion: "Respect or override the user's `prefers-reduced-motion` setting, with a reactive flag and a body data attribute for CSS-only consumers.",
       useRtl: 'RTL (right-to-left) direction detection with adapter pattern',
       useStack: 'Stack-based state management for layered contexts (dialogs, menus, etc.)',
       useStorage: 'Storage abstraction (localStorage/sessionStorage)',
       useTheme: 'Theme switching and CSS variable management',
+      useTooltip: 'Shares tooltip open/close/skip delay defaults across a region, so nearby tooltips open instantly once one is already open.',
     },
   },
   data: {
@@ -99,11 +105,14 @@ export const VUETIFY0_COMPOSABLES = {
     description: 'Data processing, filtering, pagination, and virtualization',
     composables: {
       createBreadcrumbs: 'Breadcrumb navigation built on createSingle',
+      createDataGrid: 'A headless data grid with column layout, cell editing, row ordering, and row spanning.',
       createDataTable: 'Composable data table that composes existing v0 primitives (selection, pagination, sorting, filtering)',
       createFilter: 'Filter arrays based on search queries',
+      createKanban: 'Two-level board state for columns of cards, with column reorder, in-column reorder, and a cross-column `transfer` primitive.',
       createOverflow: 'Computes how many items fit in a container based on available width',
       createPagination: 'Lightweight pagination for navigating through pages with next/prev/first/last methods',
       createProgress: 'Progress state management for determinate and indeterminate indicators',
+      createSortable: 'Ordered-list state with `move`, `swap`, and `reorder` mutations.',
       createVirtual: 'Virtual scrolling for efficiently rendering large lists',
     },
   },
@@ -121,14 +130,15 @@ export const VUETIFY0_COMPOSABLES = {
     composables: {
       toArray: 'Convert any value to an array with null/undefined handling',
       toElement: 'Resolve various element reference types to a DOM Element',
+      toHighlight: 'Splits text into matched and unmatched chunks, returning a plain `HighlightChunk[]` for search-term highlighting.',
       toReactive: 'Convert MaybeRef objects to reactive proxies',
     },
   },
 } as const
 
 export const VUETIFY0_COMPONENTS = {
-  Alert: 'Contextual feedback messages for user actions',
   AlertDialog: 'Modal confirmation dialog requiring user acknowledgment before proceeding',
+  AspectRatio: 'Reserves a box with a fixed width-to-height ratio using CSS `aspect-ratio`.',
   Atom: 'Base element wrapper component',
   Avatar: 'Image loading with fallback system',
   Breadcrumbs: 'Responsive navigation trail with automatic overflow handling and ellipsis support',
@@ -137,9 +147,6 @@ export const VUETIFY0_COMPONENTS = {
   Checkbox: 'Checkbox with tri-state and group support',
   Collapsible: 'Animated expand/collapse container for showing and hiding content',
   Combobox: 'Filterable dropdown with text input for searching and selecting options',
-  DataGrid: 'Data grid component for tabular data display with sorting and filtering',
-  DatePicker: 'Calendar-based date selection component',
-  DateRangePicker: 'Calendar-based date range selection with start and end dates',
   Dialog: 'Modal dialog component',
   ExpansionPanel: 'Expandable panel component',
   Form: 'Coordinates validation across fields with submit/reset handling',
@@ -167,12 +174,9 @@ export const VUETIFY0_COMPONENTS = {
   Switch: 'Toggle control with group support, tri-state, and form integration',
   Tabs: 'Tabbed interface component',
   Theme: 'Scoped theme provider for applying theme context to component subtrees',
-  TimePicker: 'Time selection component with hour, minute, and period controls',
   Toggle: 'Pressable toggle button with on/off state management',
   Tooltip: 'Informational popup that appears on hover or focus',
-  Tour: 'Guided walkthrough system for onboarding and feature discovery',
   Treeview: 'Hierarchical tree with expand/collapse, multi-selection, and keyboard navigation',
-  Virtualizer: 'Virtual scrolling container for efficiently rendering large lists',
 } as const
 
 export const VUETIFY0_EXPORTS = {
@@ -383,7 +387,7 @@ export function createVuetify0Service () {
         })
         .join('\n\n')
 
-      return text(`# @vuetify/v0 Composables\n\nVuetify0 provides 63 tree-shakeable composables organized into 9 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in Alpha (v1.0.0-alpha.0). Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`)
+      return text(`# @vuetify/v0 Composables\n\nVuetify0 provides 71 tree-shakeable composables organized into 9 categories:\n\n${categories}\n\n**Note**: Vuetify0 is currently in pre-release. Features may not function as expected.\n\n**Documentation**: https://0.vuetifyjs.com/composables`)
     },
 
     getComponentList: async () => {
@@ -391,7 +395,7 @@ export function createVuetify0Service () {
         .map(([name, description]) => `- **${name}**: ${description}`)
         .join('\n')
 
-      return text(`# @vuetify/v0 Components\n\nVuetify0 provides 46 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`)
+      return text(`# @vuetify/v0 Components\n\nVuetify0 provides 40 headless components (unstyled, logic-only building blocks):\n\n${components}\n\n**Note**: These are headless components - they provide only logic and state without imposed styling.\n\n**Documentation**: https://0.vuetifyjs.com/components`)
     },
 
     getComposableGuide: async ({ category, name }: { category: Vuetify0Category, name: string }) => {
