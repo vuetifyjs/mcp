@@ -2,6 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js'
 import type { ServerRequest, ServerNotification } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
+import { getApiKey } from './auth.js'
 
 export interface Playground {
   id: string
@@ -17,14 +18,6 @@ export interface Playground {
 }
 
 type Extra = RequestHandlerExtra<ServerRequest, ServerNotification>
-
-function getApiKey (extra: Extra): string {
-  const key = extra.authInfo?.token || process.env.VUETIFY_API_KEY || ''
-  if (!key) {
-    throw new Error('No API key provided. Set VUETIFY_API_KEY env var or pass Authorization: Bearer header.')
-  }
-  return key
-}
 
 const APP_FILE = 'src/App.vue'
 

@@ -4,6 +4,7 @@
  * Implements stateless HTTP transport for MCP server.
  * Creates a new transport and server connection per request.
  */
+import process from 'node:process'
 import { createServer } from 'node:http'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
@@ -151,10 +152,77 @@ async function handleRequest (
     return
   }
 
+  // RFC 9728 — OAuth 2.0 Protected Resource Metadata
+  if (req.url?.startsWith('/.well-known/oauth-protected-resource') && req.method === 'GET') {
+    const serverUrl = process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com'
+    const apiUrl = process.env.VUETIFY_API_SERVER ?? 'https://api.vuetifyjs.com'
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'max-age=3600',
+    })
+    res.end(JSON.stringify({
+      resource: serverUrl,
+      authorization_servers: [apiUrl],
+      scopes_supported: ['mcp'],
+      bearer_methods_supported: ['header'],
+    }))
+    return
+  }
+
+  // RFC 8414 — Authorization Server Metadata (proxy to API)
+  // Some MCP SDK versions fetch this from the resource server directly
+  if (
+    (req.url === '/.well-known/oauth-authorization-server' ||
+     req.url === '/.well-known/openid-configuration') &&
+    req.method === 'GET'
+  ) {
+    const apiUrl = process.env.VUETIFY_API_SERVER ?? 'https://api.vuetifyjs.com'
+    const serverUrl = process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com'
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'max-age=3600',
+    })
+    res.end(JSON.stringify({
+      issuer: apiUrl,
+      authorization_endpoint: `${apiUrl}/oauth/authorize`,
+      token_endpoint: `${apiUrl}/oauth/token`,
+      response_types_supported: ['code'],
+      grant_types_supported: ['authorization_code', 'refresh_token'],
+      code_challenge_methods_supported: ['S256'],
+      token_endpoint_auth_methods_supported: ['none'],
+      authorization_response_iss_parameter_supported: true,
+      client_id_metadata_document_supported: true,
+      protected_resources: [serverUrl],
+    }))
+    return
+  }
+
+  // Redirect /authorize and /mcp/authorize to the API's OAuth endpoint
+  if (req.url?.match(/^(\/mcp)?\/authorize(\?.*)?$/) && req.method === 'GET') {
+    const apiUrl = process.env.VUETIFY_API_SERVER ?? 'https://api.vuetifyjs.com'
+    const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''
+    res.writeHead(302, { Location: `${apiUrl}/oauth/authorize${qs}` })
+    res.end()
+    return
+  }
+
   // Only handle requests to the MCP path
   if (req.url !== mcpPath) {
     res.writeHead(404, { 'Content-Type': 'text/plain' })
     res.end(`Not Found. Try ${mcpPath} for MCP endpoint or /health for health check.`)
+    return
+  }
+
+  // Require auth on all MCP requests — triggers OAuth2 flow in supporting clients
+  if (req.method === 'POST' && !extractAuthToken(req)) {
+    const serverUrl = process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com'
+    res.writeHead(401, {
+      'Content-Type': 'application/json',
+      'WWW-Authenticate': `Bearer resource_metadata="${serverUrl}/.well-known/oauth-protected-resource"`,
+    })
+    res.end(JSON.stringify({ error: 'unauthorized' }))
     return
   }
 
