@@ -62,18 +62,12 @@ export const getSettingsPath = (ide: IDEId): string => {
   }
 }
 
+// The hosted server authenticates over OAuth2 — the client obtains its own
+// token, so no key is baked into the config.
 export function getRemoteConfig () {
-  const config: { url: string, headers?: Record<string, string> } = {
+  return {
     url: 'https://mcp.vuetifyjs.com/mcp',
   }
-
-  if (process.env.VUETIFY_API_KEY) {
-    config.headers = {
-      Authorization: `Bearer ${process.env.VUETIFY_API_KEY}`,
-    }
-  }
-
-  return config
 }
 
 export function getServerConfig (transport?: 'stdio' | 'http', remote?: boolean) {
@@ -88,8 +82,7 @@ export function getServerConfig (transport?: 'stdio' | 'http', remote?: boolean)
 }
 
 export function getClaudeCodeArgs (): string[] {
-  const apiKey = process.env.VUETIFY_API_KEY
-  const args = [
+  return [
     'mcp',
     'add',
     '--transport',
@@ -99,12 +92,6 @@ export function getClaudeCodeArgs (): string[] {
     SERVER_NAME,
     'https://mcp.vuetifyjs.com/mcp',
   ]
-
-  if (apiKey) {
-    args.push('--header', `Authorization:Bearer ${apiKey}`)
-  }
-
-  return args
 }
 
 export function getClaudeCodeCommand (): string {

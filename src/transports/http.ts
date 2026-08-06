@@ -88,6 +88,77 @@ function getClientIdentifier (req: IncomingMessage): string {
   return `ip:${ip ?? 'unknown'}`
 }
 
+function getApiUrl (): string {
+  return process.env.VUETIFY_API_SERVER ?? 'https://api.vuetifyjs.com'
+}
+
+function getServerUrl (): string {
+  return process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com'
+}
+
+function sendJson (res: ServerResponse, body: unknown) {
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Cache-Control': 'max-age=3600',
+  })
+  res.end(JSON.stringify(body))
+}
+
+/**
+ * OAuth2 discovery and authorization routes. Returns true when the request
+ * was handled, so the caller can stop.
+ */
+function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean {
+  if (req.method !== 'GET' || !req.url) {
+    return false
+  }
+
+  // RFC 9728 — OAuth 2.0 Protected Resource Metadata
+  if (req.url.startsWith('/.well-known/oauth-protected-resource')) {
+    sendJson(res, {
+      resource: getServerUrl(),
+      authorization_servers: [getApiUrl()],
+      scopes_supported: ['mcp'],
+      bearer_methods_supported: ['header'],
+    })
+    return true
+  }
+
+  // RFC 8414 — Authorization Server Metadata (proxy to API)
+  // Some MCP SDK versions fetch this from the resource server directly
+  if (
+    req.url === '/.well-known/oauth-authorization-server'
+    || req.url === '/.well-known/openid-configuration'
+  ) {
+    const apiUrl = getApiUrl()
+    sendJson(res, {
+      issuer: apiUrl,
+      authorization_endpoint: `${apiUrl}/oauth/authorize`,
+      token_endpoint: `${apiUrl}/oauth/token`,
+      registration_endpoint: `${apiUrl}/register`,
+      response_types_supported: ['code'],
+      grant_types_supported: ['authorization_code', 'refresh_token'],
+      code_challenge_methods_supported: ['S256'],
+      token_endpoint_auth_methods_supported: ['none'],
+      authorization_response_iss_parameter_supported: true,
+      client_id_metadata_document_supported: true,
+      protected_resources: [getServerUrl()],
+    })
+    return true
+  }
+
+  // Redirect /authorize and /mcp/authorize to the API's OAuth endpoint
+  if (/^(\/mcp)?\/authorize(\?.*)?$/.test(req.url)) {
+    const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''
+    res.writeHead(302, { Location: `${getApiUrl()}/oauth/authorize${qs}` })
+    res.end()
+    return true
+  }
+
+  return false
+}
+
 async function handleRequest (
   req: IncomingMessage,
   res: ServerResponse,
@@ -152,59 +223,7 @@ async function handleRequest (
     return
   }
 
-  // RFC 9728 — OAuth 2.0 Protected Resource Metadata
-  if (req.url?.startsWith('/.well-known/oauth-protected-resource') && req.method === 'GET') {
-    const serverUrl = process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com'
-    const apiUrl = process.env.VUETIFY_API_SERVER ?? 'https://api.vuetifyjs.com'
-    res.writeHead(200, {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'max-age=3600',
-    })
-    res.end(JSON.stringify({
-      resource: serverUrl,
-      authorization_servers: [apiUrl],
-      scopes_supported: ['mcp'],
-      bearer_methods_supported: ['header'],
-    }))
-    return
-  }
-
-  // RFC 8414 — Authorization Server Metadata (proxy to API)
-  // Some MCP SDK versions fetch this from the resource server directly
-  if (
-    (req.url === '/.well-known/oauth-authorization-server' ||
-     req.url === '/.well-known/openid-configuration') &&
-    req.method === 'GET'
-  ) {
-    const apiUrl = process.env.VUETIFY_API_SERVER ?? 'https://api.vuetifyjs.com'
-    const serverUrl = process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com'
-    res.writeHead(200, {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'max-age=3600',
-    })
-    res.end(JSON.stringify({
-      issuer: apiUrl,
-      authorization_endpoint: `${apiUrl}/oauth/authorize`,
-      token_endpoint: `${apiUrl}/oauth/token`,
-      response_types_supported: ['code'],
-      grant_types_supported: ['authorization_code', 'refresh_token'],
-      code_challenge_methods_supported: ['S256'],
-      token_endpoint_auth_methods_supported: ['none'],
-      authorization_response_iss_parameter_supported: true,
-      client_id_metadata_document_supported: true,
-      protected_resources: [serverUrl],
-    }))
-    return
-  }
-
-  // Redirect /authorize and /mcp/authorize to the API's OAuth endpoint
-  if (req.url?.match(/^(\/mcp)?\/authorize(\?.*)?$/) && req.method === 'GET') {
-    const apiUrl = process.env.VUETIFY_API_SERVER ?? 'https://api.vuetifyjs.com'
-    const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''
-    res.writeHead(302, { Location: `${apiUrl}/oauth/authorize${qs}` })
-    res.end()
+  if (handleOauthRoutes(req, res)) {
     return
   }
 
