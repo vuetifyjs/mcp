@@ -9,7 +9,6 @@ import 'dotenv/config'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
-import { intro } from './cli/intro.js'
 import packageJson from '../package.json' with { type: 'json' }
 import { startHttpServer } from './transports/http.js'
 
@@ -26,14 +25,43 @@ function parseArgs () {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i]
-    if (arg === '--transport' && i + 1 < args.length) {
-      transport = args[++i]
-    } else if (arg === '--port' && i + 1 < args.length) {
-      port = Number.parseInt(args[++i], 10)
-    } else if (arg === '--host' && i + 1 < args.length) {
-      host = args[++i]
-    } else if (arg === '--path' && i + 1 < args.length) {
-      path = args[++i]
+    const eq = arg.indexOf('=')
+    const inline = arg.startsWith('--') && eq !== -1
+    const key = inline ? arg.slice(0, eq) : arg
+    const value = inline ? arg.slice(eq + 1) : args[i + 1]
+
+    if (value === undefined) {
+      continue
+    }
+
+    switch (key) {
+      case '--transport': {
+        transport = value
+
+        break
+      }
+      case '--port': {
+        port = Number.parseInt(value, 10)
+
+        break
+      }
+      case '--host': {
+        host = value
+
+        break
+      }
+      case '--path': {
+        path = value
+
+        break
+      }
+      default: {
+        continue
+      }
+    }
+
+    if (!inline) {
+      i++
     }
   }
 
@@ -52,7 +80,7 @@ async function main () {
     })
   } else {
     // Stdio transport - single server instance
-    intro()
+    console.warn('Welcome to the Vuetify MCP Server')
 
     const server = new McpServer({
       name: 'Vuetify',

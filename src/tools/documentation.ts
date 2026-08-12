@@ -108,13 +108,13 @@ export async function registerDocumentationTools (server: McpServer) {
 
   server.tool(
     'get_vuetify0_composable_list',
-    'Get a comprehensive list of all 63 composables available in @vuetify/v0, organized by category (foundation, registration, selection, forms, system, plugins, data, reactivity, transformers).',
+    'Get a comprehensive list of all 71 composables available in @vuetify/v0, organized by category (foundation, registration, selection, forms, system, plugins, data, reactivity, transformers).',
     vuetify0.getComposableList,
   )
 
   server.tool(
     'get_vuetify0_component_list',
-    'Get a list of all 46 headless components available in @vuetify/v0.',
+    'Get a list of all 40 headless components available in @vuetify/v0.',
     vuetify0.getComponentList,
   )
 
