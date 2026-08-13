@@ -27,6 +27,10 @@ export function registerIssuesTools (server: McpServer) {
       repo: z.enum(REPO_SLUGS).describe(`The repository to report a bug against. Available: ${REPO_SLUGS.join(', ')}`),
       label: z.string().optional().describe('Optional label to pre-fill on the bug report.'),
     },
+    {
+      title: 'Create bug report',
+      readOnlyHint: true,
+    },
     ({ repo, label }) => {
       const params = new URLSearchParams({ repo, type: 'bug' })
 

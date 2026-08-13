@@ -36,6 +36,8 @@ export async function registerLinkTools (server: McpServer) {
       scoped: z.boolean().default(false).describe('When true, the slug is unique to your account; when false, the slug is reserved globally.'),
     },
     {
+      title: 'Create Vuetify link',
+      destructiveHint: true,
       openWorldHint: true,
     },
     async (link, extra) => {
@@ -85,6 +87,8 @@ export async function registerLinkTools (server: McpServer) {
     'Get all user links.',
     {},
     {
+      title: 'Get all links',
+      readOnlyHint: true,
       openWorldHint: true,
     },
     async (_args, extra) => {
