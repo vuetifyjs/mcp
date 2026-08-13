@@ -4,6 +4,7 @@
  * Implements stateless HTTP transport for MCP server.
  * Creates a new transport and server connection per request.
  */
+import process from 'node:process'
 import { createServer } from 'node:http'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
@@ -12,6 +13,7 @@ import type { IncomingMessage, ServerResponse, Server } from 'node:http'
 import { registerPrompts } from '#prompts/index'
 import { registerResources } from '#resources/index'
 import { registerTools } from '#tools/index'
+import { ONE_TOOL_NAME_SET } from '#tools/one/names'
 import { setApiKey, withToolLogging } from '#services/logger'
 import packageJson from '../../package.json' with { type: 'json' }
 import { RateLimiter } from '../utils/rate-limiter.js'
@@ -87,6 +89,81 @@ function getClientIdentifier (req: IncomingMessage): string {
   return `ip:${ip ?? 'unknown'}`
 }
 
+function getApiUrl (): string {
+  return process.env.VUETIFY_API_SERVER ?? 'https://api.vuetifyjs.com'
+}
+
+function getServerUrl (): string {
+  return process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com/mcp'
+}
+
+function getResourceUrl (): string {
+  return getServerUrl()
+}
+
+function sendJson (res: ServerResponse, body: unknown) {
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Cache-Control': 'max-age=3600',
+  })
+  res.end(JSON.stringify(body))
+}
+
+/**
+ * OAuth2 discovery and authorization routes. Returns true when the request
+ * was handled, so the caller can stop.
+ */
+function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean {
+  if (req.method !== 'GET' || !req.url) {
+    return false
+  }
+
+  // RFC 9728 — OAuth 2.0 Protected Resource Metadata
+  if (req.url.startsWith('/.well-known/oauth-protected-resource')) {
+    sendJson(res, {
+      resource: getResourceUrl(),
+      authorization_servers: [getApiUrl()],
+      scopes_supported: ['mcp'],
+      bearer_methods_supported: ['header'],
+    })
+    return true
+  }
+
+  // RFC 8414 — Authorization Server Metadata (proxy to API)
+  // Some MCP SDK versions fetch this from the resource server directly
+  if (
+    req.url === '/.well-known/oauth-authorization-server'
+    || req.url === '/.well-known/openid-configuration'
+  ) {
+    const apiUrl = getApiUrl()
+    sendJson(res, {
+      issuer: apiUrl,
+      authorization_endpoint: `${apiUrl}/oauth/authorize`,
+      token_endpoint: `${apiUrl}/oauth/token`,
+      registration_endpoint: `${apiUrl}/register`,
+      response_types_supported: ['code'],
+      grant_types_supported: ['authorization_code', 'refresh_token'],
+      code_challenge_methods_supported: ['S256'],
+      token_endpoint_auth_methods_supported: ['none'],
+      authorization_response_iss_parameter_supported: true,
+      client_id_metadata_document_supported: true,
+      protected_resources: [getResourceUrl()],
+    })
+    return true
+  }
+
+  // Redirect /authorize and /mcp/authorize to the API's OAuth endpoint
+  if (/^(\/mcp)?\/authorize(\?.*)?$/.test(req.url)) {
+    const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''
+    res.writeHead(302, { Location: `${getApiUrl()}/oauth/authorize${qs}` })
+    res.end()
+    return true
+  }
+
+  return false
+}
+
 async function handleRequest (
   req: IncomingMessage,
   res: ServerResponse,
@@ -151,6 +228,10 @@ async function handleRequest (
     return
   }
 
+  if (handleOauthRoutes(req, res)) {
+    return
+  }
+
   // Only handle requests to the MCP path
   if (req.url !== mcpPath) {
     res.writeHead(404, { 'Content-Type': 'text/plain' })
@@ -187,14 +268,22 @@ async function handleMcpPost (
     return
   }
 
+  const token = extractAuthToken(req)
+  if (!token && hasOneToolCall(body)) {
+    res.writeHead(401, {
+      'Content-Type': 'application/json',
+      'WWW-Authenticate': `Bearer resource_metadata="${new URL(getServerUrl()).origin}/.well-known/oauth-protected-resource"`,
+    })
+    res.end(JSON.stringify({ error: 'unauthorized' }))
+    return
+  }
+
   // Workaround: Ensure Accept header includes text/event-stream for SSE
   // Some clients (e.g., Claude Code) may not send the correct Accept header
   if (!req.headers.accept?.includes('text/event-stream')) {
     req.headers.accept = 'application/json, text/event-stream'
   }
 
-  // Extract auth from headers and set on request for transport
-  const token = extractAuthToken(req)
   if (token) {
     ;(req as any).auth = {
       token,
@@ -224,6 +313,31 @@ async function handleMcpPost (
 
   // Handle the request
   await transport.handleRequest(req, res, body)
+}
+
+function isJsonRpcRecord (value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function isOneToolCall (value: unknown): boolean {
+  if (!isJsonRpcRecord(value) || value.method !== 'tools/call') {
+    return false
+  }
+
+  const params = value.params
+  if (!isJsonRpcRecord(params) || typeof params.name !== 'string') {
+    return false
+  }
+
+  return ONE_TOOL_NAME_SET.has(params.name)
+}
+
+function hasOneToolCall (body: unknown): boolean {
+  if (Array.isArray(body)) {
+    return body.some(item => isOneToolCall(item))
+  }
+
+  return isOneToolCall(body)
 }
 
 function parseBody (req: IncomingMessage): Promise<unknown> {

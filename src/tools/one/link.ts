@@ -2,6 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js'
 import type { ServerRequest, ServerNotification } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
+import { getApiKey } from './auth.js'
 
 export interface Link {
   id: string
@@ -21,18 +22,10 @@ export interface Link {
 
 type Extra = RequestHandlerExtra<ServerRequest, ServerNotification>
 
-function getApiKey (extra: Extra): string {
-  const key = extra.authInfo?.token || process.env.VUETIFY_API_KEY || ''
-  if (!key) {
-    throw new Error('No API key provided. Set VUETIFY_API_KEY env var or pass Authorization: Bearer header.')
-  }
-  return key
-}
-
 export async function registerLinkTools (server: McpServer) {
   server.tool(
     'create_vuetify_link',
-    'Create a Vuetify short link (vtfy.link). Requires VUETIFY_API_KEY.',
+    'Create a Vuetify short link (vtfy.link).',
     {
       title: z.string().describe('Title of the link'),
       url: z.string().url().describe('Destination URL'),
@@ -89,7 +82,7 @@ export async function registerLinkTools (server: McpServer) {
 
   server.tool(
     'get_all_links',
-    'Get all user links. Requires VUETIFY_API_KEY.',
+    'Get all user links.',
     {},
     {
       openWorldHint: true,
