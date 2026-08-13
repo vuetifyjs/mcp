@@ -54,7 +54,7 @@ function playgroundUrl (id: string): string {
 export async function registerPlaygroundTools (server: McpServer) {
   server.tool(
     'create_vuetify_playground',
-    'Create a Vuetify playground. Content should be a Vue SFC. Requires VUETIFY_API_KEY.',
+    'Create a Vuetify playground. Content should be a Vue SFC.',
     {
       title: z.string().default('My playground').describe('Title of your playground'),
       content: z.string().describe('Vue SFC content for the playground'),
@@ -110,7 +110,7 @@ export async function registerPlaygroundTools (server: McpServer) {
 
   server.tool(
     'get_all_playgrounds',
-    'Get all user playgrounds. Requires VUETIFY_API_KEY.',
+    'Get all user playgrounds.',
     {},
     {
       openWorldHint: true,
@@ -168,7 +168,7 @@ export async function registerPlaygroundTools (server: McpServer) {
 
   server.tool(
     'update_vuetify_playground',
-    'Update an existing Vuetify playground. Requires VUETIFY_API_KEY.',
+    'Update an existing Vuetify playground.',
     {
       id: z.string().describe('The playground ID to update'),
       content: z.string().optional().describe('Vue SFC content for the playground'),
@@ -230,7 +230,7 @@ export async function registerPlaygroundTools (server: McpServer) {
 
   server.tool(
     'get_playground',
-    'Get a playground by ID. Requires VUETIFY_API_KEY.',
+    'Get a playground by ID.',
     {
       id: z.string().describe('The playground ID'),
     },

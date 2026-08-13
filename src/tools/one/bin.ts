@@ -23,7 +23,7 @@ type Extra = RequestHandlerExtra<ServerRequest, ServerNotification>
 export async function registerBinTools (server: McpServer) {
   server.tool(
     'create_vuetify_bin',
-    'Create a Vuetify bin. Requires VUETIFY_API_KEY.',
+    'Create a Vuetify bin.',
     {
       title: z.string().default('My vuetify bin').describe('Title of your bin'),
       language: z.string().default('markdown').describe('Language of your vuetify bin'),
@@ -79,7 +79,7 @@ export async function registerBinTools (server: McpServer) {
 
   server.tool(
     'get_all_bins',
-    'Get all user bins. Requires VUETIFY_API_KEY.',
+    'Get all user bins.',
     {},
     {
       openWorldHint: true,
@@ -138,7 +138,7 @@ export async function registerBinTools (server: McpServer) {
 
   server.tool(
     'update_vuetify_bin',
-    'Update an existing Vuetify bin. Requires VUETIFY_API_KEY.',
+    'Update an existing Vuetify bin.',
     {
       id: z.string().describe('The bin ID to update'),
       content: z.string().describe('The content of your bin'),
@@ -201,7 +201,7 @@ export async function registerBinTools (server: McpServer) {
 
   server.tool(
     'get_bin',
-    'Get a bin by ID. Requires VUETIFY_API_KEY.',
+    'Get a bin by ID.',
     {
       id: z.string(),
     },

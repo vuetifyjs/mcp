@@ -13,6 +13,7 @@ import type { IncomingMessage, ServerResponse, Server } from 'node:http'
 import { registerPrompts } from '#prompts/index'
 import { registerResources } from '#resources/index'
 import { registerTools } from '#tools/index'
+import { ONE_TOOL_NAME_SET } from '#tools/one/names'
 import { setApiKey, withToolLogging } from '#services/logger'
 import packageJson from '../../package.json' with { type: 'json' }
 import { RateLimiter } from '../utils/rate-limiter.js'
@@ -96,6 +97,12 @@ function getServerUrl (): string {
   return process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com'
 }
 
+function getResourceUrl (): string {
+  const origin = getServerUrl().replace(/\/$/, '')
+  // RFC 9728 resource must include /mcp to match API JWT aud
+  return origin.endsWith('/mcp') ? origin : `${origin}/mcp`
+}
+
 function sendJson (res: ServerResponse, body: unknown) {
   res.writeHead(200, {
     'Content-Type': 'application/json',
@@ -117,7 +124,7 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
   // RFC 9728 — OAuth 2.0 Protected Resource Metadata
   if (req.url.startsWith('/.well-known/oauth-protected-resource')) {
     sendJson(res, {
-      resource: getServerUrl(),
+      resource: getResourceUrl(),
       authorization_servers: [getApiUrl()],
       scopes_supported: ['mcp'],
       bearer_methods_supported: ['header'],
@@ -143,7 +150,7 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
       token_endpoint_auth_methods_supported: ['none'],
       authorization_response_iss_parameter_supported: true,
       client_id_metadata_document_supported: true,
-      protected_resources: [getServerUrl()],
+      protected_resources: [getResourceUrl()],
     })
     return true
   }
@@ -234,17 +241,6 @@ async function handleRequest (
     return
   }
 
-  // Require auth on all MCP requests — triggers OAuth2 flow in supporting clients
-  if (req.method === 'POST' && !extractAuthToken(req)) {
-    const serverUrl = process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com'
-    res.writeHead(401, {
-      'Content-Type': 'application/json',
-      'WWW-Authenticate': `Bearer resource_metadata="${serverUrl}/.well-known/oauth-protected-resource"`,
-    })
-    res.end(JSON.stringify({ error: 'unauthorized' }))
-    return
-  }
-
   // MCP endpoint - stateless mode: create new server + transport per request
   if (req.method === 'POST') {
     await handleMcpPost(req, res)
@@ -274,14 +270,22 @@ async function handleMcpPost (
     return
   }
 
+  const token = extractAuthToken(req)
+  if (!token && hasOneToolCall(body)) {
+    res.writeHead(401, {
+      'Content-Type': 'application/json',
+      'WWW-Authenticate': `Bearer resource_metadata="${getServerUrl()}/.well-known/oauth-protected-resource"`,
+    })
+    res.end(JSON.stringify({ error: 'unauthorized' }))
+    return
+  }
+
   // Workaround: Ensure Accept header includes text/event-stream for SSE
   // Some clients (e.g., Claude Code) may not send the correct Accept header
   if (!req.headers.accept?.includes('text/event-stream')) {
     req.headers.accept = 'application/json, text/event-stream'
   }
 
-  // Extract auth from headers and set on request for transport
-  const token = extractAuthToken(req)
   if (token) {
     ;(req as any).auth = {
       token,
@@ -311,6 +315,31 @@ async function handleMcpPost (
 
   // Handle the request
   await transport.handleRequest(req, res, body)
+}
+
+function isJsonRpcRecord (value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function isOneToolCall (value: unknown): boolean {
+  if (!isJsonRpcRecord(value) || value.method !== 'tools/call') {
+    return false
+  }
+
+  const params = value.params
+  if (!isJsonRpcRecord(params) || typeof params.name !== 'string') {
+    return false
+  }
+
+  return ONE_TOOL_NAME_SET.has(params.name)
+}
+
+function hasOneToolCall (body: unknown): boolean {
+  if (Array.isArray(body)) {
+    return body.some(item => isOneToolCall(item))
+  }
+
+  return isOneToolCall(body)
 }
 
 function parseBody (req: IncomingMessage): Promise<unknown> {

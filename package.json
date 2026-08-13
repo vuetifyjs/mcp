@@ -24,6 +24,7 @@
     "start": "node dist/index.js",
     "dev": "pnpm watch && node --watch dist/index.js",
     "watch": "tsc --watch",
+    "test": "vitest run",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "release": "pnpm build && bumpp -r"
@@ -47,15 +48,16 @@
     "zod": "^3.25.56"
   },
   "devDependencies": {
-    "bumpp": "^10.1.0",
     "@types/node": "^22.15.30",
+    "@vuetify/github-releaser": "^4.0.3",
+    "bumpp": "^10.1.0",
     "conventional-changelog-cli": "^5.0.0",
     "conventional-changelog-vuetify": "^2.0.2",
-    "@vuetify/github-releaser": "^4.0.3",
     "eslint": "^9.28.0",
     "eslint-config-vuetify": "^4.0.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.10"
   },
   "packageManager": "pnpm@10.24.0"
 }

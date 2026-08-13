@@ -25,7 +25,7 @@ type Extra = RequestHandlerExtra<ServerRequest, ServerNotification>
 export async function registerLinkTools (server: McpServer) {
   server.tool(
     'create_vuetify_link',
-    'Create a Vuetify short link (vtfy.link). Requires VUETIFY_API_KEY.',
+    'Create a Vuetify short link (vtfy.link).',
     {
       title: z.string().describe('Title of the link'),
       url: z.string().url().describe('Destination URL'),
@@ -82,7 +82,7 @@ export async function registerLinkTools (server: McpServer) {
 
   server.tool(
     'get_all_links',
-    'Get all user links. Requires VUETIFY_API_KEY.',
+    'Get all user links.',
     {},
     {
       openWorldHint: true,
