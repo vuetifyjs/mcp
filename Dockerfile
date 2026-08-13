@@ -5,8 +5,10 @@ WORKDIR /app
 # Copy package files
 COPY package*.json pnpm-lock.yaml ./
 
-# Install pnpm and dependencies
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+# Pin to packageManager (10.24.0). Unpinned `npm i -g pnpm` then fails
+# --frozen-lockfile on a linux-x64 optional binary this lockfile omits.
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate && pnpm install --frozen-lockfile
 
 # Copy source
 COPY . .
