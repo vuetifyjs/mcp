@@ -50,6 +50,15 @@ npx -y @vuetify/mcp
 
 This command downloads and runs the latest version of the Vuetify MCP server, making it immediately available to your MCP-compatible clients.
 
+## Cursor / Agent Plugin
+
+This repo is an [Agent Plugins](https://agent-plugins.org/) 1.0.0 package (`plugin.json` + `mcp.json`) that points compatible clients at the hosted server.
+
+- Hosted MCP: https://mcp.vuetifyjs.com/mcp
+- Privacy: https://vuetifyjs.com/en/legal/mcp-privacy
+
+Local test: copy or symlink this repo to `~/.cursor/plugins/local/vuetify-mcp`.
+
 ## Configuration
 
 You can configure the Vuetify MCP server in your IDE or client by running the interactive CLI or by manually updating your settings file.
