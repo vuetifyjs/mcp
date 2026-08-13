@@ -64,6 +64,8 @@ export async function registerPlaygroundTools (server: McpServer) {
       locked: z.boolean().default(false),
     },
     {
+      title: 'Create Vuetify playground',
+      destructiveHint: true,
       openWorldHint: true,
     },
     async (playground, extra) => {
@@ -113,6 +115,8 @@ export async function registerPlaygroundTools (server: McpServer) {
     'Get all user playgrounds.',
     {},
     {
+      title: 'Get all playgrounds',
+      readOnlyHint: true,
       openWorldHint: true,
     },
     async (_args, extra) => {
@@ -179,6 +183,8 @@ export async function registerPlaygroundTools (server: McpServer) {
       locked: z.boolean().optional(),
     },
     {
+      title: 'Update Vuetify playground',
+      destructiveHint: true,
       openWorldHint: true,
     },
     async ({ id, ...playground }, extra) => {
@@ -235,6 +241,8 @@ export async function registerPlaygroundTools (server: McpServer) {
       id: z.string().describe('The playground ID'),
     },
     {
+      title: 'Get playground',
+      readOnlyHint: true,
       openWorldHint: true,
     },
     async ({ id }, extra) => {

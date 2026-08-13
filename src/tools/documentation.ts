@@ -29,12 +29,20 @@ export async function registerDocumentationTools (server: McpServer) {
       ssr: z.boolean().default(false).describe('Whether to return the SSR version of the installation guide.'),
       fresh: z.boolean().default(false).describe('Whether the user has an existing project or is starting fresh.'),
     },
+    {
+      title: 'Get installation guide',
+      readOnlyHint: true,
+    },
     documentation.getInstallationGuide,
   )
 
   server.tool(
     'get_feature_guides',
     'Get a list of available features in the documentation.',
+    {
+      title: 'Get feature guides',
+      readOnlyHint: true,
+    },
     documentation.getFeatureGuides,
   )
 
@@ -44,18 +52,30 @@ export async function registerDocumentationTools (server: McpServer) {
     {
       feature: z.enum(features).describe(`The feature for which to get the documentation. Available features: ${features.join(', ')}`),
     },
+    {
+      title: 'Get feature guide',
+      readOnlyHint: true,
+    },
     documentation.getFeatureGuide,
   )
 
   server.tool(
     'get_exposed_exports',
     'Get a list of exports from the Vuetify npm package',
+    {
+      title: 'Get exposed exports',
+      readOnlyHint: true,
+    },
     documentation.getExposedExports,
   )
 
   server.tool(
     'get_frequently_asked_questions',
     'Get a list of frequently asked questions about Vuetify.',
+    {
+      title: 'Get frequently asked questions',
+      readOnlyHint: true,
+    },
     documentation.getFrequentlyAskedQuestions,
   )
 
@@ -65,12 +85,20 @@ export async function registerDocumentationTools (server: McpServer) {
     {
       version: z.string().describe('One or more Vuetify versions for which to get the release notes.').default('latest'),
     },
+    {
+      title: 'Get release notes by version',
+      readOnlyHint: true,
+    },
     documentation.getReleaseNotesByVersion,
   )
 
   server.tool(
     'get_vuetify_one_installation_guide',
     'Get the README contents for @vuetify/one package from GitHub, including installation and usage instructions.',
+    {
+      title: 'Get Vuetify One installation guide',
+      readOnlyHint: true,
+    },
     documentation.getVuetifyOneInstallationGuide,
   )
 
@@ -81,6 +109,10 @@ export async function registerDocumentationTools (server: McpServer) {
     {
       version: z.enum(upgradeVersions).describe(`The source Vuetify version to upgrade from. Available versions: ${upgradeVersions.join(', ')}`),
     },
+    {
+      title: 'Get upgrade guide',
+      readOnlyHint: true,
+    },
     documentation.getUpgradeGuide,
   )
 
@@ -90,6 +122,10 @@ export async function registerDocumentationTools (server: McpServer) {
     {
       category: z.enum(breakingChangeCategories).optional().describe(`Optional category to filter by. Available categories: ${breakingChangeCategories.join(', ')}. Omit to get all breaking changes.`),
     },
+    {
+      title: 'Get Vuetify 4 breaking changes',
+      readOnlyHint: true,
+    },
     documentation.getV4BreakingChanges,
   )
 
@@ -97,24 +133,40 @@ export async function registerDocumentationTools (server: McpServer) {
   server.tool(
     'get_vuetify0_installation_guide',
     'Get the README contents for @vuetify/v0 (Vuetify0) package from GitHub, including installation and usage instructions for this headless meta-framework.',
+    {
+      title: 'Get Vuetify0 installation guide',
+      readOnlyHint: true,
+    },
     vuetify0.getInstallationGuide,
   )
 
   server.tool(
     'get_vuetify0_package_guide',
     'Get the package-specific documentation for @vuetify/v0 from GitHub.',
+    {
+      title: 'Get Vuetify0 package guide',
+      readOnlyHint: true,
+    },
     vuetify0.getPackageGuide,
   )
 
   server.tool(
     'get_vuetify0_composable_list',
     'Get a comprehensive list of all 71 composables available in @vuetify/v0, organized by category (foundation, registration, selection, forms, system, plugins, data, reactivity, transformers).',
+    {
+      title: 'Get Vuetify0 composable list',
+      readOnlyHint: true,
+    },
     vuetify0.getComposableList,
   )
 
   server.tool(
     'get_vuetify0_component_list',
     'Get a list of all 40 headless components available in @vuetify/v0.',
+    {
+      title: 'Get Vuetify0 component list',
+      readOnlyHint: true,
+    },
     vuetify0.getComponentList,
   )
 
@@ -128,6 +180,10 @@ export async function registerDocumentationTools (server: McpServer) {
       category: z.enum(categories).describe(`The category of the composable. Available categories: ${categories.join(', ')}`),
       name: z.string().describe('The name of the composable (e.g., "createContext", "useSelection", "useTheme")'),
     },
+    {
+      title: 'Get Vuetify0 composable guide',
+      readOnlyHint: true,
+    },
     vuetify0.getComposableGuide,
   )
 
@@ -137,18 +193,30 @@ export async function registerDocumentationTools (server: McpServer) {
     {
       name: z.enum(components).describe(`The name of the component. Available components: ${components.join(', ')}`),
     },
+    {
+      title: 'Get Vuetify0 component guide',
+      readOnlyHint: true,
+    },
     vuetify0.getComponentGuide,
   )
 
   server.tool(
     'get_vuetify0_exports_list',
     'Get a list of all subpath exports available in @vuetify/v0 (utilities, types, constants, date, data-table, palettes, theme, locale, logger, and more).',
+    {
+      title: 'Get Vuetify0 exports list',
+      readOnlyHint: true,
+    },
     vuetify0.getExportsList,
   )
 
   server.tool(
     'get_vuetify0_skill',
     'Get the latest SKILL.md reference for @vuetify/v0 — a compact guide with patterns, anti-patterns, and common mistakes optimized for AI coding assistants.',
+    {
+      title: 'Get Vuetify0 skill',
+      readOnlyHint: true,
+    },
     vuetify0.getSkill,
   )
 }

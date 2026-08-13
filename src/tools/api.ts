@@ -75,6 +75,10 @@ export async function registerApiTools (server: McpServer) {
     {
       version: z.string().default('latest').describe('The version of Vuetify to retrieve API types for, e.g., "latest" or "3.0.0"'),
     },
+    {
+      title: 'Get Vuetify API by version',
+      readOnlyHint: true,
+    },
     async ({ version }) => {
       await cacheApi(version)
 
@@ -95,6 +99,10 @@ export async function registerApiTools (server: McpServer) {
     {
       componentName: z.string().describe('The name of a Vuetify component, available options here: https://vuetifyjs.com/components/all/'),
       version: z.string().default('latest').describe('The version of Vuetify to retrieve API types for, e.g., "latest" or "3.0.0"'),
+    },
+    {
+      title: 'Get component API by version',
+      readOnlyHint: true,
     },
     async ({ componentName, version }) => {
       const api: VuetifyWebTypes = JSON.parse(await cacheApi(version))
@@ -130,6 +138,10 @@ export async function registerApiTools (server: McpServer) {
     {
       directiveName: z.string().describe('The name of a Vuetify directive, e.g., "v-ripple" or "ripple"'),
       version: z.string().default('latest').describe('The version of Vuetify to retrieve API types for, e.g., "latest" or "3.0.0"'),
+    },
+    {
+      title: 'Get directive API by version',
+      readOnlyHint: true,
     },
     async ({ directiveName, version }) => {
       const api: VuetifyWebTypes = JSON.parse(await cacheApi(version))

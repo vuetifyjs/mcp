@@ -34,6 +34,8 @@ export async function registerBinTools (server: McpServer) {
       locked: z.boolean().default(false),
     },
     {
+      title: 'Create Vuetify bin',
+      destructiveHint: true,
       openWorldHint: true,
     },
     async (bin, extra) => {
@@ -82,6 +84,8 @@ export async function registerBinTools (server: McpServer) {
     'Get all user bins.',
     {},
     {
+      title: 'Get all bins',
+      readOnlyHint: true,
       openWorldHint: true,
     },
     async (_args, extra) => {
@@ -150,6 +154,8 @@ export async function registerBinTools (server: McpServer) {
       locked: z.boolean().optional(),
     },
     {
+      title: 'Update Vuetify bin',
+      destructiveHint: true,
       openWorldHint: true,
     },
     async ({ id, ...bin }, extra) => {
@@ -206,6 +212,8 @@ export async function registerBinTools (server: McpServer) {
       id: z.string(),
     },
     {
+      title: 'Get bin',
+      readOnlyHint: true,
       openWorldHint: true,
     },
     async ({ id }, extra) => {

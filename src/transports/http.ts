@@ -18,6 +18,7 @@ import { setApiKey, withToolLogging } from '#services/logger'
 import packageJson from '../../package.json' with { type: 'json' }
 import { RateLimiter } from '../utils/rate-limiter.js'
 import type { RateLimiterOptions } from '../utils/rate-limiter.js'
+import { getRequestOrigin, isAllowedOrigin } from './origin.js'
 
 export interface HttpServerOptions {
   port?: number
@@ -101,10 +102,19 @@ function getResourceUrl (): string {
   return getServerUrl()
 }
 
-function sendJson (res: ServerResponse, body: unknown) {
+function applyCors (res: ServerResponse, origin: string | undefined): void {
+  if (!origin) {
+    return
+  }
+
+  res.setHeader('Access-Control-Allow-Origin', origin)
+  res.setHeader('Vary', 'Origin')
+}
+
+function sendJson (res: ServerResponse, body: unknown, origin?: string) {
+  applyCors(res, origin)
   res.writeHead(200, {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
     'Cache-Control': 'max-age=3600',
   })
   res.end(JSON.stringify(body))
@@ -119,6 +129,8 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
     return false
   }
 
+  const origin = getRequestOrigin(req)
+
   // RFC 9728 — OAuth 2.0 Protected Resource Metadata
   if (req.url.startsWith('/.well-known/oauth-protected-resource')) {
     sendJson(res, {
@@ -126,7 +138,7 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
       authorization_servers: [getApiUrl()],
       scopes_supported: ['mcp'],
       bearer_methods_supported: ['header'],
-    })
+    }, origin)
     return true
   }
 
@@ -149,7 +161,7 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
       authorization_response_iss_parameter_supported: true,
       client_id_metadata_document_supported: true,
       protected_resources: [getResourceUrl()],
-    })
+    }, origin)
     return true
   }
 
@@ -173,10 +185,17 @@ async function handleRequest (
 ): Promise<void> {
   console.error(`[${new Date().toISOString()}] ${req.method} ${req.url}`)
 
+  const origin = getRequestOrigin(req)
+  if (origin !== undefined && !isAllowedOrigin(origin, getResourceUrl())) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' })
+    res.end('Forbidden')
+    return
+  }
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
+    applyCors(res, origin)
     res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Vuetify-Api-Key',
     })
@@ -270,6 +289,7 @@ async function handleMcpPost (
 
   const token = extractAuthToken(req)
   if (!token && hasOneToolCall(body)) {
+    applyCors(res, getRequestOrigin(req))
     res.writeHead(401, {
       'Content-Type': 'application/json',
       'WWW-Authenticate': `Bearer resource_metadata="${new URL(getServerUrl()).origin}/.well-known/oauth-protected-resource"`,
@@ -310,6 +330,9 @@ async function handleMcpPost (
   transport.onclose = () => {
     server.close().catch(error => console.error('Error closing server:', error))
   }
+
+  // setHeader before writeHead so Node merges ACAO with the SDK response
+  applyCors(res, getRequestOrigin(req))
 
   // Handle the request
   await transport.handleRequest(req, res, body)
