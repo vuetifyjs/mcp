@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "vuetify-mcp",
+  "version": "1.0.0",
+  "description": "Official hosted Vuetify MCP: docs, APIs, bins, playgrounds, vtfy.link. Privacy: https://vuetifyjs.com/en/legal/mcp-privacy",
+  "author": {
+    "name": "Vuetify LLC",
+    "email": "hello@vuetifyjs.com",
+    "url": "https://vuetifyjs.com"
+  },
+  "homepage": "https://0.vuetifyjs.com/guide/tooling/vuetify-mcp",
+  "repository": "https://github.com/vuetifyjs/mcp",
+  "license": "MIT",
+  "keywords": ["vuetify", "mcp", "vue", "documentation"]
+}
