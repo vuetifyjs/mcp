@@ -94,13 +94,11 @@ function getApiUrl (): string {
 }
 
 function getServerUrl (): string {
-  return process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com'
+  return process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com/mcp'
 }
 
 function getResourceUrl (): string {
-  const origin = getServerUrl().replace(/\/$/, '')
-  // RFC 9728 resource must include /mcp to match API JWT aud
-  return origin.endsWith('/mcp') ? origin : `${origin}/mcp`
+  return getServerUrl()
 }
 
 function sendJson (res: ServerResponse, body: unknown) {
@@ -274,7 +272,7 @@ async function handleMcpPost (
   if (!token && hasOneToolCall(body)) {
     res.writeHead(401, {
       'Content-Type': 'application/json',
-      'WWW-Authenticate': `Bearer resource_metadata="${getServerUrl()}/.well-known/oauth-protected-resource"`,
+      'WWW-Authenticate': `Bearer resource_metadata="${new URL(getServerUrl()).origin}/.well-known/oauth-protected-resource"`,
     })
     res.end(JSON.stringify({ error: 'unauthorized' }))
     return

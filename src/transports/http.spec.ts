@@ -97,9 +97,32 @@ describe('http oauth gate', () => {
   })
 
   it('advertises RFC9728 resource with /mcp', async () => {
-    const response = await fetch(`${originUrl(server)}/.well-known/oauth-protected-resource`)
-    const body = await response.json()
+    const prev = process.env.MCP_SERVER_URL
+    delete process.env.MCP_SERVER_URL
+    try {
+      const response = await fetch(`${originUrl(server)}/.well-known/oauth-protected-resource`)
+      const body = await response.json()
 
-    expect(body.resource).toBe('https://mcp.vuetifyjs.com/mcp')
+      expect(body.resource).toBe('https://mcp.vuetifyjs.com/mcp')
+    } finally {
+      if (prev === undefined) delete process.env.MCP_SERVER_URL
+      else process.env.MCP_SERVER_URL = prev
+    }
+  })
+
+  it('uses MCP_SERVER_URL verbatim when set', async () => {
+    const prev = process.env.MCP_SERVER_URL
+    try {
+      process.env.MCP_SERVER_URL = 'https://custom.example.com/foo'
+      const custom = await fetch(`${originUrl(server)}/.well-known/oauth-protected-resource`)
+      expect((await custom.json()).resource).toBe('https://custom.example.com/foo')
+
+      process.env.MCP_SERVER_URL = 'http://localhost:3001'
+      const local = await fetch(`${originUrl(server)}/.well-known/oauth-protected-resource`)
+      expect((await local.json()).resource).toBe('http://localhost:3001')
+    } finally {
+      if (prev === undefined) delete process.env.MCP_SERVER_URL
+      else process.env.MCP_SERVER_URL = prev
+    }
   })
 })
