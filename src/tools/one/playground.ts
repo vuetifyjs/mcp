@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js'
 import type { ServerRequest, ServerNotification } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
-import { getApiKey } from './auth.js'
+import { assertOk, getApiKey } from './auth.js'
 
 export interface Playground {
   id: string
@@ -54,7 +54,7 @@ function playgroundUrl (id: string): string {
 export async function registerPlaygroundTools (server: McpServer) {
   server.tool(
     'create_vuetify_playground',
-    'Create a Vuetify playground. Content should be a Vue SFC.',
+    'Create a Vuetify playground. Content should be a Vue SFC. Use of this tool requires a vuetify one subscription',
     {
       title: z.string().default('My playground').describe('Title of your playground'),
       content: z.string().describe('Vue SFC content for the playground'),
@@ -86,9 +86,7 @@ export async function registerPlaygroundTools (server: McpServer) {
             'Authorization': `Bearer ${apiKey}`,
           },
         })
-        if (!response.ok) {
-          throw new Error(await response.text())
-        }
+        await assertOk(response)
 
         const data = await response.json()
         const created: Playground = data.playground
@@ -112,7 +110,7 @@ export async function registerPlaygroundTools (server: McpServer) {
 
   server.tool(
     'get_all_playgrounds',
-    'Get all user playgrounds.',
+    'Get all user playgrounds. Use of this tool requires a vuetify one subscription',
     {},
     {
       title: 'Get all playgrounds',
@@ -130,9 +128,7 @@ export async function registerPlaygroundTools (server: McpServer) {
           },
         })
 
-        if (!response.ok) {
-          throw new Error(await response.text())
-        }
+        await assertOk(response)
 
         const data = await response.json()
         const playgrounds: Playground[] = data.playgrounds
@@ -172,7 +168,7 @@ export async function registerPlaygroundTools (server: McpServer) {
 
   server.tool(
     'update_vuetify_playground',
-    'Update an existing Vuetify playground.',
+    'Update an existing Vuetify playground. Use of this tool requires a vuetify one subscription',
     {
       id: z.string().describe('The playground ID to update'),
       content: z.string().optional().describe('Vue SFC content for the playground'),
@@ -210,9 +206,7 @@ export async function registerPlaygroundTools (server: McpServer) {
             'Authorization': `Bearer ${apiKey}`,
           },
         })
-        if (!response.ok) {
-          throw new Error(await response.text())
-        }
+        await assertOk(response)
 
         const data = await response.json()
         const updated: Playground = data.playground
@@ -236,7 +230,7 @@ export async function registerPlaygroundTools (server: McpServer) {
 
   server.tool(
     'get_playground',
-    'Get a playground by ID.',
+    'Get a playground by ID. Use of this tool requires a vuetify one subscription',
     {
       id: z.string().describe('The playground ID'),
     },
@@ -256,9 +250,7 @@ export async function registerPlaygroundTools (server: McpServer) {
           },
         })
 
-        if (!response.ok) {
-          throw new Error(await response.text())
-        }
+        await assertOk(response)
 
         const data = await response.json()
         const { playground }: { playground: Playground } = data

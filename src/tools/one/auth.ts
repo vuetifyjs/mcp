@@ -10,3 +10,15 @@ export function getApiKey (extra: Extra): string {
   }
   return key
 }
+
+export async function assertOk (response: Response): Promise<void> {
+  if (response.ok) {
+    return
+  }
+
+  const text = await response.text()
+  if (response.status === 403 && text.trim() === 'Invalid Access') {
+    throw new Error('This tool requires a Vuetify One subscription.')
+  }
+  throw new Error(text)
+}
