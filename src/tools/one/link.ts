@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js'
 import type { ServerRequest, ServerNotification } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
-import { getApiKey } from './auth.js'
+import { assertOk, getApiKey } from './auth.js'
 
 export interface Link {
   id: string
@@ -25,7 +25,7 @@ type Extra = RequestHandlerExtra<ServerRequest, ServerNotification>
 export async function registerLinkTools (server: McpServer) {
   server.tool(
     'create_vuetify_link',
-    'Create a Vuetify short link (vtfy.link).',
+    'Create a Vuetify short link (vtfy.link). Use of this tool requires a vuetify one subscription',
     {
       title: z.string().describe('Title of the link'),
       url: z.string().url().describe('Destination URL'),
@@ -58,9 +58,7 @@ export async function registerLinkTools (server: McpServer) {
             'Authorization': `Bearer ${apiKey}`,
           },
         })
-        if (!response.ok) {
-          throw new Error(await response.text())
-        }
+        await assertOk(response)
 
         const data = await response.json()
         const created: Link = data.link
@@ -84,7 +82,7 @@ export async function registerLinkTools (server: McpServer) {
 
   server.tool(
     'get_all_links',
-    'Get all user links.',
+    'Get all user links. Use of this tool requires a vuetify one subscription',
     {},
     {
       title: 'Get all links',
@@ -102,9 +100,7 @@ export async function registerLinkTools (server: McpServer) {
           },
         })
 
-        if (!response.ok) {
-          throw new Error(await response.text())
-        }
+        await assertOk(response)
 
         const data = await response.json()
         const list: Link[] = data.links

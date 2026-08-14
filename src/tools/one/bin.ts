@@ -2,7 +2,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js'
 import type { ServerRequest, ServerNotification } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
-import { getApiKey } from './auth.js'
+import { assertOk, getApiKey } from './auth.js'
 
 export interface Bin {
   id: string
@@ -23,7 +23,7 @@ type Extra = RequestHandlerExtra<ServerRequest, ServerNotification>
 export async function registerBinTools (server: McpServer) {
   server.tool(
     'create_vuetify_bin',
-    'Create a Vuetify bin.',
+    'Create a Vuetify bin. Use of this tool requires a vuetify one subscription',
     {
       title: z.string().default('My vuetify bin').describe('Title of your bin'),
       language: z.string().default('markdown').describe('Language of your vuetify bin'),
@@ -55,9 +55,7 @@ export async function registerBinTools (server: McpServer) {
             'Authorization': `Bearer ${apiKey}`,
           },
         })
-        if (!binResponse.ok) {
-          throw new Error(await binResponse.text())
-        }
+        await assertOk(binResponse)
 
         const data = await binResponse.json()
         const createdBin: Bin = data.bin
@@ -81,7 +79,7 @@ export async function registerBinTools (server: McpServer) {
 
   server.tool(
     'get_all_bins',
-    'Get all user bins.',
+    'Get all user bins. Use of this tool requires a vuetify one subscription',
     {},
     {
       title: 'Get all bins',
@@ -99,9 +97,7 @@ export async function registerBinTools (server: McpServer) {
           },
         })
 
-        if (!binResponse.ok) {
-          throw new Error(await binResponse.text())
-        }
+        await assertOk(binResponse)
 
         const data = await binResponse.json()
         const binList: Bin[] = data.bins
@@ -142,7 +138,7 @@ export async function registerBinTools (server: McpServer) {
 
   server.tool(
     'update_vuetify_bin',
-    'Update an existing Vuetify bin.',
+    'Update an existing Vuetify bin. Use of this tool requires a vuetify one subscription',
     {
       id: z.string().describe('The bin ID to update'),
       content: z.string().describe('The content of your bin'),
@@ -181,9 +177,7 @@ export async function registerBinTools (server: McpServer) {
             'Authorization': `Bearer ${apiKey}`,
           },
         })
-        if (!binResponse.ok) {
-          throw new Error(await binResponse.text())
-        }
+        await assertOk(binResponse)
 
         const data = await binResponse.json()
         const updatedBin: Bin = data.bin
@@ -207,7 +201,7 @@ export async function registerBinTools (server: McpServer) {
 
   server.tool(
     'get_bin',
-    'Get a bin by ID.',
+    'Get a bin by ID. Use of this tool requires a vuetify one subscription',
     {
       id: z.string(),
     },
@@ -227,9 +221,7 @@ export async function registerBinTools (server: McpServer) {
           },
         })
 
-        if (!binResponse.ok) {
-          throw new Error(await binResponse.text())
-        }
+        await assertOk(binResponse)
 
         const data = await binResponse.json()
         const { bin }: { bin: Bin } = data
