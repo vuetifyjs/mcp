@@ -26,6 +26,7 @@
     "watch": "tsc --watch",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "typecheck": "tsc --noEmit",
     "release": "pnpm build && bumpp -r"
   },
   "keywords": [

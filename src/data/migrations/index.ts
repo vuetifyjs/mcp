@@ -30,7 +30,7 @@ const HOPS: MigrationHop[] = [
     },
     effort: 'high',
     ruleCount: V1_TO_V2_RULES.length,
-    summary: 'Major grid system rewrite (v-layout/v-flex → v-row/v-col). Several component renames. Use eslint-plugin-vuetify@1 deprecated rules.',
+    summary: 'Grid rewrite (v-layout/v-flex → v-row/v-col). v-content → v-main. Theme object reshape. Use eslint-plugin-vuetify@1 deprecated rules.',
   },
   {
     from: 'v2',
@@ -41,7 +41,7 @@ const HOPS: MigrationHop[] = [
     },
     effort: 'very-high',
     ruleCount: V2_TO_V3_RULES.length,
-    summary: 'Requires Vue 2 → Vue 3 migration. Complete rewrite with Composition API. Many components temporarily removed (returned in v3.1+).',
+    summary: 'Vue 2 → Vue 3. createVuetify(), v-model/variant/density props, color classes, data-table, list/table, $vuetify.breakpoint → $vuetify.display. Typography stays on MD2 text-h* names.',
   },
   {
     from: 'v3',
@@ -49,11 +49,11 @@ const HOPS: MigrationHop[] = [
     tooling: {
       eslintPlugin: 'eslint-plugin-vuetify@^2.5.0',
       codemods: 'vuetify-codemods',
-      notes: 'Use vuetify-codemods for automated migrations (typography, etc).',
+      notes: 'Use vuetify-codemods plugins named vuetify-4-* (typography, elevation, grid, form slots, snackbar, combobox item slot).',
     },
     effort: 'medium',
     ruleCount: V3_TO_V4_RULES.length,
-    summary: 'MD3 design system adoption. CSS layers mandatory. Typography class renames. Several component prop/slot changes.',
+    summary: 'MD3 typography (upgrade-guide table), elevation 0–5, CSS layers, grid gap, Vite optimizeDeps.include. Do not disable server.hmr.overlay.',
   },
 ]
 
