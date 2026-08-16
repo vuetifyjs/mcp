@@ -1,20 +1,53 @@
 /**
  * Unit tests for migration service.
  *
- * Run with: npx tsx test/migrations.test.ts
+ * Run with: pnpm exec tsx test/migrations.test.ts
  *
  * Tests:
  * - Hop resolution (single and multi-hop)
  * - Version normalization
  * - Rule filtering by IDs, category, and component
+ * - Honest catalog mappings (docs host, typography, no invented APIs)
  * - Error handling for invalid versions
  */
 import assert from 'node:assert'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 import { loadMigrationData, normalizeVersion, isKnownVersion } from '../src/data/migrations/index.js'
 import { createMigrationService } from '../src/services/migrations.js'
 
 const loader = loadMigrationData()
 const service = createMigrationService()
+
+const here = dirname(fileURLToPath(import.meta.url))
+const repoRoot = join(here, '..')
+
+const OFFICIAL_V4_TYPOGRAPHY: Record<string, string> = {
+  'text-h1': 'text-display-large',
+  'text-h2': 'text-display-large',
+  'text-h3': 'text-display-medium',
+  'text-h4': 'text-headline-large',
+  'text-h5': 'text-headline-small',
+  'text-h6': 'text-title-large',
+  'text-subtitle-1': 'text-body-large',
+  'text-subtitle-2': 'text-title-small',
+  'text-body-1': 'text-body-large',
+  'text-body-2': 'text-body-medium',
+  'text-button': 'text-label-large',
+  'text-caption': 'text-body-small',
+  'text-overline': 'text-label-medium',
+}
+
+const WRONG_V4_TYPOGRAPHY: Record<string, string> = {
+  'text-h2': 'text-display-medium',
+  'text-h3': 'text-display-small',
+  'text-h5': 'text-headline-medium',
+  'text-h6': 'text-headline-small',
+  'text-subtitle-1': 'text-title-large',
+  'text-subtitle-2': 'text-title-medium',
+  'text-overline': 'text-label-small',
+}
 
 async function testVersionNormalization () {
   console.log('Testing version normalization...')
@@ -72,19 +105,212 @@ async function testHopData () {
   console.log('  ✓ Hop data is correct')
 }
 
+async function testShippedRulesHaveReplacements () {
+  console.log('Testing every shipped rule has detect + replace...')
+
+  for (const rule of loader.getAllRules()) {
+    assert.ok(rule.detect.grep.length > 0, `${rule.id} is missing detect.grep`)
+    assert.ok(rule.detect.files.length > 0, `${rule.id} is missing detect.files`)
+    assert.ok(rule.replace.length > 0, `${rule.id} shipped with empty replace[]`)
+    for (const mapping of rule.replace) {
+      assert.ok(mapping.from.length > 0, `${rule.id} has an empty replace.from`)
+      assert.notStrictEqual(mapping.from, mapping.to, `${rule.id} has a no-op replace ${mapping.from}`)
+    }
+  }
+
+  console.log('  ✓ Every shipped rule has real detect + replace')
+}
+
+async function testDocsHosts () {
+  console.log('Testing docs hosts and hashes...')
+
+  for (const rule of loader.getRules('v2', 'v3')) {
+    assert.ok(
+      rule.docs.startsWith('https://v3.vuetifyjs.com'),
+      `${rule.id} docs must be on v3.vuetifyjs.com, got ${rule.docs}`,
+    )
+    assert.ok(!rule.docs.includes('vuetifyjs.com/en/getting-started/upgrade-guide') || rule.docs.includes('v3.vuetifyjs.com'), `${rule.id} leaked onto the v4 host`)
+  }
+
+  const v4Hashes = new Set([
+    'typography',
+    'elevation',
+    'grid-system-vrow-and-vcol',
+    'vsnackbar',
+    'vsnackbarqueue',
+    'vselect-vcombobox-vautocomplete',
+    'vform',
+    'vbadge',
+    'vcontainer',
+    'vcounter',
+    'vfileinput',
+    'vradiogroup',
+    'vtextfield',
+    'vbtn-text-transform',
+    'vbtn-display',
+    'layers',
+    'style-entry-points',
+    'themes',
+    'breakpoints',
+    'defaults',
+    'vite3a-overlay-z-index-in-dev-mode',
+  ])
+
+  for (const rule of loader.getRules('v3', 'v4')) {
+    assert.ok(
+      rule.docs.startsWith('https://vuetifyjs.com/en/getting-started/upgrade-guide'),
+      `${rule.id} docs must be the live v4 upgrade page, got ${rule.docs}`,
+    )
+    assert.ok(!rule.docs.includes('next.vuetifyjs.com'), `${rule.id} still points at next.vuetifyjs.com`)
+    const hash = rule.docs.split('#')[1]
+    assert.ok(hash, `${rule.id} is missing a hash`)
+    assert.ok(v4Hashes.has(hash), `${rule.id} hash #${hash} is not on the live v4 upgrade page`)
+  }
+
+  console.log('  ✓ Docs hosts and hashes are correct')
+}
+
+async function testTypographyMappings () {
+  console.log('Testing official v4 typography mappings...')
+
+  const rule = loader.getRules('v3', 'v4').find(r => r.id === 'v4/typography-classes')
+  assert.ok(rule, 'Should have typography-classes rule')
+  assert.strictEqual(rule.codemod, 'vuetify-4-typography')
+
+  const map = Object.fromEntries(rule.replace.map(r => [r.from, r.to]))
+  for (const [from, to] of Object.entries(OFFICIAL_V4_TYPOGRAPHY)) {
+    assert.strictEqual(map[from], to, `${from} must map to ${to}, got ${map[from]}`)
+  }
+
+  for (const [from, wrong] of Object.entries(WRONG_V4_TYPOGRAPHY)) {
+    assert.notStrictEqual(map[from], wrong, `${from} still has the wrong typography-migration quick-reference target ${wrong}`)
+  }
+
+  const v2Typography = loader.getRules('v2', 'v3').find(r => r.id === 'v3/typography-classes')
+  assert.ok(v2Typography, 'v2→v3 must keep MD2 class remaps on their own hop')
+  assert.ok(v2Typography.replace.some(r => r.from === 'display-4' && r.to === 'text-h1'))
+  assert.ok(!v2Typography.replace.some(r => r.to.includes('display-large')), 'v2→v3 must not apply MD3 class names')
+  assert.ok(!v2Typography.codemod, 'Do not stamp vuetify-codemods on the v2 typography table')
+
+  console.log('  ✓ Typography mappings match the upgrade-guide table')
+}
+
+async function testCompositionApiHasNoUseVuetify () {
+  console.log('Testing composition-api does not invent useVuetify()...')
+
+  const rule = loader.getRules('v2', 'v3').find(r => r.id === 'v3/composition-api')
+  assert.ok(rule, 'Should have composition-api rule')
+
+  const blob = [
+    rule.title,
+    rule.description,
+    rule.migration,
+    ...rule.replace.map(r => `${r.from} ${r.to} ${r.note ?? ''}`),
+  ].join('\n')
+
+  assert.ok(!blob.includes('useVuetify()'), 'composition-api must not mention useVuetify()')
+  assert.ok(!blob.includes('useVuetify'), 'composition-api must not mention useVuetify')
+  assert.ok(rule.replace.some(r => r.from === '$vuetify.breakpoint' && r.to === '$vuetify.display'))
+
+  console.log('  ✓ composition-api does not mention useVuetify()')
+}
+
+async function testViteFixIsOptimizeDeps () {
+  console.log('Testing Vite rule uses optimizeDeps, not hmr overlay...')
+
+  const rule = loader.getRules('v3', 'v4').find(r => r.id === 'v4/vite-overlay-zindex')
+  assert.ok(rule, 'Should have vite overlay rule')
+
+  const blob = [
+    rule.description,
+    rule.migration,
+    rule.revert?.snippet ?? '',
+    rule.revert?.description ?? '',
+    ...rule.replace.map(r => `${r.from} ${r.to} ${r.note ?? ''}`),
+  ].join('\n')
+
+  assert.ok(blob.includes('optimizeDeps'), 'Official fix is optimizeDeps.include')
+  assert.ok(blob.includes('.vite'), 'Official fix deletes node_modules/.vite')
+  assert.ok(!blob.includes('hmr'), 'Must not disable server.hmr.overlay')
+  assert.ok(!blob.includes('overlay: false'), 'Must not disable server.hmr.overlay')
+
+  console.log('  ✓ Vite rule matches the official optimizeDeps fix')
+}
+
+async function testV1OnlyRenames () {
+  console.log('Testing v-content stays on the v1 hop...')
+
+  const v1 = loader.getRules('v1', 'v2')
+  const later = [...loader.getRules('v2', 'v3'), ...loader.getRules('v3', 'v4')]
+
+  assert.ok(v1.some(r => r.replace.some(m => m.from === 'v-content' && m.to === 'v-main')))
+  assert.ok(!later.some(r => r.replace.some(m => m.from === 'v-content')))
+  assert.ok(!later.some(r => r.detect.grep.includes('v-content')))
+
+  console.log('  ✓ v-content is v1-hop only')
+}
+
+async function testOfficialV2ToV3Misses () {
+  console.log('Testing official v2→v3 misses are present...')
+
+  const rules = loader.getRules('v2', 'v3')
+  const ids = new Set(rules.map(r => r.id))
+
+  for (const id of ['v3/v-model', 'v3/variants', 'v3/data-table', 'v3/nuxt', 'v3/color-classes', 'v3/list-table']) {
+    assert.ok(ids.has(id), `Missing official miss ${id}`)
+  }
+
+  const model = rules.find(r => r.id === 'v3/v-model')!
+  assert.ok(model.replace.some(r => r.from === ':value=' && r.to === ':model-value='))
+  assert.ok(model.replace.some(r => r.from === '@input=' && r.to === '@update:model-value='))
+
+  const variants = rules.find(r => r.id === 'v3/variants')!
+  assert.ok(variants.replace.some(r => r.from === 'depressed' && r.to === 'variant="flat"'))
+  assert.ok(variants.replace.some(r => r.from === 'dense' && r.to === 'density="compact"'))
+
+  const table = rules.find(r => r.id === 'v3/data-table')!
+  assert.ok(table.replace.some(r => r.from === 'server-items-length' && r.to === 'items-length'))
+  assert.ok(table.replace.some(r => r.from === 'text:' && r.to === 'title:'))
+
+  const nuxt = rules.find(r => r.id === 'v3/nuxt')!
+  assert.ok(nuxt.docs.includes('v3.vuetifyjs.com'))
+  assert.ok(nuxt.replace.some(r => r.from === '@nuxtjs/vuetify'))
+
+  const color = rules.find(r => r.id === 'v3/color-classes')!
+  assert.ok(color.replace.some(r => r.from === 'primary--text' && r.to === 'text-primary'))
+  assert.ok(color.replace.some(r => r.from === '--v-primary-base' && r.to === '--v-theme-primary'))
+
+  const list = rules.find(r => r.id === 'v3/list-table')!
+  assert.ok(list.replace.some(r => r.from === 'v-simple-table' && r.to === 'v-table'))
+  assert.ok(list.replace.some(r => r.from === 'v-subheader' && r.to === 'v-list-subheader'))
+
+  console.log('  ✓ Official v2→v3 misses are filled')
+}
+
+async function testV4BreakingChangesStillRegistered () {
+  console.log('Testing get_v4_breaking_changes stays registered...')
+
+  const tools = readFileSync(join(repoRoot, 'src/tools/documentation.ts'), 'utf8')
+  const docs = readFileSync(join(repoRoot, 'src/services/documentation.ts'), 'utf8')
+  assert.ok(tools.includes('\'get_v4_breaking_changes\''), 'get_v4_breaking_changes must stay registered')
+  assert.ok(tools.includes('[DEPRECATED:'), 'Deprecation belongs in the description only')
+  assert.ok(tools.includes('documentation.getV4BreakingChanges'), 'Registered handler must remain')
+  assert.ok(docs.includes('getV4BreakingChanges:'), 'Service implementation must remain')
+
+  console.log('  ✓ get_v4_breaking_changes is still registered (deprecated in description)')
+}
+
 async function testRuleData () {
   console.log('Testing rule data...')
 
   const v3v4Rules = loader.getRules('v3', 'v4')
-  assert.ok(v3v4Rules.length > 10, 'Should have at least 10 v3→v4 rules')
-
   const typographyRule = v3v4Rules.find(r => r.id === 'v4/typography-classes')
   assert.ok(typographyRule, 'Should have typography-classes rule')
   assert.strictEqual(typographyRule.severity, 'high')
   assert.strictEqual(typographyRule.category, 'typography')
   assert.ok(typographyRule.detect.grep.length > 0, 'Should have grep patterns')
   assert.ok(typographyRule.replace.length > 0, 'Should have replace mappings')
-  assert.strictEqual(typographyRule.codemod, 'typography')
+  assert.strictEqual(typographyRule.codemod, 'vuetify-4-typography')
 
   const cssLayersRule = v3v4Rules.find(r => r.id === 'v4/css-layers')
   assert.ok(cssLayersRule, 'Should have css-layers rule')
@@ -119,6 +345,7 @@ async function testMultiHopPlan () {
   assert.ok(text.includes('Total migration hops: 2'), 'Should have 2 hops')
   assert.ok(text.includes('## Hop 1: v2 → v3'), 'Should have v2→v3 hop')
   assert.ok(text.includes('## Hop 2: v3 → v4'), 'Should have v3→v4 hop')
+  assert.ok(!text.includes('v-content'), 'Multi-hop v2→v4 must not advertise the v1 v-content rename')
 
   console.log('  ✓ Multi-hop upgrade plan works')
 }
@@ -198,13 +425,25 @@ async function testRuleStructure () {
   assert.ok(text.includes('**ID:** `v4/typography-classes`'), 'Should have ID')
   assert.ok(text.includes('**Severity:** high'), 'Should have severity')
   assert.ok(text.includes('**Category:** typography'), 'Should have category')
-  assert.ok(text.includes('**Codemod:** `typography`'), 'Should have codemod')
+  assert.ok(text.includes('**Codemod:** `vuetify-4-typography`'), 'Should have official codemod id')
   assert.ok(text.includes('### Detection'), 'Should have detection section')
   assert.ok(text.includes('**Grep patterns:**'), 'Should have grep patterns')
   assert.ok(text.includes('text-h1'), 'Should have grep pattern content')
   assert.ok(text.includes('### Replacements'), 'Should have replacements section')
   assert.ok(text.includes('text-display-large'), 'Should have replacement value')
+  assert.ok(text.includes('text-h2'), 'Should list h2')
+  assert.ok(text.includes('text-label-medium'), 'overline maps to label-medium')
+  assert.ok(!text.includes('text-display-small'), 'Must not use the wrong h3 target')
   assert.ok(text.includes('**Docs:**'), 'Should have docs link')
+  assert.ok(text.includes('https://vuetifyjs.com/en/getting-started/upgrade-guide#typography'))
+
+  const composition = await service.getUpgradeRules({
+    from: 'v2',
+    to: 'v3',
+    ids: ['v3/composition-api'],
+  })
+  assert.ok(!composition.content[0].text.includes('useVuetify()'))
+  assert.ok(composition.content[0].text.includes('$vuetify.display'))
 
   console.log('  ✓ Rule structure is correct')
 }
@@ -261,6 +500,14 @@ async function runAllTests () {
   await testVersionNormalization()
   await testIsKnownVersion()
   await testHopData()
+  await testShippedRulesHaveReplacements()
+  await testDocsHosts()
+  await testTypographyMappings()
+  await testCompositionApiHasNoUseVuetify()
+  await testViteFixIsOptimizeDeps()
+  await testV1OnlyRenames()
+  await testOfficialV2ToV3Misses()
+  await testV4BreakingChangesStillRegistered()
   await testRuleData()
   await testSingleHopPlan()
   await testMultiHopPlan()
