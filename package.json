@@ -42,7 +42,7 @@
     "url": "https://github.com/vuetifyjs/mcp"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "dotenv": "^16.5.0",
     "octokit": "^5.0.3",
     "zod": "^3.25.56"
