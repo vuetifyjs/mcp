@@ -31,16 +31,11 @@ async function createMcpServer () {
   const server = new McpServer({
     name: 'Vuetify',
     version: packageJson.version,
+  }, {
     capabilities: {
-      resources: {
-        description: 'No resources required for Vuetify assistance.',
-      },
-      tools: {
-        description: 'Tools to help with Vuetify component properties, layouts, and documentation.',
-      },
-      prompts: {
-        description: 'Prompts to assist with Vuetify component usage and best practices.',
-      },
+      resources: {},
+      tools: {},
+      prompts: {},
     },
   })
 
