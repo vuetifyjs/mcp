@@ -8,8 +8,24 @@ import { z } from 'zod'
 
 import { AVAILABLE_FEATURES, createDocumentationService, INSTALLATION_PLATFORMS, UPGRADE_FROM_VERSIONS, V4_BREAKING_CHANGES } from '#services/documentation'
 import type { InstallationPlatform, AvailableFeature, UpgradeFromVersion, V4BreakingChangeCategory } from '#services/documentation'
+import { createMigrationService } from '#services/migrations'
+import { KNOWN_VERSIONS } from '../data/migrations/index.js'
+import type { MigrationCategory } from '../data/migrations/schema.js'
 import { createVuetify0Service, VUETIFY0_COMPOSABLES, VUETIFY0_COMPONENTS } from '#services/vuetify0'
 import type { Vuetify0Category, Vuetify0Component } from '#services/vuetify0'
+
+const MIGRATION_CATEGORIES: MigrationCategory[] = [
+  'styles',
+  'theme',
+  'display',
+  'grid',
+  'typography',
+  'elevation',
+  'components',
+  'composables',
+  'directives',
+  'utilities',
+]
 
 export async function registerDocumentationTools (server: McpServer) {
   const platforms = Object.keys(INSTALLATION_PLATFORMS) as [InstallationPlatform, ...InstallationPlatform[]]
@@ -18,6 +34,7 @@ export async function registerDocumentationTools (server: McpServer) {
   const breakingChangeCategories = Object.keys(V4_BREAKING_CHANGES) as [V4BreakingChangeCategory, ...V4BreakingChangeCategory[]]
 
   const documentation = createDocumentationService()
+  const migrations = createMigrationService()
   const vuetify0 = createVuetify0Service()
 
   // Vuetify 3 (vuetify) Tools
@@ -105,7 +122,7 @@ export async function registerDocumentationTools (server: McpServer) {
   // Upgrade Tools
   server.tool(
     'get_upgrade_guide',
-    'Get the upgrade guide for migrating between Vuetify major versions (v1.5→v2, v2.7→v3, v3→v4).',
+    'Get the raw upgrade guide markdown for migrating between Vuetify major versions (v1.5→v2, v2.7→v3, v3→v4). For machine-actionable rules, use get_upgrade_plan and get_upgrade_rules instead.',
     {
       version: z.enum(upgradeVersions).describe(`The source Vuetify version to upgrade from. Available versions: ${upgradeVersions.join(', ')}`),
     },
@@ -116,9 +133,35 @@ export async function registerDocumentationTools (server: McpServer) {
     documentation.getUpgradeGuide,
   )
 
+  const knownVersions = [...KNOWN_VERSIONS] as [string, ...string[]]
+  const migrationCategories = [...MIGRATION_CATEGORIES] as [MigrationCategory, ...MigrationCategory[]]
+
+  server.tool(
+    'get_upgrade_plan',
+    'Get a structured upgrade plan for migrating between Vuetify versions. Resolves multi-hop migrations (e.g., v2→v4 becomes v2→v3→v4). Returns tooling recommendations, effort estimates, and a rule index per hop. This is the first call agents should make when planning a migration.',
+    {
+      from: z.string().describe(`Source Vuetify version to upgrade from. Examples: v1, v2, v3, 2.7, 3. Known versions: ${knownVersions.join(', ')}`),
+      to: z.string().describe(`Target Vuetify version to upgrade to. Examples: v2, v3, v4, latest. Known versions: ${knownVersions.join(', ')}`),
+    },
+    migrations.getUpgradePlan,
+  )
+
+  server.tool(
+    'get_upgrade_rules',
+    'Get full machine-actionable migration rules for Vuetify upgrades. Each rule includes: detect.grep patterns for scanning code, replace mappings, codemod hints, and revert snippets for incremental migration. Filter by rule IDs, category, or component.',
+    {
+      from: z.string().describe(`Source Vuetify version to upgrade from. Examples: v1, v2, v3, 2.7, 3`),
+      to: z.string().describe(`Target Vuetify version to upgrade to. Examples: v2, v3, v4, latest`),
+      ids: z.array(z.string()).optional().describe('Optional array of specific rule IDs to fetch (e.g., ["v4/typography-classes", "v4/css-layers"])'),
+      category: z.enum(migrationCategories).optional().describe(`Optional category to filter by. Available: ${migrationCategories.join(', ')}`),
+      component: z.string().optional().describe('Optional component name to filter by (e.g., "VSnackbar", "VBtn", "VSelect")'),
+    },
+    migrations.getUpgradeRules,
+  )
+
   server.tool(
     'get_v4_breaking_changes',
-    'Get Vuetify 4 breaking changes, optionally filtered by category. Returns migration guidance for each change.',
+    '[DEPRECATED: Use get_upgrade_rules({ from: "v3", to: "v4" }) instead] Get Vuetify 4 breaking changes, optionally filtered by category. Returns migration guidance for each change.',
     {
       category: z.enum(breakingChangeCategories).optional().describe(`Optional category to filter by. Available categories: ${breakingChangeCategories.join(', ')}. Omit to get all breaking changes.`),
     },
