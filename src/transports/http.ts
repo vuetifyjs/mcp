@@ -154,7 +154,7 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
       code_challenge_methods_supported: ['S256'],
       token_endpoint_auth_methods_supported: ['none'],
       authorization_response_iss_parameter_supported: true,
-      client_id_metadata_document_supported: true,
+      scopes_supported: ['mcp'],
       protected_resources: [getResourceUrl()],
     }, origin)
     return true

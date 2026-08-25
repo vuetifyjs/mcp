@@ -155,6 +155,15 @@ describe('http oauth gate', () => {
     }
   })
 
+  it('proxies AS metadata without advertising unimplemented CIMD', async () => {
+    const response = await fetch(`${originUrl(server)}/.well-known/oauth-authorization-server`)
+    const body = await response.json()
+
+    expect(body.scopes_supported).toEqual(['mcp'])
+    expect(body.client_id_metadata_document_supported).toBeUndefined()
+    expect(body.authorization_endpoint).toBe('https://api.vuetifyjs.com/oauth/authorize')
+  })
+
   it('advertises RFC9728 resource with /mcp', async () => {
     const prev = process.env.MCP_SERVER_URL
     delete process.env.MCP_SERVER_URL
