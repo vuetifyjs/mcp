@@ -15,7 +15,7 @@ import { registerResources } from '#resources/index'
 import { registerTools } from '#tools/index'
 import { ONE_TOOL_NAME_SET } from '#tools/one/names'
 import { setApiKey, withToolLogging } from '#services/logger'
-import packageJson from '../../package.json' with { type: 'json' }
+import { SERVER_INFO } from '../server-info.js'
 import { RateLimiter } from '../utils/rate-limiter.js'
 import type { RateLimiterOptions } from '../utils/rate-limiter.js'
 import { getRequestOrigin, isAllowedOrigin } from './origin.js'
@@ -28,10 +28,7 @@ export interface HttpServerOptions {
 }
 
 async function createMcpServer () {
-  const server = new McpServer({
-    name: 'Vuetify',
-    version: packageJson.version,
-  }, {
+  const server = new McpServer(SERVER_INFO, {
     capabilities: {
       resources: {},
       tools: {},
@@ -237,7 +234,7 @@ async function handleRequest (
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({
       name: 'Vuetify MCP Server',
-      version: packageJson.version,
+      version: SERVER_INFO.version,
       mcp_endpoint: mcpPath,
       health_endpoint: '/health',
     }))
