@@ -121,6 +121,39 @@ describe('http oauth gate', () => {
     expect(await initialize.json()).toEqual({ error: 'unauthorized' })
   })
 
+  it('advertises the VMCP icon on initialize', async () => {
+    const response = await fetch(mcpUrl(server), {
+      method: 'POST',
+      headers: { ...headers, Authorization: 'Bearer test' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2024-11-05',
+          capabilities: {},
+          clientInfo: { name: 'test', version: '0.0.0' },
+        },
+      }),
+    })
+
+    const body = await mcpJson(response)
+    expect(body.result.serverInfo.icons).toEqual([
+      {
+        src: 'https://cdn.vuetifyjs.com/docs/images/one/logos/vmcp.png',
+        mimeType: 'image/png',
+      },
+    ])
+    expect(body.result.serverInfo.title).toBe('Vuetify MCP')
+  })
+
+  it('redirects favicon.ico to the VMCP mark', async () => {
+    const response = await fetch(`${originUrl(server)}/favicon.ico`, { redirect: 'manual' })
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get('location')).toBe('https://cdn.vuetifyjs.com/docs/images/one/logos/vmcp.png')
+  })
+
   it('returns 401 with WWW-Authenticate for unauthenticated One tools/call', async () => {
     for (const name of ONE_TOOL_NAMES) {
       const response = await fetch(mcpUrl(server), {
