@@ -15,7 +15,7 @@ import { registerResources } from '#resources/index'
 import { registerTools } from '#tools/index'
 import { ONE_TOOL_NAME_SET } from '#tools/one/names'
 import { setApiKey, withToolLogging } from '#services/logger'
-import { SERVER_INFO } from '../server-info.js'
+import { SERVER_ICON_PNG, SERVER_INFO } from '../server-info.js'
 import { RateLimiter } from '../utils/rate-limiter.js'
 import type { RateLimiterOptions } from '../utils/rate-limiter.js'
 import { getRequestOrigin, isAllowedOrigin } from './origin.js'
@@ -192,6 +192,16 @@ async function handleRequest (
     res.writeHead(204, {
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Vuetify-Api-Key',
+    })
+    res.end()
+    return
+  }
+
+  if (req.method === 'GET' && (req.url === '/favicon.ico' || req.url === '/apple-touch-icon.png')) {
+    applyCors(res, origin)
+    res.writeHead(302, {
+      'Location': SERVER_ICON_PNG,
+      'Cache-Control': 'public, max-age=86400',
     })
     res.end()
     return
