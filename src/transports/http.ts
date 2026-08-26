@@ -285,11 +285,11 @@ async function handleMcpPost (
   }
 
   const token = extractAuthToken(req)
-  if (!token && hasOneToolCall(body)) {
+  if (!token && requiresBearer(body)) {
     applyCors(res, getRequestOrigin(req))
     res.writeHead(401, {
       'Content-Type': 'application/json',
-      'WWW-Authenticate': `Bearer resource_metadata="${new URL(getServerUrl()).origin}/.well-known/oauth-protected-resource"`,
+      'WWW-Authenticate': `Bearer resource_metadata="${resourceMetadataUrl()}"`,
     })
     res.end(JSON.stringify({ error: 'unauthorized' }))
     return
@@ -352,12 +352,30 @@ function isOneToolCall (value: unknown): boolean {
   return ONE_TOOL_NAME_SET.has(params.name)
 }
 
-function hasOneToolCall (body: unknown): boolean {
-  if (Array.isArray(body)) {
-    return body.some(item => isOneToolCall(item))
+function jsonRpcMethod (value: unknown): string | undefined {
+  if (!isJsonRpcRecord(value) || typeof value.method !== 'string') {
+    return undefined
   }
+  return value.method
+}
 
-  return isOneToolCall(body)
+function requiresBearerItem (value: unknown): boolean {
+  const method = jsonRpcMethod(value)
+  return method === 'initialize' || method === 'tools/list' || isOneToolCall(value)
+}
+
+function requiresBearer (body: unknown): boolean {
+  if (Array.isArray(body)) {
+    return body.some(item => requiresBearerItem(item))
+  }
+  return requiresBearerItem(body)
+}
+
+function resourceMetadataUrl (): string {
+  const resource = getResourceUrl()
+  const url = new URL(resource)
+  const path = url.pathname.replace(/\/$/, '')
+  return `${url.origin}/.well-known/oauth-protected-resource${path === '/' || path === '' ? '' : path}`
 }
 
 function parseBody (req: IncomingMessage): Promise<unknown> {

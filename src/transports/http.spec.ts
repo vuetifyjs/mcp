@@ -85,7 +85,7 @@ describe('http oauth gate', () => {
     })
   })
 
-  it('does not 401 unauthenticated initialize or tools/list', async () => {
+  it('returns 401 with WWW-Authenticate for unauthenticated initialize and tools/list', async () => {
     const url = mcpUrl(server)
 
     const initialize = await fetch(url, {
@@ -114,8 +114,11 @@ describe('http oauth gate', () => {
       }),
     })
 
-    expect(initialize.status).not.toBe(401)
-    expect(list.status).not.toBe(401)
+    expect(initialize.status).toBe(401)
+    expect(list.status).toBe(401)
+    expect(initialize.headers.get('www-authenticate')).toContain('resource_metadata')
+    expect(list.headers.get('www-authenticate')).toContain('/.well-known/oauth-protected-resource/mcp')
+    expect(await initialize.json()).toEqual({ error: 'unauthorized' })
   })
 
   it('returns 401 with WWW-Authenticate for unauthenticated One tools/call', async () => {
@@ -392,7 +395,7 @@ describe('http tool annotations', () => {
   it('lists every tool with title and exactly one of readOnly/destructive', async () => {
     const response = await fetch(mcpUrl(server), {
       method: 'POST',
-      headers,
+      headers: { ...headers, Authorization: 'Bearer test' },
       body: JSON.stringify({
         jsonrpc: '2.0',
         id: 2,
