@@ -140,8 +140,10 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
   // RFC 8414 — Authorization Server Metadata (proxy to API)
   // Some MCP SDK versions fetch this from the resource server directly
   if (
-    req.url === '/.well-known/oauth-authorization-server'
-    || req.url === '/.well-known/openid-configuration'
+    req.url.startsWith('/.well-known/oauth-authorization-server')
+    || req.url.startsWith('/.well-known/openid-configuration')
+    || req.url.startsWith('/mcp/.well-known/oauth-authorization-server')
+    || req.url.startsWith('/mcp/.well-known/openid-configuration')
   ) {
     const apiUrl = getApiUrl()
     sendJson(res, {

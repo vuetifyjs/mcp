@@ -164,6 +164,17 @@ describe('http oauth gate', () => {
     expect(body.authorization_endpoint).toBe('https://api.vuetifyjs.com/oauth/authorize')
   })
 
+  it('serves path-aware AS metadata for /mcp', async () => {
+    const origin = originUrl(server)
+    const a = await fetch(`${origin}/.well-known/oauth-authorization-server/mcp`)
+    const b = await fetch(`${origin}/mcp/.well-known/openid-configuration`)
+
+    expect(a.status).toBe(200)
+    expect(b.status).toBe(200)
+    expect((await a.json()).authorization_endpoint).toBe('https://api.vuetifyjs.com/oauth/authorize')
+    expect((await b.json()).authorization_endpoint).toBe('https://api.vuetifyjs.com/oauth/authorize')
+  })
+
   it('advertises RFC9728 resource with /mcp', async () => {
     const prev = process.env.MCP_SERVER_URL
     delete process.env.MCP_SERVER_URL
