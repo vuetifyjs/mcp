@@ -44,3 +44,12 @@ coverage/
 
 # Optional eslint cache
 .eslintcache
+# Design specs (local only)
+specs/
+
+# Local worktrees
+.worktrees/
+
+# Superpowers SDD scratch
+.superpowers/
+.claude/plans/

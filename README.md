@@ -319,6 +319,23 @@ The Vuetify MCP server provides a comprehensive set of tools to enhance your dev
 - `get_release_notes_by_version`: Get release notes for one or more Vuetify versions, helping you understand changes between versions.
 - `get_vuetify_one_installation_guide`: Get the README contents for @vuetify/one package from GitHub.
 
+### Upgrade (v2 → v3)
+
+Start with `get_v3_upgrade_playbook`. Target **Vuetify 3.13 LTS** — do not jump to v4.
+
+- `get_v3_upgrade_playbook`: Ordered phases (baseline e2e, Vue 3 prerequisite, bundler/Nuxt, eslint --fix, component map, breaking-change scan).
+- `get_v3_upgrade_baseline_recipe`: Playwright recipe for `upgrade-baseline/` before the bump and `upgrade-after/` after. Functional tests are the source of truth; screenshots are classified, not a CI gate.
+- `get_v2_to_v3_component_map`: v2 component → v3.13 status (core, renamed, removed, replaced).
+- `get_v3_breaking_changes`: Filterable v2 → 3 catalog, including a `gotchas` category.
+- `get_upgrade_guide`: Full markdown. Use `version: "v2.7"` for v2 → 3 (fetched from v3-stable).
+
+Prompt: `upgrade-v2-to-v3`.
+
+### Upgrade (v3 → v4)
+
+- `get_upgrade_guide`: Use `version: "v3"`.
+- `get_v4_breaking_changes`: Filterable Vuetify 4 breaking changes.
+
 ### Vuetify0 (@vuetify/v0) Tools
 
 Support for @vuetify/v0, a headless meta-framework providing unstyled components and composables for building design systems:
