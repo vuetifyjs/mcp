@@ -4,6 +4,10 @@
     "vuetify-mcp": {
       "type": "streamable-http",
       "url": "https://mcp.vuetifyjs.com/mcp"
+    },
+    "vuetify-one": {
+      "type": "streamable-http",
+      "url": "https://mcp.vuetifyjs.com/one"
     }
   }
 }

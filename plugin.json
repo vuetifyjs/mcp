@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "vuetify-mcp",
   "version": "1.0.0",
-  "description": "Official hosted Vuetify MCP: docs, APIs, bins, playgrounds, vtfy.link. Privacy: https://vuetifyjs.com/en/legal/mcp-privacy",
+  "description": "Official hosted Vuetify MCP. Public docs at /mcp (no account). Vuetify One bins/playgrounds at /one (OAuth). Privacy: https://vuetifyjs.com/en/legal/mcp-privacy",
   "author": {
     "name": "Vuetify LLC",
     "email": "hello@vuetifyjs.com",

@@ -27,7 +27,7 @@ export interface HttpServerOptions {
   rateLimit?: RateLimiterOptions
 }
 
-async function createMcpServer () {
+async function createMcpServer (options: { one?: boolean } = {}) {
   const server = new McpServer(SERVER_INFO, {
     capabilities: {
       resources: {},
@@ -40,7 +40,7 @@ async function createMcpServer () {
 
   await registerResources(server)
   await registerPrompts(server)
-  await registerTools(server)
+  await registerTools(server, { one: options.one })
 
   return server
 }
@@ -68,7 +68,7 @@ export async function startHttpServer (options: HttpServerOptions = {}): Promise
     httpServer.on('error', reject)
 
     httpServer.listen(port, host, () => {
-      console.error(`MCP Server listening on http://${host}:${port}${path}`)
+      console.error(`MCP Server listening on http://${host}:${port}${path} (public) and /one (OAuth)`)
       resolve(httpServer)
     })
   })
@@ -86,12 +86,25 @@ function getApiUrl (): string {
   return process.env.VUETIFY_API_SERVER ?? 'https://api.vuetifyjs.com'
 }
 
-function getServerUrl (): string {
-  return process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com/mcp'
+function mcpOrigin (): string {
+  const raw = process.env.MCP_SERVER_URL ?? 'https://mcp.vuetifyjs.com/mcp'
+  try {
+    return new URL(raw).origin
+  } catch {
+    return 'https://mcp.vuetifyjs.com'
+  }
+}
+
+function getPublicResourceUrl (): string {
+  return `${mcpOrigin()}/mcp`
+}
+
+function getOneResourceUrl (): string {
+  return `${mcpOrigin()}/one`
 }
 
 function getResourceUrl (): string {
-  return getServerUrl()
+  return getPublicResourceUrl()
 }
 
 function applyCors (res: ServerResponse, origin: string | undefined): void {
@@ -123,10 +136,16 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
 
   const origin = getRequestOrigin(req)
 
-  // RFC 9728 — OAuth 2.0 Protected Resource Metadata
-  if (req.url.startsWith('/.well-known/oauth-protected-resource')) {
+  const path = req.url.split('?')[0]
+
+  // RFC 9728 — only the One resource is protected. Public /mcp must 404
+  // these documents or Grok Bot starts OAuth on the docs URL.
+  if (
+    path === '/.well-known/oauth-protected-resource/one'
+    || path === '/one/.well-known/oauth-protected-resource'
+  ) {
     sendJson(res, {
-      resource: getResourceUrl(),
+      resource: getOneResourceUrl(),
       authorization_servers: [getApiUrl()],
       scopes_supported: ['mcp'],
       bearer_methods_supported: ['header'],
@@ -134,13 +153,11 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
     return true
   }
 
-  // RFC 8414 — Authorization Server Metadata (proxy to API)
-  // Some MCP SDK versions fetch this from the resource server directly
   if (
-    req.url.startsWith('/.well-known/oauth-authorization-server')
-    || req.url.startsWith('/.well-known/openid-configuration')
-    || req.url.startsWith('/mcp/.well-known/oauth-authorization-server')
-    || req.url.startsWith('/mcp/.well-known/openid-configuration')
+    path === '/.well-known/oauth-authorization-server/one'
+    || path === '/.well-known/openid-configuration/one'
+    || path === '/one/.well-known/oauth-authorization-server'
+    || path === '/one/.well-known/openid-configuration'
   ) {
     const apiUrl = getApiUrl()
     sendJson(res, {
@@ -154,13 +171,12 @@ function handleOauthRoutes (req: IncomingMessage, res: ServerResponse): boolean 
       token_endpoint_auth_methods_supported: ['none'],
       authorization_response_iss_parameter_supported: true,
       scopes_supported: ['mcp'],
-      protected_resources: [getResourceUrl()],
+      protected_resources: [getOneResourceUrl()],
     }, origin)
     return true
   }
 
-  // Redirect /authorize and /mcp/authorize to the API's OAuth endpoint
-  if (/^(\/mcp)?\/authorize(\?.*)?$/.test(req.url)) {
+  if (/^\/one\/authorize(\?.*)?$/.test(req.url)) {
     const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''
     res.writeHead(302, { Location: `${getApiUrl()}/oauth/authorize${qs}` })
     res.end()
@@ -246,6 +262,7 @@ async function handleRequest (
       name: 'Vuetify MCP Server',
       version: SERVER_INFO.version,
       mcp_endpoint: mcpPath,
+      one_endpoint: '/one',
       health_endpoint: '/health',
     }))
     return
@@ -255,16 +272,18 @@ async function handleRequest (
     return
   }
 
-  // Only handle requests to the MCP path
-  if (req.url !== mcpPath) {
+  const path = pathname(req.url)
+  const isPublic = path === mcpPath
+  const isOne = path === '/one'
+
+  if (!isPublic && !isOne) {
     res.writeHead(404, { 'Content-Type': 'text/plain' })
-    res.end(`Not Found. Try ${mcpPath} for MCP endpoint or /health for health check.`)
+    res.end(`Not Found. Try ${mcpPath} for public docs or /one for Vuetify One (OAuth).`)
     return
   }
 
-  // MCP endpoint - stateless mode: create new server + transport per request
   if (req.method === 'POST') {
-    await handleMcpPost(req, res)
+    await handleMcpPost(req, res, { one: isOne })
     return
   }
 
@@ -282,6 +301,7 @@ async function handleRequest (
 async function handleMcpPost (
   req: IncomingMessage,
   res: ServerResponse,
+  options: { one: boolean },
 ): Promise<void> {
   // Parse request body
   const body = await parseBody(req)
@@ -292,7 +312,7 @@ async function handleMcpPost (
   }
 
   const token = extractAuthToken(req)
-  if (!token && requiresBearer(body)) {
+  if (options.one && !token && requiresBearer(body)) {
     applyCors(res, getRequestOrigin(req))
     res.writeHead(401, {
       'Content-Type': 'application/json',
@@ -325,7 +345,7 @@ async function handleMcpPost (
   })
 
   // Create fresh MCP server
-  const server = await createMcpServer()
+  const server = await createMcpServer({ one: options.one })
 
   // Connect server to transport
   await server.connect(transport)
@@ -378,9 +398,15 @@ function requiresBearer (body: unknown): boolean {
   return requiresBearerItem(body)
 }
 
+function pathname (url: string | undefined): string {
+  if (!url) {
+    return ''
+  }
+  return url.split('?')[0]
+}
+
 function resourceMetadataUrl (): string {
-  const resource = getResourceUrl()
-  const url = new URL(resource)
+  const url = new URL(getOneResourceUrl())
   const path = url.pathname.replace(/\/$/, '')
   return `${url.origin}/.well-known/oauth-protected-resource${path === '/' || path === '' ? '' : path}`
 }
