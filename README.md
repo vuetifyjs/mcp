@@ -32,12 +32,24 @@ By connecting your development environment to the Vuetify MCP server, you gain A
 
 ### Hosted HTTP Server (Easiest)
 
-Use the hosted MCP server directly. The `claude` CLI below is **Claude Code**, not Claude Desktop — see [Claude Desktop](#claude-desktop) for that GUI client.
+Two URLs. Use `/mcp` unless you need bins.
+
+| URL | Auth | Tools |
+|-----|------|--------|
+| `https://mcp.vuetifyjs.com/mcp` | none | docs, APIs, install/upgrade guides |
+| `https://mcp.vuetifyjs.com/one` | Vuetify One OAuth | docs plus bins, playgrounds, vtfy.link |
+
+The `claude` CLI below is **Claude Code**, not Claude Desktop — see [Claude Desktop](#claude-desktop) for that GUI client.
 
 ```bash
-# Claude Code
+# Claude Code — public docs
 claude mcp add --transport http vuetify-mcp https://mcp.vuetifyjs.com/mcp
+
+# Optional — Vuetify One bins (OAuth)
+claude mcp add --transport http vuetify-one https://mcp.vuetifyjs.com/one
 ```
+
+Grok Bot / Cursor Agents: add `/mcp` for docs (no Authorize card). Add `/one` only for bins and complete One login there. Do not paste an API key.
 
 ### Local Installation
 
@@ -54,7 +66,8 @@ This command downloads and runs the latest version of the Vuetify MCP server, ma
 
 This repo is an [Agent Plugins](https://agent-plugins.org/) 1.0.0 package (`plugin.json` + `mcp.json`) that points compatible clients at the hosted server.
 
-- Hosted MCP: https://mcp.vuetifyjs.com/mcp
+- Hosted MCP (docs): https://mcp.vuetifyjs.com/mcp
+- Hosted MCP (One / OAuth): https://mcp.vuetifyjs.com/one
 - Privacy: https://vuetifyjs.com/en/legal/mcp-privacy
 
 Local test: copy or symlink this repo to `~/.cursor/plugins/local/vuetify-mcp`.
@@ -114,10 +127,15 @@ Below are the locations and JSON snippets for each supported environment. Copy t
   "mcpServers": {
     "vuetify-mcp": {
       "url": "https://mcp.vuetifyjs.com/mcp"
+    },
+    "vuetify-one": {
+      "url": "https://mcp.vuetifyjs.com/one"
     }
   }
 }
 ```
+
+Omit `vuetify-one` if you only need docs.
 
 ### Claude Desktop
 
@@ -166,7 +184,9 @@ After editing `claude_desktop_config.json`, fully quit and relaunch Claude Deskt
 
 ### Authentication
 
-Some tools (like creating bins) require a Vuetify API key. How you pass the key depends on your transport type.
+Hosted `/mcp` needs no login. Hosted bins/playgrounds are a second URL (`/one`) and use Vuetify One OAuth — do not paste an API key there.
+
+Local stdio or self-hosted HTTP can still use a Vuetify API key. How you pass it depends on transport:
 
 **Local stdio servers** use environment variables:
 
