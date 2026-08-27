@@ -430,10 +430,18 @@ export const UPGRADE_FROM_VERSIONS = {
     description: 'Upgrade from Vuetify v2.7 to v3.0',
     path: 'packages/docs/src/pages/en/getting-started/upgrade-guide.md',
     markdown: `
-      # Dependencies
+      # Target
+      Install **Vuetify 3.13 LTS**, not v4.
+
       \`\`\`bash
-      [npm|pnpm|yarn|bun] install vuetify@v3.0.0 eslint-plugin-vuetify@2.0.0
+      [npm|pnpm|yarn|bun] install vuetify@^3.13.0 eslint-plugin-vuetify
       \`\`\`
+
+      Use eslint-plugin-vuetify **recommended** (flat: \`flat/recommended\`). Do **not** enable \`recommended-v4\`.
+
+      Vue 2 → 3 language changes (filters, $listeners, $children): https://v3-migration.vuejs.org/
+
+      Full guide is fetched from the v3-stable branch below.
     `,
   },
   'v3': {
@@ -678,6 +686,15 @@ export type FreshInstallationPlatform = keyof typeof FRESH_INSTALLATION_PLATFORM
 export type AvailableFeature = keyof typeof AVAILABLE_FEATURES
 export type UpgradeFromVersion = keyof typeof UPGRADE_FROM_VERSIONS
 
+export function upgradeGuideRef (version: UpgradeFromVersion): string | undefined {
+  if (version === 'v2.7') {
+    return 'v3-stable'
+  }
+  if (version === 'v3') {
+    return 'next'
+  }
+}
+
 export function createDocumentationService () {
   return {
     getInstallationGuide: async ({ fresh, platform, ssr }: {
@@ -752,8 +769,7 @@ export function createDocumentationService () {
     getUpgradeGuide: async ({ version }: { version: UpgradeFromVersion }) => {
       const guide = UPGRADE_FROM_VERSIONS[version]
 
-      // For v3 upgrade, fetch from next.vuetifyjs.com docs (v4 branch)
-      const ref = version === 'v3' ? 'next' : undefined
+      const ref = upgradeGuideRef(version)
 
       const { data } = await octokit.rest.repos.getContent({
         owner: 'vuetifyjs',
