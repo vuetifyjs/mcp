@@ -12,10 +12,13 @@ import { registerBinTools } from './one/bin.js'
 import { registerLinkTools } from './one/link.js'
 import { registerPlaygroundTools } from './one/playground.js'
 
-export async function registerTools (server: McpServer) {
+export async function registerTools (server: McpServer, options: { one?: boolean } = {}) {
   await registerApiTools(server)
   await registerDocumentationTools(server)
   await registerIssuesTools(server)
+  if (options.one === false) {
+    return
+  }
   await registerBinTools(server)
   await registerLinkTools(server)
   await registerPlaygroundTools(server)

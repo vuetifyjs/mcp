@@ -14,6 +14,11 @@ function mcpUrl (server: Server): string {
   return `http://127.0.0.1:${address.port}/mcp`
 }
 
+function oneUrl (server: Server): string {
+  const address = server.address() as AddressInfo
+  return `http://127.0.0.1:${address.port}/one`
+}
+
 function originUrl (server: Server): string {
   const address = server.address() as AddressInfo
   return `http://127.0.0.1:${address.port}`
@@ -85,7 +90,7 @@ describe('http oauth gate', () => {
     })
   })
 
-  it('returns 401 with WWW-Authenticate for unauthenticated initialize and tools/list', async () => {
+  it('does not 401 unauthenticated initialize or tools/list on the public /mcp URL', async () => {
     const url = mcpUrl(server)
 
     const initialize = await fetch(url, {
@@ -114,17 +119,35 @@ describe('http oauth gate', () => {
       }),
     })
 
+    expect(initialize.status).not.toBe(401)
+    expect(list.status).not.toBe(401)
+  })
+
+  it('returns 401 with WWW-Authenticate for unauthenticated initialize on /one', async () => {
+    const initialize = await fetch(oneUrl(server), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2024-11-05',
+          capabilities: {},
+          clientInfo: { name: 'test', version: '0.0.0' },
+        },
+      }),
+    })
+
     expect(initialize.status).toBe(401)
-    expect(list.status).toBe(401)
-    expect(initialize.headers.get('www-authenticate')).toContain('resource_metadata')
-    expect(list.headers.get('www-authenticate')).toContain('/.well-known/oauth-protected-resource/mcp')
+    expect(initialize.headers.get('www-authenticate')).toContain('/.well-known/oauth-protected-resource/one')
     expect(await initialize.json()).toEqual({ error: 'unauthorized' })
   })
 
   it('advertises the VMCP icon on initialize', async () => {
     const response = await fetch(mcpUrl(server), {
       method: 'POST',
-      headers: { ...headers, Authorization: 'Bearer test' },
+      headers,
       body: JSON.stringify({
         jsonrpc: '2.0',
         id: 1,
@@ -156,7 +179,7 @@ describe('http oauth gate', () => {
 
   it('returns 401 with WWW-Authenticate for unauthenticated One tools/call', async () => {
     for (const name of ONE_TOOL_NAMES) {
-      const response = await fetch(mcpUrl(server), {
+      const response = await fetch(oneUrl(server), {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -191,53 +214,35 @@ describe('http oauth gate', () => {
     }
   })
 
-  it('proxies AS metadata without advertising unimplemented CIMD', async () => {
-    const response = await fetch(`${originUrl(server)}/.well-known/oauth-authorization-server`)
-    const body = await response.json()
-
-    expect(body.scopes_supported).toEqual(['mcp'])
-    expect(body.client_id_metadata_document_supported).toBeUndefined()
-    expect(body.authorization_endpoint).toBe('https://api.vuetifyjs.com/oauth/authorize')
-  })
-
-  it('serves path-aware AS metadata for /mcp', async () => {
+  it('does not advertise OAuth metadata on the public /mcp well-known paths', async () => {
     const origin = originUrl(server)
-    const a = await fetch(`${origin}/.well-known/oauth-authorization-server/mcp`)
-    const b = await fetch(`${origin}/mcp/.well-known/openid-configuration`)
+    const rootPrm = await fetch(`${origin}/.well-known/oauth-protected-resource`)
+    const mcpPrm = await fetch(`${origin}/.well-known/oauth-protected-resource/mcp`)
+    const rootAs = await fetch(`${origin}/.well-known/oauth-authorization-server`)
 
-    expect(a.status).toBe(200)
-    expect(b.status).toBe(200)
-    expect((await a.json()).authorization_endpoint).toBe('https://api.vuetifyjs.com/oauth/authorize')
-    expect((await b.json()).authorization_endpoint).toBe('https://api.vuetifyjs.com/oauth/authorize')
+    expect(rootPrm.status).toBe(404)
+    expect(mcpPrm.status).toBe(404)
+    expect(rootAs.status).toBe(404)
   })
 
-  it('advertises RFC9728 resource with /mcp', async () => {
+  it('advertises RFC9728 resource only for /one', async () => {
     const prev = process.env.MCP_SERVER_URL
     delete process.env.MCP_SERVER_URL
     try {
-      const response = await fetch(`${originUrl(server)}/.well-known/oauth-protected-resource`)
-      const body = await response.json()
+      const origin = originUrl(server)
+      const prm = await fetch(`${origin}/.well-known/oauth-protected-resource/one`)
+      const as = await fetch(`${origin}/.well-known/oauth-authorization-server/one`)
+      const asBody = await as.json()
 
-      expect(body.resource).toBe('https://mcp.vuetifyjs.com/mcp')
+      expect((await prm.json()).resource).toBe('https://mcp.vuetifyjs.com/one')
+      expect(asBody.authorization_endpoint).toBe('https://api.vuetifyjs.com/oauth/authorize')
+      expect(asBody.client_id_metadata_document_supported).toBeUndefined()
     } finally {
-      if (prev === undefined) delete process.env.MCP_SERVER_URL
-      else process.env.MCP_SERVER_URL = prev
-    }
-  })
-
-  it('uses MCP_SERVER_URL verbatim when set', async () => {
-    const prev = process.env.MCP_SERVER_URL
-    try {
-      process.env.MCP_SERVER_URL = 'https://custom.example.com/foo'
-      const custom = await fetch(`${originUrl(server)}/.well-known/oauth-protected-resource`)
-      expect((await custom.json()).resource).toBe('https://custom.example.com/foo')
-
-      process.env.MCP_SERVER_URL = 'http://localhost:3001'
-      const local = await fetch(`${originUrl(server)}/.well-known/oauth-protected-resource`)
-      expect((await local.json()).resource).toBe('http://localhost:3001')
-    } finally {
-      if (prev === undefined) delete process.env.MCP_SERVER_URL
-      else process.env.MCP_SERVER_URL = prev
+      if (prev === undefined) {
+        delete process.env.MCP_SERVER_URL
+      } else {
+        process.env.MCP_SERVER_URL = prev
+      }
     }
   })
 })
@@ -396,7 +401,7 @@ describe('http origin validation', () => {
   })
 
   it('reflects an allowed Origin on 401 One tools/call', async () => {
-    const response = await fetch(mcpUrl(server), {
+    const response = await fetch(oneUrl(server), {
       method: 'POST',
       headers: { ...headers, Origin: 'https://claude.ai' },
       body: JSON.stringify({
@@ -426,7 +431,7 @@ describe('http tool annotations', () => {
   })
 
   it('lists every tool with title and exactly one of readOnly/destructive', async () => {
-    const response = await fetch(mcpUrl(server), {
+    const response = await fetch(oneUrl(server), {
       method: 'POST',
       headers: { ...headers, Authorization: 'Bearer test' },
       body: JSON.stringify({
