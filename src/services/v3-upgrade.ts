@@ -252,3 +252,166 @@ export async function getV2ToV3ComponentMap () {
 
   return { content: [{ type: 'text' as const, text }] }
 }
+
+export async function getV3UpgradePlaybook () {
+  const text = `# Vuetify 2 → 3.13 upgrade playbook
+
+Start here. Target **vuetify@^3.13**. Do not upgrade to v4.
+
+Follow phases 0–11 in order. Do not skip phase 0.
+
+## 0. Baseline
+
+Call \`get_v3_upgrade_baseline_recipe\`. Scaffold Playwright if missing. Capture \`upgrade-baseline/\` **before any dependency bump**. Inventory vue-router / Nuxt pages; cover app-bar/drawer shells, data tables, date pickers, lists, forms, dialogs. Do not skip because the app is large.
+
+## 1. Inventory
+
+Read \`package.json\`: \`vue\`, \`vuetify\`, \`vue-router\`, \`vuex\`/\`pinia\`, \`vee-validate\`, \`nuxt\`, bundler (\`vue-cli-service\` / webpack / vite). vee-validate 3 and Vue CLI are blockers.
+
+## 2. Vue 3 prerequisite
+
+https://v3-migration.vuejs.org/. \`@vue/compat\` is **not** a Vuetify 3 path unless \`configureCompat({ MODE: 3 })\` globally and \`MODE: 2\` only on leftover Vue 2 SFCs (FAQ). Filters, \`$listeners\`, \`$children\`, \`$on\`/\`$off\` are Vue's problem.
+
+## 3. Target
+
+Install **vuetify@^3.13.0**. Do not install 4.
+
+## 4. Bundler / Nuxt
+
+\`vuetify-loader\` → \`vite-plugin-vuetify\` or \`webpack-plugin-vuetify\`. Nuxt 2 \`@nuxtjs/vuetify\` → Nuxt 3 + \`vuetify-nuxt-module\`.
+
+## 5. Bootstrap
+
+\`createApp\` + \`createVuetify\`. Drop \`vuetify/lib\`. \`import 'vuetify/styles'\`. Optional defaults to keep v2 look:
+
+\`\`\`ts
+defaults: {
+  VBtn: { variant: 'text' },
+  VTextField: { variant: 'underlined' },
+  VSelect: { variant: 'underlined' },
+  VTextarea: { variant: 'underlined' },
+}
+\`\`\`
+
+## 6. Mechanical remaps
+
+\`eslint-plugin-vuetify\` config \`recommended\` (flat: \`flat/recommended\`), **not recommended-v4**. \`--fix\`.
+
+## 7. Status table
+
+Call \`get_v2_to_v3_component_map\`. Fail closed on \`v-overflow-btn\`.
+
+## 8. Scan remaining
+
+Call \`get_v3_breaking_changes\` in order: \`layout\`, \`v-list\`, \`v-data-table\`, \`v-date-picker\`, \`theme\`, \`general\`, \`gotchas\`, then the rest. Report file, line, recommended fix.
+
+## 9. Re-baseline
+
+\`test:upgrade:after\` into \`upgrade-after/\`. Functional failures are blockers. Screenshot diffs are classified (layout-break vs intended v3 look), never a hard CI fail on first v3 run.
+
+## 10. Tests
+
+DOM structure changed (\`v-switch\` is a real checkbox). #17684: no official v3 testing docs.
+
+## 11. Stop.
+
+Do not apply \`get_v4_breaking_changes\`.
+`
+
+  return { content: [{ type: 'text' as const, text }] }
+}
+
+export async function getV3UpgradeBaselineRecipe () {
+  const text = `# Vuetify 2 → 3 upgrade baseline recipe
+
+Playwright (not Cypress) functional e2e plus tagged screenshots. Functional tests are the source of truth. Do not add Percy, Chromatic billing, or \`toHaveScreenshot\` as a CI gate.
+
+Capture \`upgrade-baseline/\` on the current Vuetify 2 app **before any dependency bump**. Re-run into \`upgrade-after/\` after the v3 upgrade.
+
+## Dev dependency
+
+\`\`\`bash
+pnpm add -D @playwright/test
+\`\`\`
+
+## playwright.config.ts
+
+Desktop viewport \`1280x720\`. \`baseURL\` from \`PLAYWRIGHT_BASE_URL\` (default \`http://localhost:3000\`). \`storageState\` is loaded only when the auth file exists.
+
+\`\`\`ts
+import { defineConfig, devices } from '@playwright/test'
+import { existsSync } from 'node:fs'
+
+const auth = 'playwright/.auth/user.json'
+
+export default defineConfig({
+  testDir: './e2e',
+  use: {
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',
+    viewport: { width: 1280, height: 720 },
+    screenshot: 'off',
+    storageState: existsSync(auth) ? auth : undefined,
+  },
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+})
+\`\`\`
+
+## npm scripts
+
+\`\`\`json
+{
+  "test:upgrade:baseline": "UPGRADE_SHOT_DIR=upgrade-baseline playwright test",
+  "test:upgrade:after": "UPGRADE_SHOT_DIR=upgrade-after playwright test"
+}
+\`\`\`
+
+## Auth
+
+Document \`storageState\`. If \`playwright/.auth/user.json\` exists, Playwright loads it. Do not invent login flows for arbitrary IdPs.
+
+## Inventory
+
+Rank routes by layout risk. One spec per high-risk route plus a **shell spec** asserting \`v-app\` / \`v-main\` / app-bar or nav-drawer still present.
+
+\`\`\`ts
+import { test, expect } from '@playwright/test'
+
+test('shell: v-app and v-main remain', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('.v-application, .v-app, [class*="v-app"]').first()).toBeVisible()
+  await expect(page.locator('.v-main, [class*="v-main"]').first()).toBeVisible()
+})
+\`\`\`
+
+## Assertions
+
+Use \`getByRole\`, visible headings, and URL — not CSS class names.
+
+\`\`\`ts
+await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible()
+await expect(page).toHaveURL(/\\/dashboard/)
+\`\`\`
+
+## Screenshots
+
+\`page.screenshot({ path, fullPage: true })\` into the tagged folder (\`upgrade-baseline/\` then \`upgrade-after/\`). Drive the folder with \`UPGRADE_SHOT_DIR\`.
+
+\`\`\`ts
+const dir = process.env.UPGRADE_SHOT_DIR ?? 'upgrade-baseline'
+await page.screenshot({ path: \`\${dir}/shell.png\`, fullPage: true })
+\`\`\`
+
+## Classification rules
+
+- Functional fail = blocker
+- Screenshot = review (layout-break vs intended v3 look)
+- v3 defaults (no uppercase buttons, \`density\`, elevation) are expected
+- Never a hard CI fail on first v3 screenshots
+
+## Out of recipe
+
+No Cypress. No Percy. No pixel-threshold \`toHaveScreenshot\` as CI gate. If Storybook/Chromatic already exists, use it too — do not add a second visual stack. Out of scope: screenshot hosting, Percy/Chromatic billing, auth-fixture generation.
+`
+
+  return { content: [{ type: 'text' as const, text }] }
+}
