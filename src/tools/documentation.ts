@@ -8,6 +8,9 @@ import { z } from 'zod'
 
 import { AVAILABLE_FEATURES, createDocumentationService, INSTALLATION_PLATFORMS, UPGRADE_FROM_VERSIONS, V4_BREAKING_CHANGES } from '#services/documentation'
 import type { InstallationPlatform, AvailableFeature, UpgradeFromVersion, V4BreakingChangeCategory } from '#services/documentation'
+import { V3_BREAKING_CHANGES, getV3BreakingChanges } from '#services/v3-breaking-changes'
+import type { V3BreakingChangeCategory } from '#services/v3-breaking-changes'
+import { createV3UpgradeService } from '#services/v3-upgrade'
 import { createVuetify0Service, VUETIFY0_COMPOSABLES, VUETIFY0_COMPONENTS } from '#services/vuetify0'
 import type { Vuetify0Category, Vuetify0Component } from '#services/vuetify0'
 
@@ -127,6 +130,54 @@ export async function registerDocumentationTools (server: McpServer) {
       readOnlyHint: true,
     },
     documentation.getV4BreakingChanges,
+  )
+
+  const v3Categories = Object.keys(V3_BREAKING_CHANGES) as [V3BreakingChangeCategory, ...V3BreakingChangeCategory[]]
+  const v3Upgrade = createV3UpgradeService()
+
+  server.tool(
+    'get_v3_breaking_changes',
+    'Vuetify 2 → 3 breaking changes, optionally filtered by category (setup, layout, theme, components, gotchas, …). High-pain categories include before/after snippets. Omit category to get all.',
+    {
+      category: z.enum(v3Categories).optional().describe(
+        `Optional category to filter by. Available categories: ${v3Categories.join(', ')}. Omit to get all breaking changes.`,
+      ),
+    },
+    {
+      title: 'Get Vuetify 3 breaking changes',
+      readOnlyHint: true,
+    },
+    getV3BreakingChanges,
+  )
+
+  server.tool(
+    'get_v2_to_v3_component_map',
+    'v2 component → v3.13 status (core, renamed, removed, replaced) with notes and issue links.',
+    {
+      title: 'Get Vuetify 2 to 3 component map',
+      readOnlyHint: true,
+    },
+    v3Upgrade.getV2ToV3ComponentMap,
+  )
+
+  server.tool(
+    'get_v3_upgrade_playbook',
+    'Start here for Vuetify 2 → 3. Ordered phases: baseline e2e, Vue 3 prerequisite, bundler/Nuxt, eslint --fix, component map, breaking-change scan. Target vuetify@^3.13. Do not upgrade to v4.',
+    {
+      title: 'Get Vuetify 2 to 3 upgrade playbook',
+      readOnlyHint: true,
+    },
+    v3Upgrade.getV3UpgradePlaybook,
+  )
+
+  server.tool(
+    'get_v3_upgrade_baseline_recipe',
+    'Playwright recipe to snapshot the current Vuetify 2 app before upgrading (upgrade-baseline/) and re-run after (upgrade-after/). Functional e2e is the source of truth; screenshots are classified, not a CI gate.',
+    {
+      title: 'Get Vuetify 2 to 3 upgrade baseline recipe',
+      readOnlyHint: true,
+    },
+    v3Upgrade.getV3UpgradeBaselineRecipe,
   )
 
   // Vuetify0 (@vuetify/v0) Tools

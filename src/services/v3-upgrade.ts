@@ -415,3 +415,11 @@ No Cypress. No Percy. No pixel-threshold \`toHaveScreenshot\` as CI gate. If Sto
 
   return { content: [{ type: 'text' as const, text }] }
 }
+
+export function createV3UpgradeService () {
+  return {
+    getV2ToV3ComponentMap,
+    getV3UpgradePlaybook,
+    getV3UpgradeBaselineRecipe,
+  }
+}
