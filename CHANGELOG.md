@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Hosted MCP is two URLs: `/mcp` is public docs (no OAuth); `/one` is Vuetify One bins/playgrounds (OAuth). Clients that treat OAuth as connect-time must not share them.
+- Hosted MCP is two URLs: `/mcp` is public docs (no OAuth); `/one` authenticates with Vuetify One so subscribers can access ecosystem sites. Clients that treat OAuth as connect-time must not share them.
 
 ## [0.1.1] - 2025-06-06
 

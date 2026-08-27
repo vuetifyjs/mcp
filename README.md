@@ -32,12 +32,12 @@ By connecting your development environment to the Vuetify MCP server, you gain A
 
 ### Hosted HTTP Server (Easiest)
 
-Two URLs. Use `/mcp` unless you need bins.
+Two URLs. Use `/mcp` unless you subscribe to Vuetify One.
 
 | URL | Auth | Tools |
 |-----|------|--------|
 | `https://mcp.vuetifyjs.com/mcp` | none | docs, APIs, install/upgrade guides |
-| `https://mcp.vuetifyjs.com/one` | Vuetify One OAuth | docs plus bins, playgrounds, vtfy.link |
+| `https://mcp.vuetifyjs.com/one` | Vuetify One OAuth | docs plus ecosystem sites (Bin, Play, Link, and the rest of One) |
 
 The `claude` CLI below is **Claude Code**, not Claude Desktop — see [Claude Desktop](#claude-desktop) for that GUI client.
 
@@ -45,11 +45,11 @@ The `claude` CLI below is **Claude Code**, not Claude Desktop — see [Claude De
 # Claude Code — public docs
 claude mcp add --transport http vuetify-mcp https://mcp.vuetifyjs.com/mcp
 
-# Optional — Vuetify One bins (OAuth)
+# Optional — authenticate with Vuetify One
 claude mcp add --transport http vuetify-one https://mcp.vuetifyjs.com/one
 ```
 
-Grok Bot / Cursor Agents: add `/mcp` for docs (no Authorize card). Add `/one` only for bins and complete One login there. Do not paste an API key.
+Grok Bot / Cursor Agents: add `/mcp` for docs (no Authorize card). Add `/one` to authenticate with Vuetify One; subscribers can then use ecosystem sites from that connector. Do not paste an API key.
 
 ### Local Installation
 
@@ -135,7 +135,7 @@ Below are the locations and JSON snippets for each supported environment. Copy t
 }
 ```
 
-Omit `vuetify-one` if you only need docs.
+Omit `vuetify-one` unless you have a Vuetify One subscription.
 
 ### Claude Desktop
 
@@ -184,7 +184,7 @@ After editing `claude_desktop_config.json`, fully quit and relaunch Claude Deskt
 
 ### Authentication
 
-Hosted `/mcp` needs no login. Hosted bins/playgrounds are a second URL (`/one`) and use Vuetify One OAuth — do not paste an API key there.
+Hosted `/mcp` needs no login. `/one` authenticates with Vuetify One so subscribers can access ecosystem sites — do not paste an API key there.
 
 Local stdio or self-hosted HTTP can still use a Vuetify API key. How you pass it depends on transport:
 
