@@ -379,8 +379,8 @@ createVuetify({ theme: { themes: { light: { colors: { primary: '#ccc' } } } } })
       },
       {
         title: 'filled/outlined/solo combined into variant',
-        description: 'Variant props `filled`/`outlined`/`solo` have been combined into a single `variant` prop. Allowed values are `underlined`, `outlined`, `filled`, `solo`, or `plain`.',
-        migration: 'Replace `outlined` with `variant="outlined"` (and the other booleans with the matching `variant` value).',
+        description: 'Variant props `filled`/`outlined`/`solo`/`solo-inverted` have been combined into a single `variant` prop. Allowed values are `underlined`, `outlined`, `filled`, `solo`, `solo-inverted`, `solo-filled`, or `plain`.',
+        migration: 'Replace boolean variant props with the matching `variant` value (`outlined` → `variant="outlined"`, `solo-inverted` → `variant="solo-inverted"`, not `solo`).',
         issue: null,
       },
       {
@@ -408,9 +408,9 @@ createVuetify({ theme: { themes: { light: { colors: { primary: '#ccc' } } } } })
         issue: null,
       },
       {
-        title: 'colored-border renamed to border-color',
-        description: '`colored-border` prop has been renamed to `border-color`.',
-        migration: 'Rename `colored-border` to `border-color`.',
+        title: 'colored-border replaced by border-color',
+        description: 'v2 `colored-border` is a boolean that paints the border with `color`/`type`. In 3.13 `border-color` is a string color value; a boolean/`true` is invalid.',
+        migration: 'Replace `colored-border` + `color="error"` (or `type`) with `border-color="error"` (or the type name). Do not pass a boolean to `border-color`.',
         issue: null,
       },
       {
