@@ -291,8 +291,8 @@ createVuetify({ theme: { themes: { light: { colors: { primary: '#ccc' } } } } })
       },
       {
         title: 'left/right replaced by start/end',
-        description: '`left` and `right` have been replaced by `start` and `end` respectively. This applies to utility classes too, for example `.rounded-r` is now `.rounded-e`.',
-        migration: 'Rename `left`/`right` props and `.rounded-l` / `.rounded-r` classes to `start`/`end` and `.rounded-s` / `.rounded-e`.',
+        description: 'Utility classes: `.rounded-r` is now `.rounded-e` (and `.rounded-l` → `.rounded-s`). Boolean `left`/`right` props are not renamed to boolean `start`/`end`. On components with `location` (btn, card, sheet, alert, banner, fab, badge, snackbar, overlay, drawer), use the `location` string (`location="start"`).',
+        migration: 'Rename `.rounded-l` / `.rounded-r` to `.rounded-s` / `.rounded-e`. Do not write boolean `start`/`end` props. On `location` components, `<v-btn left>` → `location="start"`.',
         issue: null,
       },
       {
@@ -322,8 +322,8 @@ createVuetify({ theme: { themes: { light: { colors: { primary: '#ccc' } } } } })
       },
       {
         title: 'top/bottom/left/right combined into location',
-        description: '`top` / `bottom` / `left` / `right` props have been combined into a `location` string on overlay, snackbar, menu, and drawer. This is not global: `v-tabs` uses `align-tabs` (`start` / `title` / `center` / `end`), not `location`.',
-        migration: 'On overlay/snackbar/menu/drawer, replace boolean `top`/`bottom`/`left`/`right` with `location="top"` (or `start`/`end`). On `v-tabs`, `centered` → `align-tabs="center"` and `right` → `align-tabs="end"`. Do not write `<v-tabs location="end">`.',
+        description: '`top` / `bottom` / `left` / `right` combine into a single `location` **anchor string** on overlay, snackbar, menu, drawer, btn, card, sheet, alert, banner, fab, badge. Multiple booleans merge: `<v-snackbar top right>` → `location="top end"`, not `location="top"`. This is not global: `v-tabs` uses `align-tabs` (`start` / `title` / `center` / `end`), not `location`.',
+        migration: 'Combine side booleans into one `location` string (`location="top end"`). On `v-tabs`, `centered` → `align-tabs="center"` and `right` → `align-tabs="end"`. Do not write `<v-tabs location="end">` or boolean `start`/`end`.',
         issue: null,
       },
       {

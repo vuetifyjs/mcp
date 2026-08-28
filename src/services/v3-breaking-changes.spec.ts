@@ -177,7 +177,15 @@ describe('catalog content', () => {
   it('tabs alignment is align-tabs, not location', () => {
     const change = V3_BREAKING_CHANGES.general.changes.find(c => c.title.includes('location'))
     expect(change?.description).toContain('align-tabs')
+    expect(change?.description).toContain('top end')
     expect(change?.migration).toContain('align-tabs="end"')
+    expect(change?.migration).toContain('location="top end"')
     expect(change?.migration).toContain('<v-tabs location="end">')
+  })
+
+  it('left/right are location strings, not boolean start/end', () => {
+    const change = V3_BREAKING_CHANGES.general.changes.find(c => c.title.includes('left/right'))
+    expect(change?.migration).toContain('location="start"')
+    expect(change?.migration).toMatch(/Do not write boolean `start`/)
   })
 })
