@@ -166,15 +166,18 @@ color: rgb(var(--v-theme-primary));
       },
       {
         title: 'Theme colors nested under colors',
-        description: 'Theme colors in the theme config are now nested inside a `colors` property.',
-        migration: `Nest palette values under \`colors\`.
+        description: 'Theme colors in the theme config are now nested inside a `colors` property. v2 `myTheme` is the theme option value passed as `new Vuetify({ theme: myTheme })`.',
+        migration: `Nest palette values under \`colors\`. Pass the option object to \`createVuetify\`; do not wrap the v2 \`myTheme\` variable in another \`theme\` key.
 
 \`\`\`js
 // 2.x
 const myTheme = { themes: { light: { primary: '#ccc' } } }
+new Vuetify({ theme: myTheme })
+\`\`\`
 
+\`\`\`js
 // 3.x
-const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } }
+createVuetify({ theme: { themes: { light: { colors: { primary: '#ccc' } } } } })
 \`\`\`
 `,
         issue: null,
@@ -299,9 +302,22 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
         issue: null,
       },
       {
-        title: 'absolute and fixed combined into position',
-        description: '`absolute` and `fixed` props have been combined into a single `position` prop.',
-        migration: 'Replace `absolute` with `position="absolute"` and `fixed` with `position="fixed"`.',
+        title: 'absolute and fixed combined into position on some components',
+        description: '`absolute` and `fixed` are combined into `position` on v-btn, v-snackbar, v-card, v-sheet, v-alert, and v-banner. Not global. Layout chrome (`v-app-bar`, `v-navigation-drawer`, `v-system-bar`) still has boolean `absolute`. Overlay, menu, and dialog still have `absolute`. `v-img` still has boolean `absolute`.',
+        migration: `On btn/snackbar/card/sheet/alert/banner, replace \`absolute\` with \`position="absolute"\` and \`fixed\` with \`position="fixed"\`. Do not rewrite drawer or app-bar \`absolute\` to \`position="absolute"\`.
+
+\`\`\`vue
+<!-- 2.x -->
+<v-btn absolute />
+<v-app-bar absolute />
+\`\`\`
+
+\`\`\`vue
+<!-- 3.x -->
+<v-btn position="absolute" />
+<v-app-bar absolute />
+\`\`\`
+`,
         issue: null,
       },
       {
@@ -398,9 +414,9 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
         issue: null,
       },
       {
-        title: 'dismissable renamed to closable',
-        description: '`dismissable` prop has been renamed to `closable`.',
-        migration: 'Rename `dismissable` to `closable`.',
+        title: 'dismissible renamed to closable',
+        description: 'v2 `dismissible` has been renamed to `closable`. eslint-plugin-vuetify maps `dismissible` → `closable`.',
+        migration: 'Rename `dismissible` to `closable`.',
         issue: null,
       },
       {
@@ -592,8 +608,8 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'Locale and format props split between picker and adapter',
-        description: 'Still picker props: `first-day-of-week`, `first-day-of-year` (v2 `locale-first-day-of-year`), `weekday-format` (v2 function → 3.13 `\'long\'|\'short\'|\'narrow\'`), and `header-date-format` (adapter token string, default `normalDateWithWeekday`, not a v2 format function). Gone as picker props — configure on the date adapter / locale: `locale`, `day-format`, `month-format`, `year-format`, `title-date-format`.',
-        migration: 'Keep `first-day-of-week` / `first-day-of-year` / `weekday-format` / `header-date-format` on the picker. Move `locale`, `day-format`, `month-format`, `year-format`, and `title-date-format` to the date adapter. Do not delete a working `first-day-of-week`.',
+        description: 'Still picker props: `first-day-of-week`, `first-day-of-year` (v2 `locale-first-day-of-year`), `weekday-format` (v2 function → 3.13 `\'long\'|\'short\'|\'narrow\'`), and `header-date-format` (adapter token string, default `normalDateWithWeekday`, not a v2 format function). Gone as picker props: `locale`, `day-format`, `month-format`, `year-format`, `title-date-format`. Those names are not 1:1 adapter option keys. Adapter `formats` keys are tokens (`month`, `year`, `dayOfMonth`, `normalDateWithWeekday`, …). App locale is `createVuetify({ locale })`.',
+        migration: 'Keep `first-day-of-week` / `first-day-of-year` / `weekday-format` / `header-date-format` on the picker. Drop the gone format props; map custom format functions onto adapter `formats` tokens, not `formats[\'day-format\']`. Set locale with `createVuetify({ locale })`, not `date.locale: \'fr\'`. Do not delete a working `first-day-of-week`.',
         issue: null,
       },
       {
@@ -693,9 +709,9 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
         issue: null,
       },
       {
-        title: 'v-list-group can nest without sub-group',
-        description: '`v-list-group` can now be nested arbitrarily deep, `sub-group` prop should be removed.',
-        migration: 'Remove `sub-group` from nested `v-list-group`.',
+        title: 'v-list-group nesting no longer requires subgroup',
+        description: '`v-list-group` can nest without `subgroup`. 3.13 still has `subgroup` (prepend chevron + `.v-list-group--subgroup`). Nesting no longer requires it.',
+        migration: 'Do not strip `subgroup` if it was used for nested indent or chevron side. Nesting works without it; keep it when you still want that look.',
         issue: null,
       },
       {
@@ -819,9 +835,24 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
         issue: null,
       },
       {
-        title: 'item-disabled and item object flags removed',
-        description: '`item-disabled` has been removed, and `disabled`, `header`, `divider`, and `avatar` properties are ignored on item objects. Additional props to pass to `v-list-item` can be specified with the `item-props` prop. `item-props` can be a function that takes the item object and returns an object of props, or set to boolean `true` to spread item objects directly as props.',
-        migration: 'Use `item-props` (function or `true`) instead of `item-disabled` / header / divider / avatar flags on items.',
+        title: 'header and divider item flags use type',
+        description: '`header` and `divider` flags on select items are ignored. They are not replaced by `item-props`. Use `{ type: \'subheader\', title: \'…\' }` and `{ type: \'divider\' }` (`itemType` default is `\'type\'`).',
+        migration: `Replace header/divider item flags with \`type\`. Do not use \`item-props\` for headers or dividers.
+
+\`\`\`js
+// 2.x
+[{ header: 'Fruits' }, { text: 'Apple', value: 'a' }, { divider: true }]
+
+// 3.x
+[{ type: 'subheader', title: 'Fruits' }, { title: 'Apple', value: 'a' }, { type: 'divider' }]
+\`\`\`
+`,
+        issue: null,
+      },
+      {
+        title: 'item-disabled and list-item flags use item-props',
+        description: '`item-disabled` has been removed. `disabled` and `avatar` on item objects are ignored unless passed through `item-props`. `item-props` can be a function that takes the item and returns list-item props, or `true` to spread the item as props. `item-props` is for disabled/avatar-like list-item props only, not headers or dividers.',
+        migration: 'Use `item-props` (function or `true`) for `disabled` / `avatar`. Do not use it for header/divider items.',
         issue: null,
       },
       {
@@ -1030,12 +1061,12 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
   },
   'v-img': {
     name: 'VImg',
-    description: 'Contain is the default; cover fills the container.',
+    description: 'v2 default was cover; 3.x default is contain.',
     changes: [
       {
-        title: 'contain is the default; use cover to fill',
-        description: '`contain` has been removed and is now the default behaviour. Use `cover` to fill the entire container.',
-        migration: 'Remove `contain`. Add `cover` if the v2 image filled the box.',
+        title: 'v2 default was cover; add cover in 3.x',
+        description: 'v2 default was cover (`contain` default false). 3.x default is contain; the `contain` prop is gone. Bare `<v-img>` must get `cover` in 3.x.',
+        migration: 'Add `cover` to every bare `<v-img>`. Remove `contain` (it is now the default). Do not skip `cover` based on whether the image filled the box.',
         issue: null,
       },
     ],

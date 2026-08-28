@@ -108,4 +108,62 @@ describe('catalog content', () => {
     expect(content[0].text).toContain('border="end"')
     expect(content[0].text).toMatch(/not boolean/)
   })
+
+  it('alert v2 prop is dismissible, not dismissable', () => {
+    const change = V3_BREAKING_CHANGES['v-alert'].changes.find(c => c.title.includes('closable'))
+    expect(change?.description).toContain('dismissible')
+    expect(change?.migration).toContain('dismissible')
+    expect(JSON.stringify(V3_BREAKING_CHANGES['v-alert'])).not.toContain('dismissable')
+  })
+
+  it('select header/divider items use type, not item-props', () => {
+    const header = V3_BREAKING_CHANGES['v-select'].changes.find(c => c.title.includes('header'))
+    expect(header?.description).toContain("type: 'subheader'")
+    expect(header?.description).toContain("type: 'divider'")
+    expect(header?.description).toContain('itemType')
+    expect(header?.migration).toMatch(/not use `item-props`/)
+    const flags = V3_BREAKING_CHANGES['v-select'].changes.find(c => c.title.includes('item-props'))
+    expect(flags?.description).toMatch(/disabled\/avatar/)
+    expect(flags?.migration).not.toMatch(/instead of `item-disabled` \/ header \/ divider/)
+  })
+
+  it('absolute/fixed → position is not global', () => {
+    const change = V3_BREAKING_CHANGES.general.changes.find(c => c.title.includes('position'))
+    expect(change?.description).toContain('v-btn')
+    expect(change?.description).toContain('v-app-bar')
+    expect(change?.description).toContain('v-navigation-drawer')
+    expect(change?.description).toContain('v-img')
+    expect(change?.migration).toMatch(/Do not rewrite drawer or app-bar/)
+    expect(change?.migration).toContain('<v-app-bar absolute />')
+  })
+
+  it('theme colors nest without double-wrapping myTheme', () => {
+    const change = V3_BREAKING_CHANGES.theme.changes.find(c => c.title.includes('nested'))
+    expect(change?.migration).toContain('new Vuetify({ theme: myTheme })')
+    expect(change?.migration).toContain('createVuetify({ theme: { themes: { light: { colors: { primary: \'#ccc\' } } } } })')
+    expect(change?.migration).not.toMatch(/const myTheme = \{ theme:/)
+  })
+
+  it('bare v-img needs cover in 3.x', () => {
+    const change = V3_BREAKING_CHANGES['v-img'].changes[0]
+    expect(change.description).toMatch(/v2 default was cover/)
+    expect(change.migration).toContain('bare `<v-img>`')
+    expect(change.migration).not.toMatch(/if the v2 image filled the box/)
+  })
+
+  it('list-group subgroup is not stripped', () => {
+    const change = V3_BREAKING_CHANGES['v-list'].changes.find(c => c.title.includes('subgroup'))
+    expect(change?.description).toContain('v-list-group--subgroup')
+    expect(change?.migration).toMatch(/Do not strip/)
+    expect(change?.migration).not.toMatch(/^Remove `sub-group`/)
+  })
+
+  it('date format props are not 1:1 adapter keys', () => {
+    const change = V3_BREAKING_CHANGES['v-date-picker'].changes.find(c => c.title.includes('Locale'))
+    expect(change?.description).toContain('dayOfMonth')
+    expect(change?.description).toContain('createVuetify({ locale })')
+    expect(change?.migration).toContain("formats['day-format']")
+    expect(change?.migration).toContain("date.locale: 'fr'")
+    expect(change?.migration).toMatch(/not `date\.locale/)
+  })
 })
