@@ -251,7 +251,7 @@ export const V3_COMPONENT_MAP: readonly V2ToV3ComponentRow[] = [
     v2: 'v-flex',
     v3: 'v-col',
     status: 'removed',
-    notes: 'Removed. Use v-col inside v-row.',
+    notes: 'Removed. Not a tag-only rename: `<v-flex xs12 md6>` → `<v-col cols="12" md="6">`. No `xs` on VCol (xs is the default `cols`). `offset-xs*` → `offset`.',
     issue: null,
   },
   {
@@ -437,7 +437,7 @@ await page.screenshot({ path: \`\${dir}/shell.png\`, fullPage: true })
 
 - Functional fail = blocker
 - Screenshot = review (layout-break vs intended v3 look)
-- v3 defaults (no uppercase buttons, \`density\`, elevation) are expected
+- v3 defaults (\`density\`, elevation) are expected. v3 still uppercases buttons (\`$button-text-transform\` / typography.button); do not strip \`text-transform\` as leftover v2 (that is a v4 change)
 - Never a hard CI fail on first v3 screenshots
 
 ## Out of recipe

@@ -40,6 +40,16 @@ describe('V3_COMPONENT_MAP', () => {
     const row = V3_COMPONENT_MAP.find(r => r.v2 === 'v-stepper-step')
     expect(row?.v3).toBe('v-stepper-item')
   })
+
+  it('maps v-flex attrs, not a tag-only rename', () => {
+    const row = V3_COMPONENT_MAP.find(r => r.v2 === 'v-flex')
+    expect(row?.v3).toBe('v-col')
+    expect(row?.notes).toContain('cols="12"')
+    expect(row?.notes).toContain('md="6"')
+    expect(row?.notes).toMatch(/no `xs`/i)
+    expect(row?.notes).toContain('offset-xs')
+    expect(row?.notes).toContain('offset')
+  })
 })
 
 describe('getV2ToV3ComponentMap', () => {
@@ -120,5 +130,14 @@ describe('getV3UpgradeBaselineRecipe', () => {
     expect(text).toContain('Cypress')
     expect(text).toContain('Percy')
     expect(text).toContain('toHaveScreenshot')
+  })
+
+  it('does not treat no-uppercase buttons as a v3 default', async () => {
+    const { content } = await getV3UpgradeBaselineRecipe()
+    const text = content[0].text
+    expect(text).not.toMatch(/no uppercase buttons/)
+    expect(text).toMatch(/still uppercases buttons/)
+    expect(text).toContain('text-transform')
+    expect(text).toContain('$button-text-transform')
   })
 })

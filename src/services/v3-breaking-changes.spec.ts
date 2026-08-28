@@ -82,4 +82,30 @@ describe('catalog content', () => {
     const { content } = await getV3BreakingChanges({ category: 'inputs' })
     expect(content[0].text).not.toMatch(/prepend-inner.*are the same/)
   })
+
+  it('size values are 3.13 named sizes, not medium', () => {
+    const change = V3_BREAKING_CHANGES.general.changes.find(c => c.title === 'Size props combined into size')
+    expect(change?.description).toContain('x-small')
+    expect(change?.description).toContain('default')
+    expect(change?.description).toContain('x-large')
+    expect(change?.description).toMatch(/not `medium`/)
+    expect(change?.migration).toContain('size="default"')
+    expect(change?.migration).not.toContain('size="medium"')
+  })
+
+  it('background-color → bg-color except VRating', () => {
+    const change = V3_BREAKING_CHANGES.general.changes.find(c => c.title === 'background-color renamed to bg-color')
+    expect(change?.description).toMatch(/VRating/)
+    expect(change?.description).toContain('bgColor')
+    expect(change?.description).toContain('active-color')
+    expect(change?.migration).toMatch(/v-rating/)
+    expect(change?.migration).toContain('active-color')
+  })
+
+  it('alert border left/right becomes border="start"/"end"', async () => {
+    const { content } = await getV3BreakingChanges({ category: 'v-alert' })
+    expect(content[0].text).toContain('border="start"')
+    expect(content[0].text).toContain('border="end"')
+    expect(content[0].text).toMatch(/not boolean/)
+  })
 })

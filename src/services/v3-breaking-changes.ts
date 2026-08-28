@@ -294,8 +294,8 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'Size props combined into size',
-        description: 'Size props `small` / `medium` / `large` etc. have been combined into a single `size` prop.',
-        migration: 'Replace `small` with `size="small"`, `large` with `size="large"`, and so on.',
+        description: 'Boolean size props (`x-small`, `small`, `large`, `x-large`) have been combined into a single `size` prop. 3.13 values are `x-small` / `small` / `default` / `large` / `x-large` — not `medium`.',
+        migration: 'Replace `small` with `size="small"`, `x-small` with `size="x-small"`, and so on. Use `size="default"` for the default size. Do not use `medium`.',
         issue: null,
       },
       {
@@ -312,8 +312,8 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'background-color renamed to bg-color',
-        description: '`background-color` prop has been renamed to `bg-color`.',
-        migration: 'Rename `background-color` to `bg-color`.',
+        description: '`background-color` prop has been renamed to `bg-color`. Exception: VRating has no `bgColor`; v2 `background-color` is empty stars (`color`) and filled is `active-color`.',
+        migration: 'Rename `background-color` to `bg-color` except on v-rating: empty stars are `color`, filled is `active-color`. See the `v-rating` category.',
         issue: null,
       },
       {
@@ -387,8 +387,8 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
     changes: [
       {
         title: 'border left/right renamed to start/end',
-        description: '`border` prop values `left` and `right` have been renamed to `start` and `end`.',
-        migration: 'Replace `border="left"` / `border="right"` with `start` / `end`.',
+        description: '`border` prop values `left` and `right` have been renamed to `start` and `end`. In 3.13 these are string values on `border`, not boolean `start`/`end` props.',
+        migration: 'Replace `border="left"` / `border="right"` with `border="start"` / `border="end"`.',
         issue: null,
       },
       {
