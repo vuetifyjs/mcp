@@ -60,4 +60,26 @@ describe('catalog content', () => {
     const rewrite = V3_BREAKING_CHANGES.gotchas.changes.find(c => c.title === 'Data-table rewrite')
     expect(rewrite?.description).not.toMatch(/item\.raw/)
   })
+
+  it('date-picker keeps first-day-of-week as a picker prop', async () => {
+    const { content } = await getV3BreakingChanges({ category: 'v-date-picker' })
+    expect(content[0].text).toContain('first-day-of-week')
+    expect(content[0].text).toMatch(/Still picker props/)
+    expect(content[0].text).not.toMatch(/`first-day-of-week`[\s\S]{0,120}part of the date adapter/)
+  })
+
+  it('date-picker maps DATE to month view-mode', async () => {
+    const { content } = await getV3BreakingChanges({ category: 'v-date-picker' })
+    expect(content[0].text).toMatch(/DATE → `month`/)
+  })
+
+  it('menu coordinate target is a bound array', async () => {
+    const { content } = await getV3BreakingChanges({ category: 'v-menu' })
+    expect(content[0].text).toContain(':target=')
+  })
+
+  it('inputs prepend and prepend-inner are distinct', async () => {
+    const { content } = await getV3BreakingChanges({ category: 'inputs' })
+    expect(content[0].text).not.toMatch(/prepend-inner.*are the same/)
+  })
 })

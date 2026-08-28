@@ -357,8 +357,8 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
     changes: [
       {
         title: 'Affix slots remapped',
-        description: 'Affix slots are consistent now: `prepend` and `prepend-inner` are the same; `append` has been renamed to `append-inner`; `append-outer` has been renamed to `append`.',
-        migration: 'Keep inner prepend as `prepend-inner`. Rename `append` → `append-inner` and `append-outer` → `append`.',
+        description: 'Outer affixes are VInput `prepend`/`append`; inner affixes are VField `prepend-inner`/`append-inner`. `prepend` and `prepend-inner` are not the same. `append` has been renamed to `append-inner`; `append-outer` has been renamed to `append`.',
+        migration: 'Keep `prepend` (outer) and `prepend-inner` (inner) distinct. Rename `append` → `append-inner` and `append-outer` → `append`.',
         issue: null,
       },
       {
@@ -591,21 +591,21 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
         issue: null,
       },
       {
-        title: 'Locale and format props moved to the date adapter',
-        description: '`locale`, `locale-first-day-of-year`, `first-day-of-week`, `day-format`, `weekday-format`, `month-format`, `year-format`, `header-date-format`, and `title-date-format` are now part of the date adapter and use the globally configured locale instead of being passed as props.',
-        migration: 'Configure locale and formats on the date adapter / i18n, not as picker props.',
+        title: 'Locale and format props split between picker and adapter',
+        description: 'Still picker props: `first-day-of-week`, `first-day-of-year` (v2 `locale-first-day-of-year`), `weekday-format` (v2 function → 3.13 `\'long\'|\'short\'|\'narrow\'`), and `header-date-format` (adapter token string, default `normalDateWithWeekday`, not a v2 format function). Gone as picker props — configure on the date adapter / locale: `locale`, `day-format`, `month-format`, `year-format`, `title-date-format`.',
+        migration: 'Keep `first-day-of-week` / `first-day-of-year` / `weekday-format` / `header-date-format` on the picker. Move `locale`, `day-format`, `month-format`, `year-format`, and `title-date-format` to the date adapter. Do not delete a working `first-day-of-week`.',
         issue: null,
       },
       {
         title: 'active-picker renamed to view-mode',
-        description: '`active-picker` has been renamed to `view-mode`.',
-        migration: 'Rename `active-picker` to `view-mode`.',
+        description: '`active-picker` has been renamed to `view-mode`. v2 values were `\'DATE\'|\'MONTH\'|\'YEAR\'`; 3.13 is `\'month\'|\'months\'|\'year\'` (default `\'month\'`).',
+        migration: 'Rename `active-picker` to `view-mode`. Map DATE → `month`, MONTH → `months`, YEAR → `year`.',
         issue: null,
       },
       {
         title: 'picker-date replaced by month and year',
-        description: '`picker-date` has been replaced with separate `month` and `year` props.',
-        migration: 'Split `picker-date` into `month` and `year`.',
+        description: '`picker-date` has been replaced with separate `month` and `year` props. v2 `picker-date` was `\'YYYY-MM\'` (1-based month); 3.13 `month` is 0-based (`adapter.getMonth`). `month=1` from `"2020-01"` is February.',
+        migration: 'Split `picker-date` into `year` and 0-based `month`. `"2020-01"` → `:year="2020" :month="0"`, not `month=1`.',
         issue: null,
       },
       {
@@ -742,8 +742,8 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'absolute, offset-y, and offset-x removed',
-        description: '`absolute`, `offset-y` and `offset-x` props have been removed. Manual positioning is now done by passing a `[x, y]` array to the `target` prop.',
-        migration: 'Replace `absolute` / `offset-x` / `offset-y` with `target="[x, y]"` (or the activator API).',
+        description: '`absolute`, `offset-y` and `offset-x` props have been removed. Coordinate targeting uses a bound `[x, y]` array on `target`. v2 boolean `offset-y` (menu below activator) is the default `location="bottom"`, not a point target.',
+        migration: 'Replace coordinate `absolute` with `:target="[x, y]"` (bound array, not `target="[x, y]"` which is a CSS selector). Drop boolean `offset-y`; `location="bottom"` is already the default.',
         issue: null,
       },
       {
@@ -893,7 +893,7 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
     changes: [
       {
         title: 'Header object keys renamed',
-        description: 'Headers objects: `text` has been renamed to `title`; `data-table-select` and `data-table-expand` must be defined as `key` instead of `value`; `class` has been replaced with `headerProps`; `cellClass` has been replaced with `cellProps` and now accepts either a function or an object; `filter` function requires `search` to be used in order for it to be triggered.',
+        description: 'Headers objects: `text` has been renamed to `title`; `data-table-select` and `data-table-expand` must be defined as `key` instead of `value`; `class` has been replaced with `headerProps`; `cellClass` has been replaced with `cellProps` and now accepts either a function or an object. Built-in search filtering needs `search`; a header `filter` function can still run without it.',
         migration: `Rename header fields. Keep \`value\` on normal columns; use \`key\` only for \`data-table-select\` / \`data-table-expand\`.
 
 \`\`\`vue
@@ -920,9 +920,9 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
         issue: null,
       },
       {
-        title: 'search prop required to trigger filtering',
-        description: 'Tables requires `search` prop to trigger filtering. `items` array can be pre-filter with a computed.',
-        migration: 'Pass `search` to filter in the table, or pre-filter `items` with a computed.',
+        title: 'Built-in search filtering needs search',
+        description: 'Built-in search filtering needs `search`. A header `filter` function can still run without it (`filterItems` runs when `query` or custom header filters exist). `items` can also be pre-filtered with a computed.',
+        migration: 'Pass `search` for built-in search filtering. Do not add `search` only to make a header `filter` run. Or pre-filter `items` with a computed.',
         issue: null,
       },
       {
