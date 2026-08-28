@@ -166,4 +166,18 @@ describe('catalog content', () => {
     expect(change?.migration).toContain("date.locale: 'fr'")
     expect(change?.migration).toMatch(/not `date\.locale/)
   })
+
+  it('list selected is an array', () => {
+    const change = V3_BREAKING_CHANGES['v-list'].changes.find(c => c.title.includes('v-list-item-group'))
+    expect(change?.description).toMatch(/always an array/)
+    expect(change?.migration).toContain("['a']")
+    expect(change?.migration).toContain('select-strategy')
+  })
+
+  it('tabs alignment is align-tabs, not location', () => {
+    const change = V3_BREAKING_CHANGES.general.changes.find(c => c.title.includes('location'))
+    expect(change?.description).toContain('align-tabs')
+    expect(change?.migration).toContain('align-tabs="end"')
+    expect(change?.migration).toContain('<v-tabs location="end">')
+  })
 })

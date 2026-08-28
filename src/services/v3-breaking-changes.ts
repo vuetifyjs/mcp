@@ -322,8 +322,8 @@ createVuetify({ theme: { themes: { light: { colors: { primary: '#ccc' } } } } })
       },
       {
         title: 'top/bottom/left/right combined into location',
-        description: '`top` / `bottom` / `left` / `right` props have been combined into a single `location` prop.',
-        migration: 'Replace boolean `top`/`bottom`/`left`/`right` with `location="top"` (or `start`/`end`).',
+        description: '`top` / `bottom` / `left` / `right` props have been combined into a `location` string on overlay, snackbar, menu, and drawer. This is not global: `v-tabs` uses `align-tabs` (`start` / `title` / `center` / `end`), not `location`.',
+        migration: 'On overlay/snackbar/menu/drawer, replace boolean `top`/`bottom`/`left`/`right` with `location="top"` (or `start`/`end`). On `v-tabs`, `centered` → `align-tabs="center"` and `right` → `align-tabs="end"`. Do not write `<v-tabs location="end">`.',
         issue: null,
       },
       {
@@ -669,8 +669,8 @@ createVuetify({ theme: { themes: { light: { colors: { primary: '#ccc' } } } } })
       },
       {
         title: 'v-list-item-group removed',
-        description: '`v-list-item-group` has been removed, assign the item\'s key to the `value` prop of each `v-list-item` and bind `v-model:selected` on the `v-list` to get the selected value.',
-        migration: `Move selection to the list. Put a \`value\` on each item.
+        description: '`v-list-item-group` has been removed. Put a `value` on each `v-list-item` and bind `v-model:selected` on the `v-list`. `selected` is always an array, even with the default `select-strategy="single-leaf"`. v2 without `multiple` was a scalar — do not reuse a string/number `selected` or it will iterate characters.',
+        migration: `Move selection to the list. Keep \`selected\` as an array (e.g. \`['a']\`). Use \`select-strategy\` for independent/multiple.
 
 \`\`\`vue
 <!-- 2.x -->
@@ -692,6 +692,7 @@ createVuetify({ theme: { themes: { light: { colors: { primary: '#ccc' } } } } })
     Item
   </v-list-item>
 </v-list>
+<!-- selected is ['a'], not 'a' -->
 \`\`\`
 `,
         issue: null,
