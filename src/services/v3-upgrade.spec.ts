@@ -25,6 +25,7 @@ const REQUIRED_V2 = [
   'v-overflow-btn', 'v-simple-checkbox', 'v-subheader', 'v-simple-table',
   'v-tabs-slider', 'v-tabs-items', 'v-tab-item',
   'v-data-table', 'v-date-picker', 'v-calendar', 'v-treeview',
+  'v-flex', 'v-edit-dialog', 'v-time-picker', 'v-sparkline', 'v-stepper-step',
 ]
 
 describe('V3_COMPONENT_MAP', () => {
@@ -33,6 +34,11 @@ describe('V3_COMPONENT_MAP', () => {
     for (const name of REQUIRED_V2) {
       expect(names).toContain(name)
     }
+  })
+
+  it('maps v-stepper-step to v-stepper-item', () => {
+    const row = V3_COMPONENT_MAP.find(r => r.v2 === 'v-stepper-step')
+    expect(row?.v3).toBe('v-stepper-item')
   })
 })
 
@@ -98,6 +104,7 @@ describe('getV3UpgradeBaselineRecipe', () => {
     expect(text).toContain('PLAYWRIGHT_BASE_URL')
     expect(text).toContain('1280x720')
     expect(text).toContain('v-app')
+    expect(text).toContain('v-content')
     expect(text).toContain('v-main')
     expect(text).toContain('getByRole')
     expect(text).toContain('test:upgrade:baseline')

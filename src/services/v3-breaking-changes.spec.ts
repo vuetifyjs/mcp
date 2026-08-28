@@ -44,4 +44,20 @@ describe('catalog content', () => {
     expect(content[0].text).toContain('v-overflow-btn')
     expect(content[0].text).toContain('v-data-table-server')
   })
+
+  it('data-table category uses internalItem, not item.raw', async () => {
+    const { content } = await getV3BreakingChanges({ category: 'v-data-table' })
+    expect(content[0].text).toContain('internalItem')
+    expect(content[0].text).not.toContain('item.raw')
+  })
+
+  it('select category may still mention item.raw', async () => {
+    const { content } = await getV3BreakingChanges({ category: 'v-select' })
+    expect(content[0].text).toContain('item.raw')
+  })
+
+  it('gotchas data-table rewrite does not say slot rows use item.raw', async () => {
+    const rewrite = V3_BREAKING_CHANGES.gotchas.changes.find(c => c.title === 'Data-table rewrite')
+    expect(rewrite?.description).not.toMatch(/item\.raw/)
+  })
 })

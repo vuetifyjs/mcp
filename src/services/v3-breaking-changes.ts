@@ -59,7 +59,7 @@ app.use(vuetify)
       {
         title: 'vuetify-loader renamed',
         description: 'vuetify-loader has been renamed to webpack-plugin-vuetify, and there is a new plugin for Vite: vite-plugin-vuetify.',
-        migration: 'Replace vuetify-loader with vite-plugin-vuetify (Vite) or webpack-plugin-vuetify (webpack). Vue CLI is not a Vuetify 3 path.',
+        migration: 'Replace vuetify-loader with vite-plugin-vuetify (Vite) or webpack-plugin-vuetify (webpack).',
         issue: null,
       },
     ],
@@ -531,8 +531,8 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
     changes: [
       {
         title: 'First emit argument is the native event',
-        description: 'The first emit argument is now the native event, custom data has been moved to the second argument. `onClickEvent ({ nativeEvent, event, day })` should be changed to `onClickDate (nativeEvent, { event, day })`.',
-        migration: 'Change handlers from a single destructured object to `(nativeEvent, { event, day })`.',
+        description: 'The first emit argument is now the native event, custom data has been moved to the second argument. `onClickEvent ({ nativeEvent, event, day })` should be changed to `onClickEvent (nativeEvent, { event, day })`. 3.13 still has both `click:event` and `click:date`.',
+        migration: 'Change handlers from a single destructured object to `(nativeEvent, data)`. Do not rename `onClickEvent` to `onClickDate`.',
         issue: null,
       },
     ],
@@ -625,7 +625,7 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
 <!-- 3.13 emits every Date in the range, not [start, end] -->
 \`\`\`
 `,
-        issue: 'https://github.com/vuetifyjs/vuetify/issues/16191',
+        issue: null,
       },
     ],
   },
@@ -682,8 +682,8 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'v-list-item-icon and v-list-item-avatar removed',
-        description: '`v-list-item-icon` and `v-list-item-avatar` have been removed, use `v-list-item` with `icon` or `avatar` props, or put an icon or avatar in the append or prepend slot.',
-        migration: 'Replace nested icon/avatar components with `prepend-icon` / `prepend-avatar` (or the append/prepend slots).',
+        description: '`v-list-item-icon` and `v-list-item-avatar` have been removed. Use `prepend-icon` / `prepend-avatar` (or `append-icon` / `append-avatar`, or the append/prepend slots). There are no `icon` or `avatar` props.',
+        migration: 'Replace nested icon/avatar components with `prepend-icon` / `prepend-avatar` (or append/prepend slots).',
         issue: null,
       },
       {
@@ -871,18 +871,18 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
   },
   'v-stepper': {
     name: 'VStepper',
-    description: 'Vertical stepper item/content structure.',
+    description: 'Horizontal core vs vertical labs structure.',
     changes: [
       {
-        title: 'v-stepper-step renamed to v-stepper-vertical-item',
-        description: '`v-stepper-step` has been renamed to `v-stepper-vertical-item`. Move content into the title slot.',
-        migration: 'Rename `v-stepper-step` to `v-stepper-vertical-item` and put the label in the title slot.',
+        title: 'v-stepper-step is v-stepper-item, not vertical-item',
+        description: '`v-stepper-step` is not a core rename to `v-stepper-vertical-item`. Horizontal (core): `v-stepper-item` plus `v-stepper-window` / `v-stepper-window-item`. Vertical: `v-stepper-vertical` / `v-stepper-vertical-item` are labs.',
+        migration: 'Replace horizontal `v-stepper-step` with `v-stepper-item`. For vertical steppers, import labs `v-stepper-vertical` / `v-stepper-vertical-item` and put the label in the title slot.',
         issue: null,
       },
       {
         title: 'v-stepper-content removed',
-        description: '`v-stepper-content` has been removed. Move content to the default slot of `v-stepper-vertical-item`.',
-        migration: 'Delete `v-stepper-content`; put the step body in the default slot of `v-stepper-vertical-item`.',
+        description: '`v-stepper-content` has been removed. Horizontal: move the body into `v-stepper-window-item`. Vertical labs: move content to the default slot of `v-stepper-vertical-item`.',
+        migration: 'Delete `v-stepper-content`. Horizontal → `v-stepper-window-item`. Vertical labs → default slot of `v-stepper-vertical-item`.',
         issue: null,
       },
     ],
@@ -893,8 +893,8 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
     changes: [
       {
         title: 'Header object keys renamed',
-        description: 'Headers objects: `text` has been renamed to `title`; `data-table-select` and `data-table-expand` must be defined as `key` instead of `value`; `class` has been replaced with `headerProps`; `cellClass` has been replaced with `cellProps` and now accepts either a function or an object; `filter` function requires `search` to be used in order for it to be triggered. Slot rows expose `item.raw` for the original object.',
-        migration: `Rename header fields. Use \`item.raw\` in slots.
+        description: 'Headers objects: `text` has been renamed to `title`; `data-table-select` and `data-table-expand` must be defined as `key` instead of `value`; `class` has been replaced with `headerProps`; `cellClass` has been replaced with `cellProps` and now accepts either a function or an object; `filter` function requires `search` to be used in order for it to be triggered.',
+        migration: `Rename header fields. Keep \`value\` on normal columns; use \`key\` only for \`data-table-select\` / \`data-table-expand\`.
 
 \`\`\`vue
 <!-- 2.x -->
@@ -906,11 +906,17 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
 \`\`\`vue
 <!-- 3.x -->
 <v-data-table
-  :headers="[{ title: 'Name', key: 'name' }]"
+  :headers="[{ title: 'Name', value: 'name' }]"
 />
-<!-- slot item is wrapped; original row is item.raw -->
+<!-- key required only for data-table-select / data-table-expand -->
 \`\`\`
 `,
+        issue: null,
+      },
+      {
+        title: '#item slot item is the original row',
+        description: 'The `#item` slot `item` is the original row. The wrapped object is `internalItem`.',
+        migration: 'Use `item` for the original row. Use `internalItem` when you need the wrapped table item (columns, select, expand).',
         issue: null,
       },
       {
@@ -951,7 +957,7 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       {
         title: 'sort-desc and group-desc combined into sort-by / group-by',
         description: '`sort-desc` and `group-desc` have been combined into `sort-by` and `group-by`. These properties now take an array of `{ key: string, order: \'asc\' | \'desc\' }` objects instead of strings.',
-        migration: 'Replace string `sort-by` + `sort-desc` with `sort-by="[{ key, order }]"`. Same for group.',
+        migration: 'Replace string `sort-by` + `sort-desc` with `:sort-by="[{ key: \'name\', order: \'asc\' }]"`. Same for group.',
         issue: null,
       },
       {
@@ -1076,9 +1082,9 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
     changes: [
       {
         title: 'v-card clips overflow and z-index',
-        description: '`v-card` does not allow content to overflow or use higher `z-index` values to display on top of elements outside it. To disable this behavior, use `<v-card style="overflow: initial; z-index: initial">`.',
+        description: '`v-card` does not allow content to overflow or use higher `z-index` values to display on top of elements outside it. To disable this behavior, use `<v-card style="overflow: initial; z-index: initial">`. (#17593, #17628)',
         migration: 'Set `overflow: initial; z-index: initial` on cards that must leak overlays/menus.',
-        issue: 'https://github.com/vuetifyjs/vuetify/issues/17593',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/17593, https://github.com/vuetifyjs/vuetify/issues/17628',
       },
     ],
   },
@@ -1125,13 +1131,13 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       {
         title: 'v-list-tile-avatar removed',
         description: 'VListTileAvatar has been removed.',
-        migration: 'Use `v-list-item` avatar props or `v-avatar` in the prepend/append slot.',
+        migration: 'Use `prepend-avatar` / `append-avatar` or `v-avatar` in the prepend/append slot.',
         issue: null,
       },
       {
-        title: 'v-list-tile-action-text → v-list-item-action-text',
-        description: 'VListTileActionText has been replaced with v-list-item-action-text.',
-        migration: 'Rename `v-list-tile-action-text` to `v-list-item-action-text`.',
+        title: 'v-list-tile-action-text is gone',
+        description: 'eslint-plugin-vuetify remaps `v-list-tile-action-text` to `v-list-item-action-text`, which does not exist in 3.13.',
+        migration: 'Do not trust the eslint remap. Use prepend/append slots or custom markup.',
         issue: null,
       },
       {
@@ -1208,7 +1214,7 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'v-list-item-avatar replaced',
-        description: 'VListItemAvatar has been replaced with `v-list-item` avatar props, or `v-avatar` in the list item append or prepend slot.',
+        description: 'VListItemAvatar has been replaced with `prepend-avatar` / `append-avatar`, or `v-avatar` in the list item append or prepend slot. There is no `avatar` prop.',
         migration: 'Use `prepend-avatar` / `append-avatar` or an avatar in the prepend/append slot.',
         issue: null,
       },
@@ -1220,7 +1226,7 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'v-list-item-icon replaced',
-        description: 'VListItemIcon has been replaced with `v-list-item` icon props, or `v-icon` in the list item append or prepend slot.',
+        description: 'VListItemIcon has been replaced with `prepend-icon` / `append-icon`, or `v-icon` in the list item append or prepend slot. There is no `icon` prop.',
         migration: 'Use `prepend-icon` / `append-icon` or an icon in the prepend/append slot.',
         issue: null,
       },
@@ -1298,15 +1304,15 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'Data-table rewrite',
-        description: 'Headers `text` → `title`; slot rows use `item.raw`; `@update:options` replaces ad-hoc server events; server pagination is `<v-data-table-server items-length />`, not `server-items-length` on `v-data-table`.',
-        migration: 'Treat data-table as a rewrite. Switch server tables to `v-data-table-server`.',
+        description: 'Headers `text` → `title`; `#item` `item` is the original row (`internalItem` is the wrapped object); `@update:options` replaces ad-hoc server events; server pagination is `<v-data-table-server items-length />`, not `server-items-length` on `v-data-table`.',
+        migration: 'Treat data-table as a rewrite. Switch server tables to `v-data-table-server`. Use `item` for the original row, `internalItem` for the wrapped table item.',
         issue: null,
       },
       {
         title: 'Date picker model is Date, range is not v2',
         description: 'v-date-picker binds `Date` objects, not strings. v2 `range` is not v3 `multiple="range"` — 3.13 emits every day in the range.',
         migration: 'Convert strings at the boundary. Do not assume `[start, end]` from `multiple="range"`.',
-        issue: 'https://github.com/vuetifyjs/vuetify/issues/16191',
+        issue: null,
       },
       {
         title: 'Theme classes in SCSS miss eslint',
@@ -1352,9 +1358,9 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'Labs import on older 3.x',
-        description: '`createVuetify({ components })` does not include Labs. Older 3.x needed `import { X } from \'vuetify/labs/X\'` for data-table, date-picker, treeview, time-picker, calendar, and sparkline. Those are core on 3.13.',
+        description: '`createVuetify({ components })` does not include Labs. Older 3.x needed `import { X } from \'vuetify/labs/X\'` for data-table, date-picker, treeview, time-picker, calendar, and sparkline. Those are core on 3.13. Historical: date-picker was missing in 3.0.3.',
         migration: 'Target vuetify@^3.13. On older 3.x, import from `vuetify/labs/...` and register the components.',
-        issue: 'https://github.com/vuetifyjs/vuetify/issues/16191',
+        issue: null,
       },
       {
         title: 'v-overflow-btn never ported',
@@ -1363,10 +1369,10 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
         issue: 'https://github.com/vuetifyjs/vuetify/issues/13493',
       },
       {
-        title: 'v-calendar API still reported broken vs v2',
-        description: 'v-calendar is core on 3.13, but slots/events are still reported broken relative to v2.',
-        migration: 'Re-test every calendar view. Do not assume v2 slot names or event payloads.',
-        issue: 'https://github.com/vuetifyjs/vuetify/issues/21783',
+        title: 'v-calendar is core; re-test slots and events',
+        description: 'v-calendar is core on 3.13. Re-test slots and events. Emit argument order is `(nativeEvent, data)` instead of a single object.',
+        migration: 'Re-test every calendar view. Update click handlers to `(nativeEvent, data)`. Do not assume v2 slot names or event payloads.',
+        issue: null,
       },
       {
         title: 'v-treeview expand performance',
@@ -1376,9 +1382,9 @@ const myTheme = { theme: { themes: { light: { colors: { primary: '#ccc' } } } } 
       },
       {
         title: 'v-card overflow / z-index',
-        description: 'v-card clips overflowing content and traps z-index, which breaks menus, dialogs, and absolute children.',
+        description: 'v-card clips overflowing content and traps z-index, which breaks menus, dialogs, and absolute children. (#17593, #17628)',
         migration: 'Use `style="overflow: initial; z-index: initial"` on cards that must leak overlays.',
-        issue: 'https://github.com/vuetifyjs/vuetify/issues/17593',
+        issue: 'https://github.com/vuetifyjs/vuetify/issues/17593, https://github.com/vuetifyjs/vuetify/issues/17628',
       },
       {
         title: 'Testing DOM changed',

@@ -27,14 +27,14 @@ export const V3_COMPONENT_MAP: readonly V2ToV3ComponentRow[] = [
     v2: 'v-list-tile-avatar',
     v3: null,
     status: 'removed',
-    notes: 'Use v-list-item avatar props or v-avatar in the prepend/append slot.',
+    notes: 'Use prepend-avatar / append-avatar or v-avatar in the prepend/append slot.',
     issue: null,
   },
   {
     v2: 'v-list-tile-action-text',
-    v3: 'v-list-item-action-text',
-    status: 'renamed',
-    notes: 'Rename to v-list-item-action-text.',
+    v3: null,
+    status: 'removed',
+    notes: 'eslint-plugin-vuetify remaps this to v-list-item-action-text, which does not exist in 3.13. Use prepend/append slots or custom markup.',
     issue: null,
   },
   {
@@ -125,7 +125,7 @@ export const V3_COMPONENT_MAP: readonly V2ToV3ComponentRow[] = [
     v2: 'v-list-item-avatar',
     v3: null,
     status: 'replaced',
-    notes: 'Use v-list-item avatar props, or v-avatar in the append/prepend slot.',
+    notes: 'Use prepend-avatar / append-avatar, or v-avatar in the append/prepend slot.',
     issue: null,
   },
   {
@@ -139,7 +139,7 @@ export const V3_COMPONENT_MAP: readonly V2ToV3ComponentRow[] = [
     v2: 'v-list-item-icon',
     v3: null,
     status: 'replaced',
-    notes: 'Use v-list-item icon props, or v-icon in the append/prepend slot.',
+    notes: 'Use prepend-icon / append-icon, or v-icon in the append/prepend slot.',
     issue: null,
   },
   {
@@ -203,14 +203,14 @@ export const V3_COMPONENT_MAP: readonly V2ToV3ComponentRow[] = [
     v3: 'v-date-picker',
     status: 'core',
     notes: 'Date objects, not strings; multiple="range" ≠ v2 range. Older 3.x: import { VDatePicker } from \'vuetify/labs/VDatePicker\'.',
-    issue: 'https://github.com/vuetifyjs/vuetify/issues/16191',
+    issue: null,
   },
   {
     v2: 'v-calendar',
     v3: 'v-calendar',
     status: 'core',
-    notes: 'API rewrite; slots/events still reported broken vs v2. Older 3.x: import { VCalendar } from \'vuetify/labs/VCalendar\'.',
-    issue: 'https://github.com/vuetifyjs/vuetify/issues/21783',
+    notes: 'API rewrite. Re-test slots/events; emit arg order is (nativeEvent, data). Older 3.x: import { VCalendar } from \'vuetify/labs/VCalendar\'.',
+    issue: null,
   },
   {
     v2: 'v-treeview',
@@ -235,9 +235,37 @@ export const V3_COMPONENT_MAP: readonly V2ToV3ComponentRow[] = [
   },
   {
     v2: 'v-stepper-step',
-    v3: 'v-stepper-vertical-item',
-    status: 'renamed',
-    notes: 'Rename to v-stepper-vertical-item; move the label into the title slot.',
+    v3: 'v-stepper-item',
+    status: 'replaced',
+    notes: 'Horizontal (core): v-stepper-item + v-stepper-window / v-stepper-window-item. Vertical: v-stepper-vertical / v-stepper-vertical-item are labs.',
+    issue: null,
+  },
+  {
+    v2: 'v-stepper-content',
+    v3: 'v-stepper-window-item',
+    status: 'removed',
+    notes: 'Removed. Horizontal: v-stepper-window-item. Vertical labs: default slot of v-stepper-vertical-item.',
+    issue: null,
+  },
+  {
+    v2: 'v-flex',
+    v3: 'v-col',
+    status: 'removed',
+    notes: 'Removed. Use v-col inside v-row.',
+    issue: null,
+  },
+  {
+    v2: 'v-layout',
+    v3: 'v-row',
+    status: 'replaced',
+    notes: 'v3 v-layout is a different layout-system component; v2 grid usage maps to v-row.',
+    issue: null,
+  },
+  {
+    v2: 'v-edit-dialog',
+    v3: null,
+    status: 'removed',
+    notes: 'Removed. No 3.13 equivalent; inline-edit with a dialog or menu.',
     issue: null,
   },
 ]
@@ -266,7 +294,7 @@ Call \`get_v3_upgrade_baseline_recipe\`. Scaffold Playwright if missing. Capture
 
 ## 1. Inventory
 
-Read \`package.json\`: \`vue\`, \`vuetify\`, \`vue-router\`, \`vuex\`/\`pinia\`, \`vee-validate\`, \`nuxt\`, bundler (\`vue-cli-service\` / webpack / vite). vee-validate 3 and Vue CLI are blockers.
+Read \`package.json\`: \`vue\`, \`vuetify\`, \`vue-router\`, \`vuex\`/\`pinia\`, \`vee-validate\`, \`nuxt\`, bundler (\`vue-cli-service\` / webpack / vite). vee-validate 3 is a blocker. Vue CLI is not; use \`webpack-plugin-vuetify\`.
 
 ## 2. Vue 3 prerequisite
 
@@ -286,10 +314,12 @@ Install **vuetify@^3.13.0**. Do not install 4.
 
 \`\`\`ts
 defaults: {
-  VBtn: { variant: 'text' },
   VTextField: { variant: 'underlined' },
   VSelect: { variant: 'underlined' },
   VTextarea: { variant: 'underlined' },
+  VAutocomplete: { variant: 'underlined' },
+  VCombobox: { variant: 'underlined' },
+  VFileInput: { variant: 'underlined' },
 }
 \`\`\`
 
@@ -371,17 +401,19 @@ Document \`storageState\`. If \`playwright/.auth/user.json\` exists, Playwright 
 
 ## Inventory
 
-Rank routes by layout risk. One spec per high-risk route plus a **shell spec** asserting \`v-app\` / \`v-main\` / app-bar or nav-drawer still present.
+Rank routes by layout risk. One spec per high-risk route plus a **shell spec**. Phase 0 runs on **v2**: assert \`.v-application\` and \`.v-content\`. After upgrade, \`.v-content\` becomes \`.v-main\`.
 
 \`\`\`ts
 import { test, expect } from '@playwright/test'
 
-test('shell: v-app and v-main remain', async ({ page }) => {
+test('shell: v-app and v-content remain', async ({ page }) => {
   await page.goto('/')
   await expect(page.locator('.v-application, .v-app, [class*="v-app"]').first()).toBeVisible()
-  await expect(page.locator('.v-main, [class*="v-main"]').first()).toBeVisible()
+  await expect(page.locator('.v-content, [class*="v-content"]').first()).toBeVisible()
 })
 \`\`\`
+
+After upgrade, change the content locator to \`.v-main\`.
 
 ## Assertions
 
