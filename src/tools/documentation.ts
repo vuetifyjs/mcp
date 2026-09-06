@@ -171,6 +171,16 @@ export async function registerDocumentationTools (server: McpServer) {
   )
 
   server.tool(
+    'get_migration_receipt_schema',
+    'Get the MigrationReceipt schema that agents MUST use when reporting migration findings. The MCP server returns rules; client agents scan user code and emit receipts in this format. Includes confidence guidance: high (→ auto) for exact match + codemod, medium/low (→ review) for partial matches. Returns both the receipt schema and the batch envelope (MigrationReceiptReport).',
+    {
+      title: 'Get migration receipt schema',
+      readOnlyHint: true,
+    },
+    migrations.getMigrationReceiptSchema,
+  )
+
+  server.tool(
     'get_v4_breaking_changes',
     '[DEPRECATED: Use get_upgrade_rules({ from: "v3", to: "v4" }) instead] Get Vuetify 4 breaking changes, optionally filtered by category. Returns migration guidance for each change.',
     {

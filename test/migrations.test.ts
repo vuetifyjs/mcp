@@ -494,6 +494,193 @@ async function testNoMatchingRules () {
   console.log('  ✓ No matching rules handled correctly')
 }
 
+async function testMigrationReceiptSchema () {
+  console.log('Testing MigrationReceipt schema...')
+
+  const { MIGRATION_RECEIPT_SCHEMA } = await import('../src/data/migrations/schema.js')
+
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.name === 'MigrationReceipt', 'Schema should be named MigrationReceipt')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.fields.appVersion.required, 'appVersion should be required')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.fields.component.required, 'component should be required')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.fields.breakingRule.required, 'breakingRule should be required')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.fields.filePath.required, 'filePath should be required')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.fields.proposedPatch.required, 'proposedPatch should be required')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.fields.confidence.required, 'confidence should be required')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.fields.docsLink.required, 'docsLink should be required')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.fields.disposition.required, 'disposition should be required')
+  assert.ok(!MIGRATION_RECEIPT_SCHEMA.fields.line.required, 'line should be optional')
+  assert.ok(!MIGRATION_RECEIPT_SCHEMA.fields.codemod.required, 'codemod should be optional')
+  assert.ok(!MIGRATION_RECEIPT_SCHEMA.fields.hop.required, 'hop should be optional')
+
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.confidenceGuidance.high.includes('auto'), 'High confidence should map to auto disposition')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.confidenceGuidance.medium.includes('review'), 'Medium confidence should map to review disposition')
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.confidenceGuidance.low.includes('review'), 'Low confidence should map to review disposition')
+
+  assert.ok(MIGRATION_RECEIPT_SCHEMA.batchEnvelope.name === 'MigrationReceiptReport', 'Batch envelope should be named MigrationReceiptReport')
+  assert.ok('from' in MIGRATION_RECEIPT_SCHEMA.batchEnvelope.fields, 'Batch envelope should have from field')
+  assert.ok('to' in MIGRATION_RECEIPT_SCHEMA.batchEnvelope.fields, 'Batch envelope should have to field')
+  assert.ok('findings' in MIGRATION_RECEIPT_SCHEMA.batchEnvelope.fields, 'Batch envelope should have findings field')
+  assert.ok('summary' in MIGRATION_RECEIPT_SCHEMA.batchEnvelope.fields, 'Batch envelope should have summary field')
+
+  console.log('  ✓ MigrationReceipt schema is correctly defined')
+}
+
+async function testMigrationReceiptTypes () {
+  console.log('Testing MigrationReceipt type definitions...')
+
+  const {
+    MIGRATION_RECEIPT_SCHEMA,
+  } = await import('../src/data/migrations/schema.js')
+
+  const validReceipt = {
+    appVersion: 'v3.6.0',
+    component: 'VSnackbar',
+    breakingRule: 'v4/snackbar-multi-line',
+    breakingRuleTitle: 'VSnackbar multi-line prop removal',
+    filePath: 'src/components/Notifications.vue',
+    line: 42,
+    proposedPatch: { from: 'multi-line', to: '', note: 'Remove multi-line prop' },
+    confidence: 'high' as const,
+    docsLink: 'https://vuetifyjs.com/en/getting-started/upgrade-guide#vsnackbar',
+    disposition: 'auto' as const,
+    codemod: 'vuetify-4-snackbar',
+    hop: { from: 'v3', to: 'v4' },
+    matchedText: '<v-snackbar multi-line>',
+  }
+
+  for (const [field, info] of Object.entries(MIGRATION_RECEIPT_SCHEMA.fields)) {
+    if (info.required) {
+      assert.ok(field in validReceipt, `Required field ${field} should be in valid receipt`)
+    }
+  }
+
+  assert.strictEqual(validReceipt.confidence, 'high')
+  assert.strictEqual(validReceipt.disposition, 'auto')
+
+  const validReceiptWithNullComponent = {
+    ...validReceipt,
+    component: null,
+  }
+  assert.strictEqual(validReceiptWithNullComponent.component, null, 'component can be null')
+
+  const validReceiptWithLineRange = {
+    ...validReceipt,
+    line: { start: 10, end: 15 },
+  }
+  assert.ok('start' in validReceiptWithLineRange.line, 'line can be a range')
+  assert.ok('end' in validReceiptWithLineRange.line, 'line can be a range')
+
+  console.log('  ✓ MigrationReceipt type definitions are correct')
+}
+
+async function testMigrationReceiptReportFixture () {
+  console.log('Testing MigrationReceiptReport fixture...')
+
+  const validReport = {
+    from: 'v3',
+    to: 'v4',
+    appVersion: 'v3.6.0',
+    generatedAt: new Date().toISOString(),
+    findings: [
+      {
+        appVersion: 'v3.6.0',
+        component: 'VSnackbar',
+        breakingRule: 'v4/snackbar-multi-line',
+        filePath: 'src/components/Notifications.vue',
+        line: 42,
+        proposedPatch: { from: 'multi-line', to: '' },
+        confidence: 'high' as const,
+        docsLink: 'https://vuetifyjs.com/en/getting-started/upgrade-guide#vsnackbar',
+        disposition: 'auto' as const,
+      },
+      {
+        appVersion: 'v3.6.0',
+        component: null,
+        breakingRule: 'v4/typography-classes',
+        filePath: 'src/App.vue',
+        line: { start: 15, end: 18 },
+        proposedPatch: { from: 'text-h1', to: 'text-display-large' },
+        confidence: 'medium' as const,
+        docsLink: 'https://vuetifyjs.com/en/getting-started/upgrade-guide#typography',
+        disposition: 'review' as const,
+      },
+    ],
+    summary: {
+      auto: 1,
+      review: 1,
+      total: 2,
+      byConfidence: {
+        high: 1,
+        medium: 1,
+        low: 0,
+      },
+    },
+  }
+
+  assert.strictEqual(validReport.from, 'v3')
+  assert.strictEqual(validReport.to, 'v4')
+  assert.strictEqual(validReport.findings.length, 2)
+  assert.strictEqual(validReport.summary.auto, 1)
+  assert.strictEqual(validReport.summary.review, 1)
+  assert.strictEqual(validReport.summary.total, 2)
+  assert.strictEqual(validReport.summary.byConfidence.high, 1)
+  assert.strictEqual(validReport.summary.byConfidence.medium, 1)
+  assert.strictEqual(validReport.summary.byConfidence.low, 0)
+
+  const autoFindings = validReport.findings.filter(f => f.disposition === 'auto')
+  const reviewFindings = validReport.findings.filter(f => f.disposition === 'review')
+  assert.strictEqual(autoFindings.length, validReport.summary.auto, 'Auto count should match findings')
+  assert.strictEqual(reviewFindings.length, validReport.summary.review, 'Review count should match findings')
+
+  console.log('  ✓ MigrationReceiptReport fixture is valid')
+}
+
+async function testGetMigrationReceiptSchemaOutput () {
+  console.log('Testing get_migration_receipt_schema output...')
+
+  const result = await service.getMigrationReceiptSchema()
+  const text = result.content[0].text
+
+  assert.ok(text.includes('# MigrationReceipt Schema'), 'Should have title')
+  assert.ok(text.includes('IMPORTANT'), 'Should have important notice')
+  assert.ok(text.includes('client agent'), 'Should mention client agent responsibility')
+  assert.ok(text.includes('server cannot read user files'), 'Should clarify server limitations')
+  assert.ok(text.includes('appVersion'), 'Should list appVersion field')
+  assert.ok(text.includes('breakingRule'), 'Should list breakingRule field')
+  assert.ok(text.includes('proposedPatch'), 'Should list proposedPatch field')
+  assert.ok(text.includes('confidence'), 'Should list confidence field')
+  assert.ok(text.includes('disposition'), 'Should list disposition field')
+  assert.ok(text.includes('Confidence Guidance'), 'Should have confidence guidance section')
+  assert.ok(text.includes('high'), 'Should mention high confidence')
+  assert.ok(text.includes('medium'), 'Should mention medium confidence')
+  assert.ok(text.includes('low'), 'Should mention low confidence')
+  assert.ok(text.includes('MigrationReceiptReport'), 'Should mention batch envelope')
+  assert.ok(text.includes('Example Receipt'), 'Should have example receipt')
+  assert.ok(text.includes('Example Report'), 'Should have example report')
+
+  console.log('  ✓ get_migration_receipt_schema output is correct')
+}
+
+async function testConfidenceToDispositionMapping () {
+  console.log('Testing confidence to disposition mapping guidance...')
+
+  const { MIGRATION_RECEIPT_SCHEMA } = await import('../src/data/migrations/schema.js')
+
+  const guidance = MIGRATION_RECEIPT_SCHEMA.confidenceGuidance
+
+  assert.ok(guidance.high.includes('codemod'), 'High confidence should mention codemod')
+  assert.ok(guidance.high.includes('exact'), 'High confidence should mention exact match')
+  assert.ok(guidance.high.toLowerCase().includes('auto'), 'High confidence should suggest auto disposition')
+
+  assert.ok(guidance.medium.includes('replace mapping'), 'Medium confidence should mention replace mapping')
+  assert.ok(guidance.medium.toLowerCase().includes('review'), 'Medium confidence should suggest review disposition')
+
+  assert.ok(guidance.low.includes('no clean replace'), 'Low confidence should mention no clean replace')
+  assert.ok(guidance.low.toLowerCase().includes('review'), 'Low confidence should suggest review disposition')
+
+  console.log('  ✓ Confidence to disposition mapping guidance is correct')
+}
+
 async function runAllTests () {
   console.log('Running migration service tests...\n')
 
@@ -517,6 +704,11 @@ async function runAllTests () {
   await testRuleStructure()
   await testInvalidVersionErrors()
   await testNoMatchingRules()
+  await testMigrationReceiptSchema()
+  await testMigrationReceiptTypes()
+  await testMigrationReceiptReportFixture()
+  await testGetMigrationReceiptSchemaOutput()
+  await testConfidenceToDispositionMapping()
 
   console.log('\n✅ All tests passed!')
 }

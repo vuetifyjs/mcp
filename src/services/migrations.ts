@@ -17,6 +17,7 @@ import {
   loadMigrationData,
   normalizeVersion,
   isKnownVersion,
+  MIGRATION_RECEIPT_SCHEMA,
 } from '../data/migrations/index.js'
 
 export interface GetUpgradePlanParams {
@@ -140,6 +141,14 @@ export function createMigrationService () {
       }
 
       const text = formatMigrationRules(allRules, from, to)
+
+      return {
+        content: [{ type: 'text' as const, text }],
+      }
+    },
+
+    getMigrationReceiptSchema: async () => {
+      const text = formatMigrationReceiptSchema()
 
       return {
         content: [{ type: 'text' as const, text }],
@@ -311,4 +320,88 @@ function groupBy<T, K extends keyof T> (arr: T[], key: K): Record<string, T[]> {
 
 function capitalize (s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+function formatMigrationReceiptSchema (): string {
+  const lines: string[] = [
+    '# MigrationReceipt Schema',
+    '',
+    '> **IMPORTANT**: The MCP server returns migration **rules**; the **client agent** scans user code and emits **receipts**. The server cannot read user files.',
+    '',
+    'After using `get_upgrade_rules` to scan the user\'s codebase with `detect.grep` patterns, agents MUST emit findings using this schema.',
+    '',
+    '## MigrationReceipt Fields',
+    '',
+    '| Field | Type | Required | Description |',
+    '|-------|------|----------|-------------|',
+  ]
+
+  for (const [field, info] of Object.entries(MIGRATION_RECEIPT_SCHEMA.fields)) {
+    lines.push(`| \`${field}\` | \`${info.type}\` | ${info.required ? 'Yes' : 'No'} | ${info.description} |`)
+  }
+
+  lines.push('')
+  lines.push('## Confidence Guidance')
+  lines.push('')
+  lines.push('Use these guidelines to determine confidence and disposition:')
+  lines.push('')
+  lines.push('| Confidence | When to Use | Disposition |')
+  lines.push('|------------|-------------|-------------|')
+  lines.push(`| \`high\` | ${MIGRATION_RECEIPT_SCHEMA.confidenceGuidance.high} | \`auto\` |`)
+  lines.push(`| \`medium\` | ${MIGRATION_RECEIPT_SCHEMA.confidenceGuidance.medium} | \`review\` |`)
+  lines.push(`| \`low\` | ${MIGRATION_RECEIPT_SCHEMA.confidenceGuidance.low} | \`review\` |`)
+  lines.push('')
+  lines.push('## Batch Envelope: MigrationReceiptReport')
+  lines.push('')
+  lines.push('Wrap all findings in this envelope:')
+  lines.push('')
+  lines.push('```typescript')
+  lines.push('interface MigrationReceiptReport {')
+  for (const [field, desc] of Object.entries(MIGRATION_RECEIPT_SCHEMA.batchEnvelope.fields)) {
+    lines.push(`  ${field}: ${typeof desc === 'string' ? `// ${desc}` : JSON.stringify(desc)}`)
+  }
+  lines.push('}')
+  lines.push('```')
+  lines.push('')
+  lines.push('## Example Receipt')
+  lines.push('')
+  lines.push('```json')
+  lines.push(JSON.stringify({
+    appVersion: 'v3.6.0',
+    component: 'VSnackbar',
+    breakingRule: 'v4/snackbar-multi-line',
+    breakingRuleTitle: 'VSnackbar multi-line prop removal',
+    filePath: 'src/components/Notifications.vue',
+    line: 42,
+    proposedPatch: { from: 'multi-line', to: '', note: 'Remove multi-line prop; use content-class for custom styling' },
+    confidence: 'high',
+    docsLink: 'https://vuetifyjs.com/en/getting-started/upgrade-guide#vsnackbar',
+    disposition: 'auto',
+    codemod: 'vuetify-4-snackbar',
+    hop: { from: 'v3', to: 'v4' },
+    matchedText: '<v-snackbar multi-line>',
+  }, null, 2))
+  lines.push('```')
+  lines.push('')
+  lines.push('## Example Report')
+  lines.push('')
+  lines.push('```json')
+  lines.push(JSON.stringify({
+    from: 'v3',
+    to: 'v4',
+    appVersion: 'v3.6.0',
+    generatedAt: new Date().toISOString(),
+    findings: [
+      { appVersion: 'v3.6.0', component: 'VSnackbar', breakingRule: 'v4/snackbar-multi-line', filePath: 'src/components/Notifications.vue', line: 42, proposedPatch: { from: 'multi-line', to: '' }, confidence: 'high', docsLink: 'https://vuetifyjs.com/en/getting-started/upgrade-guide#vsnackbar', disposition: 'auto' },
+      { appVersion: 'v3.6.0', component: null, breakingRule: 'v4/typography-classes', filePath: 'src/App.vue', line: { start: 15, end: 18 }, proposedPatch: { from: 'text-h1', to: 'text-display-large' }, confidence: 'medium', docsLink: 'https://vuetifyjs.com/en/getting-started/upgrade-guide#typography', disposition: 'review' },
+    ],
+    summary: { auto: 1, review: 1, total: 2, byConfidence: { high: 1, medium: 1, low: 0 } },
+  }, null, 2))
+  lines.push('```')
+  lines.push('')
+  lines.push('---')
+  lines.push('')
+  lines.push('Use `get_upgrade_rules` to get the migration rules, scan the user\'s codebase, and emit receipts in this format.')
+
+  return lines.join('\n')
 }
