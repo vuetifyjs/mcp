@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process'
+import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
@@ -40,11 +41,7 @@ export function resolveSpawnConfig (argv = process.argv.slice(2), platform = pro
     args,
     env,
     isSubcommand,
-    // The server is spawned as `process.execPath`. With the shell enabled on
-    // Windows the command is re-parsed by `cmd.exe`, which splits the
-    // executable path on spaces (e.g. `C:\Program Files\nodejs\node.exe`) and
-    // fails with `'C:\Program' is not recognized`. Only Windows `.cmd` shims
-    // (npx) actually require a shell.
+    // .cmd shims need a shell; do not let cmd.exe re-parse execPath
     shell: platform === 'win32' && isSubcommand,
   }
 }
@@ -82,6 +79,17 @@ function main () {
   process.on('SIGTERM', forward('SIGTERM'))
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+export function isMainModule (importMetaUrl, argv1) {
+  if (!argv1) {
+    return false
+  }
+  try {
+    return fileURLToPath(importMetaUrl) === fs.realpathSync(argv1)
+  } catch {
+    return importMetaUrl === pathToFileURL(path.resolve(argv1)).href
+  }
+}
+
+if (isMainModule(import.meta.url, process.argv[1])) {
   main()
 }

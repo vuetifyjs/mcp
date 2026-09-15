@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
+import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { resolveSpawnConfig } from '../../bin/cli.js'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { isMainModule, resolveSpawnConfig } from '../../bin/cli.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
@@ -47,5 +49,18 @@ describe('resolveSpawnConfig', () => {
       expect(command).toBe('npx')
       expect(shell).toBe(false)
     })
+  })
+})
+
+describe('isMainModule', () => {
+  it('treats a POSIX bin symlink as a direct run', () => {
+    const real = fileURLToPath(import.meta.url)
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'mcp-cli-'))
+    const link = path.join(dir, 'cli.js')
+    fs.symlinkSync(real, link)
+
+    expect(isMainModule(pathToFileURL(real).href, link)).toBe(true)
+
+    fs.rmSync(dir, { recursive: true, force: true })
   })
 })
