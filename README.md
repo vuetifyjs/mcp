@@ -313,7 +313,8 @@ The Vuetify MCP server provides a comprehensive set of tools to enhance your dev
 ### Documentation Tools
 
 - `get_installation_guide`: Get detailed installation guides for various environments, including Vue CLI, Nuxt, Vite, and manual installation methods.
-- `get_available_features`: Get a list of available Vuetify features, including components, directives, and composables.
+- `get_feature_guides`: Get a list of available features in the documentation.
+- `get_feature_guide`: Get the information about a specific feature in the documentation.
 - `get_exposed_exports`: Get a list of exports from the Vuetify npm package, useful for understanding what can be imported directly.
 - `get_frequently_asked_questions`: Get the FAQ section from the Vuetify docs, providing answers to common questions and issues.
 - `get_release_notes_by_version`: Get release notes for one or more Vuetify versions, helping you understand changes between versions.
